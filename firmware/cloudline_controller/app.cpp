@@ -569,4 +569,15 @@ void loop() {
     }
   }
 #endif
+#ifdef TEST_HANG_CLI_AFTER_MS
+  // Hang with interrupts disabled: the watchdog interrupt cannot run, so the
+  // second timeout must reset the chip (datasheet, WDTCSR bit WDIE).
+  if (!(gResetFlags & _BV(WDRF)) && now > TEST_HANG_CLI_AFTER_MS) {
+    Serial.println(F("TEST: hang with interrupts off"));
+    Serial.flush();
+    noInterrupts();
+    for (;;) {
+    }
+  }
+#endif
 }

@@ -9,6 +9,8 @@ checks the serial output of two builds:
 | normal | `-DTEST_STATUS_EVERY_MS=1000` | boots, prints the banner, `loop()` keeps running, fan duty 0 %, no watchdog restart |
 | hang | `-DTEST_STATUS_EVERY_MS=1000 -DTEST_HANG_AFTER_MS=3000` | after 3 s `loop()` stops feeding the watchdog; the watchdog interrupt restarts the sketch, which reports `restarted by the watchdog` and `reset=0x80` and starts with the fan OFF |
 
+| hang-cli (information only) | `-DTEST_HANG_CLI_AFTER_MS=3000` | `loop()` stops with interrupts disabled. On the real chip the second timeout resets it (ATmega328P datasheet, WDTCSR bit WDIE). simavr does not model that rule, so the script only reports what happened. |
+
 The `TEST_*` hooks at the end of `loop()` in `app.cpp` are compiled in only
 when these flags are given.
 

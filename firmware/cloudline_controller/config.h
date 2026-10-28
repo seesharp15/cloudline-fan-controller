@@ -57,7 +57,7 @@
 // Line duty (%) for a 1 % and a 100 % setting. Settings 1..100 map linearly
 // onto (FAN_DUTY_MIN_PCT, FAN_DUTY_MAX_PCT]. If the fan does not turn at the
 // bottom of the knob, raise FAN_DUTY_MIN_PCT to the lowest duty that turns it
-// (BENCH_TEST.md step R6). OFF and a 0 % setting always give 0 % duty.
+// (BENCH_TEST.md step B6). OFF and a 0 % setting always give 0 % duty.
 #define FAN_DUTY_MIN_PCT   0
 #define FAN_DUTY_MAX_PCT   100
 
