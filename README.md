@@ -98,6 +98,7 @@ part with the same value and rating works; the part numbers are examples.
 | D2 | 1 | TVS diode, unidirectional | V<sub>RWM</sub> 11.1 V, 600 W | Littelfuse P6KE13A (P6KE15A if your fan measures > 10.8 V) | $0.45 |
 | D3, D4 | 2 | Small Schottky diode | 30 V, 200 mA | BAT85 | $0.30 |
 | F1 | 1 | Resettable PTC fuse | 0.2 A hold, 0.4 A trip | Bourns MF-R020 | $0.35 |
+| U4 | 1 | I²C level shifter module (BSS138) | 5 V ↔ 3.3 V, bidirectional, 2 channels used | SparkFun BOB-12009 (or Adafruit 757) | $4 |
 | C1 | 1 | Electrolytic capacitor | 220 µF, 25 V | Panasonic EEU-FR1E221 | $0.40 |
 | C2 | 1 | Ceramic capacitor | 100 nF, 50 V | KEMET C320C104K5R5TA | $0.25 |
 | C3, C4 | 2 | Ceramic capacitor | 1 µF, 25–50 V | TDK FG28X7R1H105KRT06 | $0.60 |
@@ -113,10 +114,10 @@ part with the same value and rating works; the part numbers are examples.
 | — | 10 | Female-female jumper wires | 20 cm Dupont, for the OLED module | any | $3 |
 | — | — | Hook-up wire | 22 AWG stranded (power), 24–26 AWG stranded (signals), several colours | any silicone wire kit | $8 |
 | — | — | Heat-shrink tubing | 2–6 mm assortment, 2:1 | any | $6 |
-| — | 1 | Enclosure | ABS, about 112 × 62 × 31 mm | Hammond 1591XXSSBK, or 3D-printed | $6 |
+| — | 1 | Enclosure | ABS, about 112 × 85 × 45 mm (check the maker's drawing) | Hammond 1591XXSSBK, or 3D-printed | $8 |
 | — | 1 | Cable gland | PG7 | any | $0.50 |
 | — | 4 | Nylon standoffs and screws | M2.5 or M3 | any | $1 |
-| | | | | **Total** | **≈ $55** |
+| | | | | **Total** | **≈ $60** |
 
 ## Tools
 
@@ -147,7 +148,7 @@ part with the same value and rating works; the part numbers are examples.
    *Install*. No other library is needed. The pinned versions are listed in
    [firmware/libraries.txt](firmware/libraries.txt).
 4. **Open the sketch.** *File → Open* →
-   `firmware/cloudline_controller/cloudline_controller.ino`. Four tabs open:
+   `firmware/cloudline_controller/cloudline_controller.ino`. Five tabs open:
    `cloudline_controller.ino`, `app.cpp`, `config.h`, `display_ui.h`,
    `fan_logic.h`. The folder must stay named `cloudline_controller`.
 5. **Select the board.** *Tools → Board → Arduino AVR Boards → Arduino
@@ -174,11 +175,12 @@ part with the same value and rating works; the part numbers are examples.
    and upload again. Whichever one works is the one you have. The watchdog in
    this firmware is designed to work with both (see
    [FAQ](FAQ.md#what-does-the-watchdog-do-and-is-it-safe-with-the-old-bootloader)).
-8. **Compile once** (*Sketch → Verify*). Expected result:
+8. **Compile once** (*Sketch → Verify*). Expected result, give or take a
+   few bytes depending on IDE and library versions:
 
    ```
-   Sketch uses 25404 bytes (82%) of program storage space. Maximum is 30720 bytes.
-   Global variables use 1276 bytes (62%) of dynamic memory, leaving 772 bytes for local variables. Maximum is 2048 bytes.
+   Sketch uses 25976 bytes (84%) of program storage space. Maximum is 30720 bytes.
+   Global variables use 1282 bytes (62%) of dynamic memory, leaving 766 bytes for local variables. Maximum is 2048 bytes.
    ```
 
    ("Old Bootloader" shows the same numbers.) Don't upload yet: that is
@@ -220,10 +222,22 @@ Record every reading in a table like the one below; you'll need them later.
 | **M1 Supply and ground** | DC volts, black probe on pin 3, red on pin 4 | **+9.5 to +10.5 V** | **Negative reading:** you are numbering from the wrong side; mirror the numbers and repeat. **No pin pair gives 9–11 V:** your fan's port is different (for example a newer USB-C "UIS" port, see [FAQ](FAQ.md#will-this-work-with-other-ac-infinity-fans-or-other-4-pin-fans)). Don't connect. **10.8–12 V:** fit a P6KE15A for D2 instead of P6KE13A. **Over 12 V:** don't connect; the design needs changes. |
 | **M2 Supply under load** | Hold a **220 Ω 1 W** resistor across pins 4 and 3 for 5 s and measure pins 4–3 again | Within **0.5 V** of M1 (45 mA load, more than the controller draws) | Drop of more than 1 V: the port can't power the controller. Power the Nano from a separate 9–12 V adapter (FAQ) and leave J1 pin 4 unconnected. |
 | **M3 Speed line pull-up** | DC volts, pin 3 (black) to pin 2 (red), nothing else connected | **About the same as M1** (an internal pull-up to the fan's supply) | **Below 1 V or drifting:** the line floats. Fit R5 (4.7 kΩ). **Above M1 + 0.5 V:** don't connect. |
-| **M3b Pull-up strength** | Connect a **10 kΩ** resistor from pin 2 to pin 3 and measure pins 2–3 | **1 V or more** (means the internal pull-up is 100 kΩ or less, so the line can be pulled low by Q1 and still rise quickly). Note the value: pull-up R ≈ 10 kΩ × (M3 ÷ reading − 1). | Below 0.1 V: the pull-up is very weak (> 1 MΩ). Fit R5. |
-| **M4 Polarity and stop** | Connect pin 2 to pin 3 through a **100 Ω** resistor. Wait 15 s. Remove it. Wait 15 s. | Linked: the fan **slows down and stops** (it may coast for several seconds). Released: it **speeds up to full**. | **Opposite** (linked = full, released = stop): set `FAN_PWM_INVERTED 0` in `config.h` **and** connect R4 from the Q1 gate to GND instead of +5V. **Linked = slow but never stops:** this fan does not stop at 0 %; OFF will mean "minimum speed" ([FAQ](FAQ.md#does-0-or-off-actually-stop-the-fan)). **No change at all:** pin 2 isn't the speed line; recheck the numbering. |
+| **M3b Pull-up strength** | Connect a **10 kΩ** resistor from pin 2 to pin 3 and measure pins 2–3 | **Between 1 V and 0.9 × M1** (the internal pull-up is between about 1.1 kΩ and 100 kΩ). Note the value: pull-up R ≈ 10 kΩ × (M3 ÷ reading − 1). While connected, watch the fan for M4b. | **Below 0.1 V:** the pull-up is very weak (> 1 MΩ); fit R5. **Above 0.9 × M1:** pin 2 is a stiff source, not a pulled-up control line. Don't do M4; recheck the numbering. |
+| **M4b PWM or analogue input?** | (During M3b.) The 10 kΩ holds the line at the M3b voltage, part-way between 0 and M1. Wait 15 s and listen. | Either result is fine; note which. **Fan settles at an in-between speed:** the input reacts to the average voltage (analogue-style); the 4 kHz PWM's average does the same job. **Fan runs at full speed (or stops):** it is a switching (logic) input; PWM is what it expects. | If later (bench B4) the speed hunts or surges at mid settings, the input is analogue without filtering: add 10 kΩ in series between Q1's drain and J1 pin 2 and 10 µF from J1 pin 2 to GND, and re-test. |
+| **M4 Polarity and stop** | Connect pin 2 to pin 3 through a **100 Ω** resistor. Wait 15 s. Remove it. Wait 15 s. | Linked: the fan **slows down and stops** (it may coast for several seconds). Released: it **speeds up to full**. | **Opposite** (linked = full, released = stop): set `FAN_PWM_INVERTED 0` in `config.h` **and** connect R4 (at the D9 end of R3) to GND instead of +5V. **Linked = slow but never stops:** this fan does not stop at 0 %; OFF will mean "minimum speed" ([FAQ](FAQ.md#does-0-or-off-actually-stop-the-fan)). **No change at all:** pin 2 isn't the speed line; recheck the numbering. |
 | **M5 Tach pin** | Fan at full speed (pin 2 released). DC volts pin 3 (black) to pin 1 (red). If your meter has Hz, measure that too. Then connect a **10 kΩ** resistor from pin 1 to pin 4 and repeat. Then stop the fan (100 Ω link on pin 2) and repeat. | A tach shows up as a **frequency of roughly 10–200 Hz while running** (or a steady DC reading between 2 and 8 V that changes when the fan stops), at least with the 10 kΩ pull-up connected. Write down the frequency at full speed. | **Steady 0 V, no frequency in any case:** no tach on this port. The controller still works; ACT shows `--%`. **Steady voltage equal to M1 that doesn't change:** not a tach (another supply pin); it is still safe to connect (R7 limits the current) but there will be no RPM. **Above 12 V:** don't connect pin 1; leave R7 unconnected at J1. |
+| **M5b Tach type and pulses per revolution** (optional) | From M5: a frequency **without** the 10 kΩ pull-up means a **push-pull** output (note its high voltage: DC reading ≈ half of it); a frequency only **with** the pull-up means **open collector**. For pulses per revolution you need the true RPM: an optical (laser) tachometer on a piece of reflective tape on the impeller, or a phone slow-motion video of a marked blade at a low setting (count turns per second). PPR = frequency × 60 ÷ RPM. | Usually 1, 2 or 4. Put it in `TACH_PULSES_PER_REV`. | If you can't measure it, leave 2: only the RPM number is affected, not the ACT %. |
 | **M6 No short to mains** | Unplug the fan from mains. Ohms, each pin 1–4 to each mains plug blade | **Open circuit (OL)** on every combination | Any reading: the fan is faulty or the port is not isolated. Do not use it. |
+
+**M7 OLED module** (no power needed). With the module unpowered: resistance
+VCC to GND **above 1 kΩ**; SDA to VCC and SCL to VCC: either **OL** (no
+pull-ups on the module) or **2–10 kΩ** (pull-ups fitted), both fine; TRA,
+TRB, PSH to GND: **OL**, and **0 Ω while the knob is turned/pressed**
+through a click (they are plain switches to GND). If a TRA/TRB/PSH pin reads
+a fixed resistance to VCC instead, the module has pull-ups on the encoder
+too, which is also fine. The display driver (SH1106 vs SSD1306) and the I²C
+address can't be measured with a meter: build step 5 checks them (the
+serial console reports which address answers).
 
 When all checks pass, plug the stock controller back in if you still want to
 use the fan, and start the build.
@@ -307,17 +321,21 @@ nothing holds its speed line low. Unplug J1 afterwards.
 1. Solder **U2** (MCP1700, flat face towards you: GND, VIN, VOUT),
    **C3** (VIN to GND) and **C4** (VOUT to GND). Wire U2 VIN to the socket's
    **+5V** pin (27).
-2. Solder **R1** (U2 VOUT to the SDA line) and **R2** (U2 VOUT to the SCL
-   line).
-3. Run the module wires, **matching the labels printed on your module**
+2. Solder header pins to **U4** (the level-shifter module) and mount it on
+   the perfboard. Wire **HV** to +5V (socket pin 27), **LV** to U2 VOUT
+   (+3V3), **GND** to GND, **HV1** to socket **A4** (pin 23), **HV2** to
+   socket **A5** (pin 24). U4 lets the 5 V Nano and the 3.3 V display talk
+   without either seeing the other's voltage.
+3. Solder **R1** (U2 VOUT to U4 **LV1**) and **R2** (U2 VOUT to U4 **LV2**).
+4. Run the module wires, **matching the labels printed on your module**
    (the pin order varies between batches):
 
    | Module | To | Suggested colour |
    |---|---|---|
    | VCC | U2 VOUT (+3V3) | pink |
    | GND | GND | black |
-   | SDA | socket A4 (pin 23) and R1 | blue |
-   | SCL | socket A5 (pin 24) and R2 | white |
+   | SDA | U4 LV1 (and R1); U4 HV1 goes to socket A4 (pin 23) | blue |
+   | SCL | U4 LV2 (and R2); U4 HV2 goes to socket A5 (pin 24) | white |
    | TRA | socket D3 (pin 6) | purple |
    | TRB | socket D4 (pin 7) | grey |
    | PSH | socket D5 (pin 8) | cyan |
@@ -325,8 +343,11 @@ nothing holds its speed line low. Unplug J1 afterwards.
    | BAK | socket D7 (pin 10) (optional) | violet |
 
 ✅ **Check before continuing** (nothing powered, Nano out):
-- Continuity from each module pin to its socket pin in the table: **beep**.
+- Continuity from each module pin to its socket pin in the table: **beep**
+  (for SDA/SCL: module to U4 LV1/LV2, and U4 HV1/HV2 to A4/A5).
 - No continuity between neighbouring socket pins D3–D7, or A4–A5.
+- No continuity from socket A4 to module SDA (U4 is in between: you'll read
+  several kΩ, not a beep).
 - Resistance socket +5V (27) to GND: **above 1 kΩ**.
 - Resistance module VCC to GND: **above 1 kΩ**.
 - Resistance module SDA to module VCC: **2.2 kΩ or less** (R1, perhaps in
@@ -334,9 +355,16 @@ nothing holds its speed line low. Unplug J1 afterwards.
 
 ### Step 5. Flash and test with USB power only
 
-J1 must **not** be connected to anything. Plug the Nano into its socket
-(USB connector towards the board edge you chose), connect USB, select the
-port and processor (Software setup step 7), and click **Upload**.
+J1 must **not** be connected to anything.
+
+**Orientation check before plugging in the Nano.** In step 2 you wired one
+socket hole to +10V_P (via D1) and the hole next to it to GND; in step 4 you
+wired a hole three places further along to +5V. Hold the Nano over the
+socket: the pins printed **VIN**, **GND** and **5V** must sit over exactly
+those holes. Turned round the other way, VIN would land on D12 and the
+Nano could be damaged as soon as the fan powers it. Then plug the Nano in,
+connect USB, select the port and processor (Software setup step 7), and
+click **Upload**.
 
 ✅ **Check before continuing:**
 - The IDE ends with `Done uploading` (or avrdude reports
@@ -356,7 +384,11 @@ port and processor (Software setup step 7), and click **Upload**.
   to `FAN OFF`, LED off.
 - *Tools → Serial Monitor*, **115200** baud, line ending **Newline**. On
   reset it prints `Cloudline controller ready. Fan OFF. Send ? for help.`
-  Type `s` and Enter: a status line starting `on=0 set=50%` appears.
+  and **`OLED answers at 0x3C`**. Type `s` and Enter: a status line
+  starting `on=0 set=50%` appears.
+- Display driver: the picture is sharp and centred with no column of random
+  dots at either edge. If there is one, your module has an SSD1306: set
+  `OLED_SSD1306 1` and upload again.
 
 ### Step 6. Wire the fan interface
 
@@ -364,7 +396,7 @@ Unplug USB. Solder:
 
 1. **Speed output:** **Q1** (2N7000, flat face towards you: S, G, D);
    **R3** 220 Ω from socket **D9** (pin 12) to Q1 gate; **R4** 10 kΩ from
-   Q1 gate to **+5V**; Q1 source to GND; J1 **PWM** wire to Q1 drain.
+   the **D9 end of R3** to **+5V**; Q1 source to GND; J1 **PWM** wire to Q1 drain.
    Fit **R5** (Q1 drain to +10V_P) only if check M3 told you to.
 2. **Tach input:** **R7** 1 kΩ from J1 **TACH** wire to the tach node;
    from the tach node: **R6** 10 kΩ to +5V, **D3** BAT85 (band to +5V),
@@ -487,7 +519,7 @@ the fan is plugged in ([FAQ](FAQ.md#can-i-power-the-nano-from-usb-and-the-fan-at
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| **Blank display**, LED L works | No 3.3 V at the module; SDA/SCL swapped or not connected; module at address 0x3D; wrong module pin order | Measure module VCC (3.25–3.35 V). Check SDA → A4, SCL → A5 by label, not position. Try `OLED_I2C_ADDRESS 0x3D`. |
+| **Blank display**, LED L works | No 3.3 V at the module; SDA/SCL swapped or not connected; U4 not powered; module at address 0x3D; wrong module pin order | Open the Serial Monitor: it says whether a display answers and at which address (`OLED answers at 0x3C`, or `! but a device answers at 0x3D`). Measure module VCC (3.25–3.35 V) and U4 HV (5 V) / LV (3.3 V). Check SDA/SCL by label, not position. |
 | **Blank display**, nothing works | No power: F1 tripped, D1 reversed, J1 wires swapped | Measure VIN (Step 3 values). Unplug, let F1 cool for a minute, look for a short. |
 | **Garbled display** (random dots, shifted picture, a column of noise at one edge) | Your board has an SSD1306, not an SH1106 | Set `OLED_SSD1306 1` in `config.h` and upload. |
 | **Garbled display** that changes when the fan starts | Noise or a poor ground on the I²C wires | Keep the OLED wires short (< 30 cm) and away from the fan cable; check the GND wire to the module. |
@@ -498,7 +530,7 @@ the fan is plugged in ([FAQ](FAQ.md#can-i-power-the-nano-from-usb-and-the-fan-at
 | **Button doesn't toggle** | PSH not on D5, or no GND to the module | Continuity PSH → D5. Note the toggle happens on **release**; if you hold for 3 s it starts a calibration instead (only while ON). |
 | **Button toggles twice** | Should not happen: presses are debounced (25 ms). If it does, the switch is failing. | Raise `BUTTON_DEBOUNCE_MS` to 50. |
 | **Fan runs at full speed when it should be off** (display says FAN OFF) | Q1 not pulling the line low: Q1 backwards, R4 missing, PWM wire on the wrong J1 pin, or polarity opposite | Q1 gate should read ~5 V while OFF (Step 6). Check 2N7000 pin order S-G-D. Recheck M4; if the fan runs when the line is low, use `FAN_PWM_INVERTED 0` and R4 to GND. |
-| **Fan runs at full speed for a moment at power-up** | R4 missing or wired to the wrong place | R4 must go from the Q1 gate to +5V. |
+| **Fan runs at full speed for a moment at power-up** | R4 missing or wired to the wrong place | R4 must go from the D9 end of R3 to +5V. |
 | **Fan won't stop at 0 % / OFF** (runs slowly) | This fan's minimum speed is above zero when the line is low (M4) | Expected for that fan: see [FAQ](FAQ.md#does-0-or-off-actually-stop-the-fan). |
 | **Fan won't stop and runs at full** | See "full speed when it should be off" | |
 | **Fan doesn't start at low settings** | EC fans need a minimum duty to start | Raise `FAN_DUTY_MIN_PCT` to the lowest duty that turns it (BENCH_TEST B6). |
@@ -558,6 +590,6 @@ Repository layout:
 - [chriskoz/AutoFan](https://github.com/chriskoz/AutoFan) (Cloudline S6): "4-pin molex ATX HDD connector", control wire "pulled up to 10V by the fan", stock controller ≈ 245 µs period (~4 kHz)
 - [coofercat/ha-ac-infinity-fan](https://github.com/coofercat/ha-ac-infinity-fan): newer USB-C "UIS" S6: +10 V, tach on D+, PWM on D−, ~5 kHz
 - [Home Assistant Community: multiple Cloudline S6 on one ESP32](https://community.home-assistant.io/t/connect-multiple-cloudline-s6-to-single-esp32/592211): half speed with direct GPIO drive
-- AITRIP / generic 1.3″ OLED + EC11 module: [manuals.plus (AITRIP)](https://manuals.plus/asin/B0F87DZ51P), [makerselectronics](https://makerselectronics.com/product/oled-display-i2c-1-3-inch-module-with-ec11-rotary-encoder/), [bitsandparts](https://www.bitsandparts.nl/en/display-oled-128x160-1.3-inch-i2c-white-with-ec11-rotary-encoder-p1931809)
+- AITRIP / generic 1.3″ OLED + EC11 module: [manuals.plus (AITRIP)](https://manuals.plus/asin/B0F87DZ51P), [makerselectronics](https://makerselectronics.com/product/oled-display-i2c-1-3-inch-module-with-ec11-rotary-encoder/)
 - Old Nano bootloader and the watchdog: [SpenceKonde, Ref_Reset.md](https://github.com/SpenceKonde/megaTinyCore/blob/master/megaavr/extras/Ref_Reset.md), [arduino/Arduino#4492](https://github.com/arduino/Arduino/issues/4492)
 - Datasheets: ATmega328P (Microchip DS40002061), 2N7000 (onsemi), MCP1700 (Microchip DS20001826), P6KE series (Littelfuse), BAT85 (Nexperia/Vishay), MF-R series (Bourns), 1N5817 (onsemi)

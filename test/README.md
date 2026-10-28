@@ -20,6 +20,7 @@ Simulation scenarios (one process per power-up):
 | `boot1` | power-up state, encoder (slow/fast/clamp/bounce), ON/OFF, tach RPM and timeout, NO TACH warning, calibration by long press, cancel, button bounce, diagnostics page, 10 Hz refresh, watchdog feeding |
 | `powercycle` | a new power-up keeps nothing (OFF, default setting, max RPM unknown) |
 | `serial` | every console command, invalid input, over-long lines |
+| `oledaddr` | display at 0x3D instead of 0x3C: the console says so, nothing hangs |
 | `diagboot` | knob held at power-up opens diagnostics without toggling the fan |
 | `wrap` | running across the 32-bit `millis()` rollover (49.7 days) |
 | `calfail` | calibration with no tach signal |

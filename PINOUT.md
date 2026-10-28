@@ -22,8 +22,8 @@ all four documents agree.
 |---|---|---|---|
 | **+10V_FAN** | ~10 V DC (measured on your fan in check M1) | Fan, J1 pin 4 | F1 |
 | **+10V_P** (protected) | ~9.6 V | After F1 (PTC, ~0.1 V) and D1 (Schottky, ~0.3 V) | Nano **VIN**, D2, C1, C2, R5 (only if fitted) |
-| **+5V** | 5.0 V | Nano on-board regulator (VIN → 5 V) | Nano, U2 input, R4 (Q1 gate pull-up), R6 (tach pull-up), D3 clamp |
-| **+3V3** | 3.3 V | U2 MCP1700-3302E (from +5V) | OLED module VCC, R1/R2 I²C pull-ups |
+| **+5V** | 5.0 V | Nano on-board regulator (VIN → 5 V) | Nano, U2 input, R4 (Q1 gate pull-up), R6 (tach pull-up), D3 clamp, U4 HV |
+| **+3V3** | 3.3 V | U2 MCP1700-3302E (from +5V) | OLED module VCC, R1/R2 I²C pull-ups, U4 LV |
 | **GND** | 0 V | Fan, J1 pin 3 | Everything. One common ground. |
 
 Current budget and regulator calculations:
@@ -75,7 +75,7 @@ numbering runs back to pin 30 (VIN). The labels are printed on the board.
 | 30 | **VIN** | Power in | **+10V_P** | — | — |
 | 29 | GND | Ground | GND | — | — |
 | 4 | GND | Ground | GND | — | — |
-| 27 | **+5V** | Power out (on-board regulator) | U2 VIN, R4, R6, D3 cathode | — | — |
+| 27 | **+5V** | Power out (on-board regulator) | U2 VIN, R4, R6, D3 cathode, U4 HV | — | — |
 | 17 | 3V3 | **not used** | — | — | — |
 | 5 | **D2** / INT0 | Tach input | R7, R6, D3 anode, D4 cathode, C5 | `PIN_TACH 2` | `INPUT`, falling-edge interrupt |
 | 6 | **D3** / PCINT19 | Encoder A | U3 **TRA** | `PIN_ENC_A 3` | `INPUT_PULLUP`, pin-change interrupt |
@@ -86,8 +86,8 @@ numbering runs back to pin 30 (VIN). The labels are printed on the board.
 | 11 | D8 | Wokwi simulator only (fake tach out) | nothing on hardware | `PIN_SIM_TACH_OUT 8` | unused unless `TARGET_WOKWI 1` |
 | 12 | **D9** / OC1A | Fan PWM (Timer1) | R3 → Q1 gate; R4 to +5V | `PIN_FAN_PWM 9` | `OUTPUT`, 4 kHz hardware PWM |
 | 16 | D13 | Status LED (on-board) | — | `PIN_STATUS_LED 13` | `OUTPUT`, lit = fan ON |
-| 23 | **A4** / SDA | I²C data | U3 **SDA**, R1 to +3V3 | fixed (hardware TWI) | internal pull-up **off** |
-| 24 | **A5** / SCL | I²C clock | U3 **SCL**, R2 to +3V3 | fixed (hardware TWI) | internal pull-up **off** |
+| 23 | **A4** / SDA | I²C data | U4 HV1 → U4 LV1 → U3 **SDA** | fixed (hardware TWI) | 5 V side; internal pull-up on (Wire) |
+| 24 | **A5** / SCL | I²C clock | U4 HV2 → U4 LV2 → U3 **SCL** | fixed (hardware TWI) | 5 V side; internal pull-up on (Wire) |
 | 1, 2 | D1/TX, D0/RX | USB serial (programming, console) | — | — | leave free |
 | 3, 28 | RESET | — | — | — | leave free |
 | others | D10–D12, A0–A3, A6, A7, AREF | spare | — | — | — |
@@ -120,8 +120,8 @@ Evidence and checks: [VERIFICATION.md §5](VERIFICATION.md#5-hardware-assumption
 |---|---|---|
 | **VCC** | Supply | **+3V3** (U2 output) |
 | **GND** | Ground | GND |
-| **SDA** | I²C data | Nano A4, R1 2.2 kΩ to +3V3 |
-| **SCL** | I²C clock | Nano A5, R2 2.2 kΩ to +3V3 |
+| **SDA** | I²C data | U4 LV1 (→ HV1 → Nano A4), R1 2.2 kΩ to +3V3 |
+| **SCL** | I²C clock | U4 LV2 (→ HV2 → Nano A5), R2 2.2 kΩ to +3V3 |
 | **TRA** | Encoder phase A | Nano D3 |
 | **TRB** | Encoder phase B | Nano D4 |
 | **PSH** | Encoder push button | Nano D5 |
@@ -129,10 +129,12 @@ Evidence and checks: [VERIFICATION.md §5](VERIFICATION.md#5-hardware-assumption
 | **BAK** (KEY0) | "Back" key | Nano D7 (optional) |
 
 The encoder contacts and keys only ever pull to GND. The firmware enables the
-ATmega's internal 5 V pull-ups on D3–D7; if the module has its own pull-ups
-to 3.3 V the two share harmlessly (these pins do not connect to the SH1106).
-The I²C lines are different: they are pulled up to 3.3 V only, and the
-firmware turns the AVR's 5 V pull-ups off on A4/A5.
+ATmega's internal 5 V pull-ups on D3–D7. **Assumption** (from the module
+listings, not a schematic): these pins are plain switch contacts and do not
+connect to the SH1106. If the module has its own pull-ups to its 3.3 V VCC,
+the two share harmlessly (about 40 µA flows into the 3.3 V rail). Check M7 in
+the README shows which you have. The I²C lines go through the level shifter
+U4, so the display only ever sees 3.3 V and the Nano 5 V.
 
 ---
 
@@ -148,6 +150,7 @@ firmware turns the AVR's 5 V pull-ups off on A4/A5.
 | **D2** | P6KE13A TVS, DO-15 | band = cathode | anode → GND · cathode → +10V_P |
 | **D3** | BAT85 Schottky, DO-34 | band = cathode | anode → tach node (D2) · cathode → +5V |
 | **D4** | BAT85 Schottky, DO-34 | band = cathode | anode → GND · cathode → tach node (D2) |
+| **U4** | BSS138 level-shifter module (SparkFun BOB-12009) | labels on the board | HV → +5V · LV → +3V3 · GND → GND · HV1 → A4 · LV1 → U3 SDA · HV2 → A5 · LV2 → U3 SCL (channels 3, 4 unused) |
 
 > Substitutes may have different pin orders. **BS170 is D-G-S** (reversed
 > from the 2N7000). The SOT-23 MCP1700 has a different order. Check the
@@ -157,13 +160,13 @@ firmware turns the AVR's 5 V pull-ups off on A4/A5.
 
 | Ref | Value | Between | Purpose |
 |---|---|---|---|
-| R1 | 2.2 kΩ | SDA ↔ +3V3 | I²C pull-up (3.3 V logic; low enough for 400 kHz rise times) |
-| R2 | 2.2 kΩ | SCL ↔ +3V3 | I²C pull-up |
+| R1 | 2.2 kΩ | U3 SDA / U4 LV1 ↔ +3V3 | I²C pull-up, display side (low enough for 400 kHz rise times) |
+| R2 | 2.2 kΩ | U3 SCL / U4 LV2 ↔ +3V3 | I²C pull-up, display side |
 | R3 | 220 Ω | D9 ↔ Q1 gate | Limits D9's peak current into the gate capacitance; damps ringing |
-| R4 | 10 kΩ | Q1 gate ↔ +5V | Holds Q1 on (fan **OFF**) while D9 floats during reset/bootloader |
+| R4 | 10 kΩ | D9 end of R3 ↔ +5V | Holds Q1 on through R3 (fan **OFF**) while D9 floats during reset/bootloader |
 | R5 | 4.7 kΩ **DNP** | J1 pin 2 ↔ +10V_P | Only if check M3 finds no internal pull-up |
 | R6 | 10 kΩ | tach node (D2) ↔ +5V | Tach pull-up to **5 V** (never to 10 V) |
-| R7 | 1 kΩ | J1 pin 1 ↔ tach node | Series protection: limits clamp current to ≤ 7 mA even with 12 V on pin 1 |
+| R7 | 1 kΩ | J1 pin 1 ↔ tach node | Series protection: clamp current 6.7 mA with 12 V on pin 1 |
 | C1 | 220 µF ≥ 25 V electrolytic | +10V_P ↔ GND | Bulk / hold-up (+ to the rail) |
 | C2 | 100 nF ceramic | +10V_P ↔ GND | HF decoupling, close to Nano VIN |
 | C3 | 1 µF ceramic | U2 VIN ↔ GND | LDO input capacitor |
@@ -182,7 +185,7 @@ For perfboard builds. Tick each line off as you solder it.
 | 1 | J1 pin 4 | F1 lead 1 | +10V_FAN |
 | 2 | F1 lead 2 | D1 anode | |
 | 3 | D1 cathode | Nano VIN (30), C1 +, C2, D2 cathode, R5* | **+10V_P** |
-| 4 | J1 pin 3 | Nano GND (29), C1 −, C2, D2 anode, Q1 S, D4 anode, C5, C3, C4, U2 GND, U3 GND | **GND** |
+| 4 | J1 pin 3 | Nano GND (29), C1 −, C2, D2 anode, Q1 S, D4 anode, C5, C3, C4, U2 GND, U3 GND, U4 GND | **GND** |
 | 5 | J1 pin 2 | Q1 drain, R5* | FAN_PWM |
 | 6 | Nano D9 (12) | R3, R4 | PWM_GATE |
 | 7 | R3 other end | Q1 gate | |
@@ -190,10 +193,13 @@ For perfboard builds. Tick each line off as you solder it.
 | 9 | J1 pin 1 | R7 | TACH_IN |
 | 10 | R7 other end | Nano D2 (5), R6, D3 anode, D4 cathode, C5 | TACH_5V |
 | 11 | R6 other end, D3 cathode | +5V | |
-| 12 | Nano +5V (27) | U2 VIN, C3, R4, R6, D3 cathode | **+5V** |
-| 13 | U2 VOUT | U3 VCC, C4, R1, R2 | **+3V3** |
-| 14 | Nano A4 (23) | U3 SDA, R1 other end | SDA |
-| 15 | Nano A5 (24) | U3 SCL, R2 other end | SCL |
+| 12 | Nano +5V (27) | U2 VIN, C3, R4, R6, D3 cathode, U4 HV | **+5V** |
+| 13 | U2 VOUT | U3 VCC, C4, R1, R2, U4 LV | **+3V3** |
+| 14 | Nano A4 (23) | U4 HV1 | SDA (5 V side) |
+| 15 | U4 LV1 | U3 SDA, R1 other end | SDA (3.3 V side) |
+| 15a | Nano A5 (24) | U4 HV2 | SCL (5 V side) |
+| 15b | U4 LV2 | U3 SCL, R2 other end | SCL (3.3 V side) |
+| 15c | U4 GND | GND | |
 | 16 | Nano D3 (6) | U3 TRA | ENC_A |
 | 17 | Nano D4 (7) | U3 TRB | ENC_B |
 | 18 | Nano D5 (8) | U3 PSH | ENC_SW |

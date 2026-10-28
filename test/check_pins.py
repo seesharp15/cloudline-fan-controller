@@ -89,7 +89,15 @@ for sig, macro, npin, mod, wnet in SIGNALS:
     if sig != "STATUS_LED":
         ok = any(n == phys for _, _, n in hits)
         check(sig, "schematic", ok, f"{[(l, n) for _, l, n in hits]} (expected {npin} = pin {phys})")
-        if mod:
+        if mod and sig in ("SDA", "SCL"):
+            # through the level shifter U4: Nano pin -> U4 HVn, U4 LVn -> module pin
+            y = {"SDA": 460, "SCL": 500}[sig]
+            nv = [v for v, _, _ in hits][0] if hits else "?"
+            ok = (f"wire({nv}, (ux4, {y}))" in sch and
+                  f"wire((ux4 + uw4, {y}), m_{sig.lower()})" in sch and
+                  sch_mod.get(f"m_{sig.lower()}", "").startswith(mod))
+            check(sig, "schematic wire", ok, f"{npin} -> U4 -> {mod}")
+        elif mod:
             nvars = {v for v, _, _ in hits}
             wired = [sch_mod.get(m, "?") for nv, m in sch_wires if nv in nvars]
             check(sig, "schematic wire", any(w.startswith(mod) for w in wired),
@@ -113,7 +121,10 @@ for sig, macro, npin, mod, wnet in SIGNALS:
         check(sig, "PINOUT.md", ok, row.group(0)[:70] if row else f"no row for pin {phys} {npin}")
     # 5. README build step 4 table (module wiring) and step 6 text
     if mod:
-        r = re.search(r"^ *\| %s \| socket %s \(pin %d\)" % (mod, npin, phys), rd, re.M)
+        if sig in ("SDA", "SCL"):  # via the level shifter U4
+            r = re.search(r"^ *\| %s \| U4 LV\d [^|]*socket %s \(pin %d\)" % (mod, npin, phys), rd, re.M)
+        else:
+            r = re.search(r"^ *\| %s \| socket %s \(pin %d\)" % (mod, npin, phys), rd, re.M)
         check(sig, "README.md", bool(r), r.group(0) if r else f"no '| {mod} | socket {npin} (pin {phys})' row")
     elif sig in ("FAN_PWM", "TACH"):
         r = re.search(r"socket \*\*%s\*\* \(pin %d\)" % (npin, phys), rd)

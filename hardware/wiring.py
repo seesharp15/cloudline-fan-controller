@@ -30,7 +30,7 @@ COL = {
     "SDA": ("blue", "#1565c0"),
     "SCL": ("white", "#eeeeee"),
     "GATE": ("brown", "#795548"),
-    "TACH_D2": ("green", "#2e7d32"),
+    "TACH_D2": ("light green", "#9ccc65"),
     "TRA": ("purple", "#7b1fa2"),
     "TRB": ("grey", "#8d8d8d"),
     "PSH": ("cyan", "#00acc1"),
@@ -107,12 +107,13 @@ def draw():
     sections = [
         (by + 30, "POWER", ["F1 PTC 0.2 A  ->  D1 1N5817 (band ->)", "D2 P6KE13A, C1 220uF, C2 100nF",
                              "to GND: gives protected +10V_P"]),
-        (by + 120, "SPEED OUTPUT", ["Q1 2N7000 (S-G-D), R3 220R gate", "R4 10k gate -> +5V (OFF at boot)",
+        (by + 120, "SPEED OUTPUT", ["Q1 2N7000 (S-G-D), R3 220R D9 -> gate", "R4 10k D9 end of R3 -> +5V (OFF at boot)",
                                      "R5 4.7k to +10V_P: DNP"]),
         (by + 210, "TACH INPUT", ["R7 1k series, R6 10k -> +5V", "D3 BAT85 -> +5V, D4 BAT85 -> GND",
                                    "C5 10nF -> GND"]),
-        (by + 300, "3.3 V FOR OLED", ["U2 MCP1700-3302E (GND-VIN-VOUT)", "C3, C4 1uF ceramic",
-                                       "R1, R2 2.2k: SDA/SCL -> +3V3"]),
+        (by + 300, "3.3 V AND I2C FOR OLED", ["U2 MCP1700-3302E (GND-VIN-VOUT), C3, C4 1uF",
+                                               "U4 level shifter: HV = 5V (Nano),",
+                                               "LV = 3V3 (OLED); R1, R2 2.2k -> +3V3"]),
     ]
     for y, title, lines in sections:
         text(bx + 16, y, title, 12, "start", "sec", "bold")
@@ -130,7 +131,7 @@ def draw():
                               "TACH": "FAN TACH"}[name], 11, "end", "term")
     # right terminals (to Nano)
     rt = {"TACH_D2": 200, "GATE": 300, "SDA": 640, "SCL": 670, "+5V": 700, "GND": 730, "VIN": 760}
-    rt_label = {"TACH_D2": "TACH OUT", "GATE": "GATE IN", "SDA": "SDA", "SCL": "SCL",
+    rt_label = {"TACH_D2": "TACH OUT", "GATE": "GATE IN", "SDA": "SDA (5V side)", "SCL": "SCL (5V side)",
                 "+5V": "+5V IN", "GND": "GND", "VIN": "+10V_P OUT"}
     for name, y in rt.items():
         pad(bx + bw, y)
@@ -139,7 +140,7 @@ def draw():
     bt = {"+3V3": 550, "GND": 500, "SDA": 450, "SCL": 400}
     for name, x in bt.items():
         pad(x, by + bh)
-        text(x, by + bh - 10, {"+3V3": "3V3", "GND": "GND", "SDA": "SDA", "SCL": "SCL"}[name],
+        text(x, by + bh - 10, {"+3V3": "3V3", "GND": "GND", "SDA": "SDA3", "SCL": "SCL3"}[name],
              11, "middle", "term")
 
     # J1 -> board
@@ -215,8 +216,8 @@ def draw():
     legend = [
         ("+10V", "+10 V from fan / +10V_P to Nano VIN"), ("GND", "ground (all GNDs are common)"),
         ("PWM", "fan speed line (Q1 drain)"), ("TACH", "fan tach (unconfirmed pin)"),
-        ("+5V", "Nano 5V -> board (R4, R6, D3, U2)"), ("+3V3", "3.3 V to OLED VCC"),
-        ("SDA", "I2C data, A4"), ("SCL", "I2C clock, A5"), ("GATE", "D9 -> Q1 gate (via R3)"),
+        ("+5V", "Nano 5V -> board (R4, R6, D3, U2, U4)"), ("+3V3", "3.3 V to OLED VCC"),
+        ("SDA", "I2C data (A4 / U4 / OLED)"), ("SCL", "I2C clock (A5 / U4 / OLED)"), ("GATE", "D9 -> R3 -> Q1 gate"),
         ("TACH_D2", "conditioned tach -> D2"), ("TRA", "encoder A -> D3"), ("TRB", "encoder B -> D4"),
         ("PSH", "encoder push -> D5"), ("CON", "CON key -> D6 (optional)"),
         ("BAK", "BAK key -> D7 (optional)"),
@@ -229,7 +230,7 @@ def draw():
         text(x + 52, y, f"{COL[net][0]}: {desc}", 12, "start", "t")
     text(1110, ly, "Wires: 24-26 AWG stranded for signals,", 12, "start", "t")
     text(1110, ly + 16, "22 AWG for +10V / GND. Keep the fan", 12, "start", "t")
-    text(1110, ly + 32, "cable and OLED wires under 50 cm.", 12, "start", "t")
+    text(1110, ly + 32, "cable under 50 cm, OLED wires 30 cm.", 12, "start", "t")
     text(1110, ly + 56, "A wire hop (arc) means the wires", 12, "start", "t")
     text(1110, ly + 72, "cross WITHOUT connecting.", 12, "start", "t")
 

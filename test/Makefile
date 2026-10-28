@@ -12,7 +12,7 @@ BUILD    := ../build
 FW       := ../firmware/cloudline_controller
 FW_SRC   := $(FW)/app.cpp $(FW)/config.h $(FW)/fan_logic.h $(FW)/display_ui.h
 SIM_SRC  := test_firmware_sim.cpp sim.cpp sim.h check.h $(wildcard stubs/*.h stubs/avr/*.h)
-SCENARIOS := boot1 powercycle serial diagboot wrap calfail
+SCENARIOS := boot1 powercycle serial oledaddr diagboot wrap calfail
 
 .PHONY: all test shots clean no-eeprom pins
 all: test

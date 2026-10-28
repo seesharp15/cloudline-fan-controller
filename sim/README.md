@@ -5,7 +5,7 @@ Try the user interface (screens, knob, buttons, serial console) in the
 
 > **Status: prepared but not run by the author.** The environment this
 > project was built in could not reach wokwi.com. The firmware's Wokwi build
-> compiles (26 746 bytes flash, 1 293 bytes RAM), and `diagram.json` uses the
+> compiles (about 27 KB flash, 1.3 KB RAM), and `diagram.json` uses the
 > part and pin names from Wokwi's documentation, but nobody has watched it run
 > yet. If a connection doesn't work, check the pin names in Wokwi's part
 > reference. The same UI logic *is* covered by the host simulation in

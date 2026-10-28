@@ -53,18 +53,30 @@ U8G2_SH1106_128X64_NONAME_F_HW_I2C oled(U8G2_R0, /*reset=*/U8X8_PIN_NONE);
 // ---------------------------------------------------------------------------
 // Reset cause, watchdog
 // ---------------------------------------------------------------------------
-// gResetFlags: MCUSR as the sketch found it (0 if the bootloader cleared it),
-// plus kSoftRestartFlag when the watchdog interrupt restarted the sketch.
-// Both live in .noinit so the C runtime start-up does not clear them.
+// gResetFlags: MCUSR as the sketch found it, plus kSoftRestartFlag when the
+// watchdog interrupt restarted the sketch. MCUSR reads 0 on Nanos with
+// Optiboot, because that bootloader clears it and passes nothing on.
+// gSoftRestart carries a marker and the speed setting across the watchdog
+// restart; it lives in .noinit so the C runtime start-up does not clear it,
+// and the 32-bit marker makes a false match from power-up garbage
+// practically impossible.
 const uint8_t kSoftRestartFlag = 0x80;
-const uint8_t kSoftRestartMagic = 0xA5;
+const uint32_t kSoftRestartMagic = 0x57D0A5C3UL;
 #ifdef __AVR__
 #define NOINIT __attribute__((section(".noinit")))
 #else
 #define NOINIT
 #endif
+struct SoftRestart {
+  uint32_t magic;
+  uint8_t setting;
+  uint8_t settingCheck;  // ~setting
+};
 uint8_t gResetFlags NOINIT;
-uint8_t gSoftRestart NOINIT;
+SoftRestart gSoftRestart NOINIT;
+uint8_t gRestoredSetting NOINIT;  // valid only when kSoftRestartFlag is set
+
+extern fan::Controller gCtl;  // defined with the application state below
 
 #ifdef __AVR__
 // Runs before RAM is initialised. After a hardware watchdog reset the
@@ -75,11 +87,15 @@ extern "C" void earlyResetHandling(void) {
   gResetFlags = MCUSR;
   MCUSR = 0;
   wdt_disable();
-  // gSoftRestart is random after power-up, so only trust it when no
-  // hardware reset cause is recorded.
+  // Only a watchdog-interrupt restart (jmp 0) leaves the marker; any
+  // hardware reset cause recorded in MCUSR overrides it.
   const uint8_t hw = _BV(PORF) | _BV(EXTRF) | _BV(BORF) | _BV(WDRF);
-  if (gSoftRestart == kSoftRestartMagic && !(gResetFlags & hw)) gResetFlags |= kSoftRestartFlag;
-  gSoftRestart = 0;
+  if (gSoftRestart.magic == kSoftRestartMagic && !(gResetFlags & hw) &&
+      gSoftRestart.settingCheck == (uint8_t)~gSoftRestart.setting) {
+    gResetFlags |= kSoftRestartFlag;
+    gRestoredSetting = gSoftRestart.setting;
+  }
+  gSoftRestart.magic = 0;
 }
 
 // "Interrupt and system reset" mode: the first timeout runs WDT_vect (and
@@ -97,8 +113,11 @@ void watchdogStart() {
 
 // loop() has not run for WATCHDOG_TIMEOUT. Stop the fan at once, then
 // restart the sketch at address 0. Jumping to 0 skips the bootloader, so the
-// old Nano bootloader's watchdog reset loop cannot happen; setup()
-// re-initialises every peripheral the sketch uses.
+// old Nano bootloader's watchdog reset loop cannot happen. A jump is not a
+// reset, so first switch off every interrupt source the sketch enabled;
+// setup() then re-initialises them from a clean state. The speed setting is
+// carried over (the brief: it persists while powered); ON/OFF is not, so the
+// fan stays OFF after the restart.
 ISR(WDT_vect) {
   TCCR1A = 0;  // disconnect OC1A from D9
 #if FAN_PWM_INVERTED
@@ -106,7 +125,14 @@ ISR(WDT_vect) {
 #else
   PORTB &= (uint8_t)~_BV(PORTB1);
 #endif
-  gSoftRestart = kSoftRestartMagic;
+  TWCR = 0;     // I2C off (a transfer may have been in progress)
+  PCICR = 0;    // encoder pin-change interrupts off
+  EIMSK = 0;    // tach INT0 off
+  UCSR0B = 0;   // serial off
+  TIMSK2 = 0;   // tone() (Wokwi build) off
+  gSoftRestart.setting = gCtl.setting();
+  gSoftRestart.settingCheck = (uint8_t)~gSoftRestart.setting;
+  gSoftRestart.magic = kSoftRestartMagic;
   asm volatile("jmp 0");
 }
 #else
@@ -463,6 +489,7 @@ void updateDisplay(uint32_t now) {
   s.pwmCompare = gGate.compare;
   s.pwmTop = gPwmTop;
   s.gateMode = (uint8_t)gGate.mode;
+  s.inverted = FAN_PWM_INVERTED != 0;
 
 #if OLED_PAGE_BUFFER
   oled.firstPage();
@@ -477,6 +504,31 @@ void updateDisplay(uint32_t now) {
 }
 
 // ---------------------------------------------------------------------------
+// I2C check: report on the console whether the display answers, and at
+// which address. Helps with a blank screen (README troubleshooting).
+// ---------------------------------------------------------------------------
+bool i2cAcks(uint8_t addr) {
+  Wire.beginTransmission(addr);
+  return Wire.endTransmission() == 0;
+}
+
+void reportOledPresence() {
+  if (i2cAcks(OLED_I2C_ADDRESS)) {
+    Serial.print(F("OLED answers at 0x"));
+    Serial.println(OLED_I2C_ADDRESS, HEX);
+    return;
+  }
+  Serial.print(F("! no I2C device at 0x"));
+  Serial.println(OLED_I2C_ADDRESS, HEX);
+  const uint8_t other = OLED_I2C_ADDRESS == 0x3C ? 0x3D : 0x3C;
+  if (i2cAcks(other)) {
+    Serial.print(F("! but a device answers at 0x"));
+    Serial.print(other, HEX);
+    Serial.println(F(": set OLED_I2C_ADDRESS in config.h"));
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Arduino entry points
 // ---------------------------------------------------------------------------
 void setup() {
@@ -486,32 +538,44 @@ void setup() {
   digitalWrite(PIN_STATUS_LED, LOW);
 
   // Keys switch to GND. Internal pull-ups (to 5 V) are used whether or not
-  // the module has its own; the encoder contacts do not connect to the
-  // SH1106, so 5 V on them is harmless.
+  // the module has its own. The encoder contacts are assumed to be plain
+  // switches that don't connect to the SH1106 (module listings; README
+  // check M7), so 5 V on them is harmless.
   pinMode(PIN_ENC_A, INPUT_PULLUP);
   pinMode(PIN_ENC_B, INPUT_PULLUP);
   pinMode(PIN_ENC_SW, INPUT_PULLUP);
   pinMode(PIN_KEY_CON, INPUT_PULLUP);
   pinMode(PIN_KEY_BAK, INPUT_PULLUP);
-  // The tach input has its own 10 k pull-up to 5 V (R6) and clamp (D3).
-  pinMode(PIN_TACH, INPUT);
+  // The tach input has its own 10 k pull-up to 5 V (R6); the internal
+  // pull-up as well keeps D2 defined if R6 is not fitted yet (build step 5).
+  pinMode(PIN_TACH, INPUT_PULLUP);
+
+#if WATCHDOG_ENABLE
+  // Started early so that a hang anywhere in setup() is caught as well.
+  watchdogStart();
+#endif
 
   Serial.begin(SERIAL_BAUD);
   Serial.println(F("Cloudline controller ready. Fan OFF. Send ? for help."));
-  if (gResetFlags & kSoftRestartFlag) Serial.println(F("! restarted by the watchdog"));
+  if (gResetFlags & kSoftRestartFlag) {
+    gCtl.setSetting(gRestoredSetting);
+    Serial.println(F("! restarted by the watchdog (fan OFF, setting kept)"));
+  }
 
-#if defined(WIRE_HAS_TIMEOUT)
   // The AVR core leaves the I2C timeout off by default, so a stuck bus (bad
-  // wiring, display fault) would block forever. 25 ms, then reset the TWI.
+  // wiring, display fault) would block forever: give up after 25 ms and
+  // reset the TWI. SDA/SCL are on the 5 V side of the level shifter U4, so
+  // the AVR's internal pull-ups that Wire enables are harmless.
+  Wire.begin();
   Wire.setWireTimeout(25000, true);
-#endif
+  Wire.setClock(OLED_I2C_CLOCK_HZ);
+  reportOledPresence();
   oled.setI2CAddress(OLED_I2C_ADDRESS << 1);  // U8g2 expects the 8-bit address
   oled.setBusClock(OLED_I2C_CLOCK_HZ);
   oled.begin();
-  // Wire.begin() enabled the AVR's internal pull-ups to 5 V on SDA/SCL. The
-  // OLED runs at 3.3 V, so turn them off and rely on R1/R2 (to 3.3 V).
-  digitalWrite(SDA, LOW);
-  digitalWrite(SCL, LOW);
+#if WATCHDOG_ENABLE
+  wdt_reset();
+#endif
 
   // Knob held during power-up: open diagnostics, and ignore that press so it
   // neither toggles the fan nor starts a calibration.
@@ -533,10 +597,6 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(PIN_TACH), onTachPulse, FALLING);
 
   applyDuty(gCtl.dutyPermille());  // 0: the controller always starts OFF
-
-#if WATCHDOG_ENABLE
-  watchdogStart();
-#endif
 }
 
 void loop() {
@@ -568,6 +628,7 @@ void loop() {
 #endif
 #ifdef TEST_HANG_AFTER_MS
   if (!(gResetFlags & kSoftRestartFlag) && now > TEST_HANG_AFTER_MS) {
+    gCtl.setSetting(37);  // must survive the watchdog restart
     Serial.println(F("TEST: loop() hangs now"));
     Serial.flush();
     for (;;) {
@@ -576,8 +637,11 @@ void loop() {
 #endif
 #ifdef TEST_HANG_CLI_AFTER_MS
   // Hang with interrupts disabled: the watchdog interrupt cannot run, so the
-  // second timeout must reset the chip (datasheet, WDTCSR bit WDIE).
-  if (!(gResetFlags & _BV(WDRF)) && now > TEST_HANG_CLI_AFTER_MS) {
+  // second timeout must reset the chip (datasheet, WDTCSR bit WDIE). The
+  // .noinit marker (not MCUSR, which Optiboot clears) stops it repeating.
+  static uint32_t testHung NOINIT;
+  if (testHung != 0x48414E47UL && now > TEST_HANG_CLI_AFTER_MS) {
+    testHung = 0x48414E47UL;
     Serial.println(F("TEST: hang with interrupts off"));
     Serial.flush();
     noInterrupts();

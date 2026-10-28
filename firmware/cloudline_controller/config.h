@@ -44,8 +44,8 @@
 // Polarity. Q1 is an open-drain pull-down, so with the fan's own pull-up the
 // gate drive is inverted: gate HIGH = line LOW = fan slower/stopped.
 // 1 = line LOW stops the fan (builder reports for Cloudline fans).
-// 0 = only if your measurements show the opposite. Then also move R4 so it
-//     pulls the gate to GND, otherwise the fan runs at boot.
+// 0 = only if your measurements show the opposite. Then also connect R4's
+//     +5V end to GND instead, otherwise the fan runs at boot.
 #define FAN_PWM_INVERTED   1
 
 // PWM carrier frequency on the fan's speed line, in Hz. The stock AC Infinity

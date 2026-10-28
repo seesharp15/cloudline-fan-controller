@@ -8,6 +8,7 @@
 //                                             tach, calibration, diagnostics
 //   test_firmware_sim powercycle              what a fresh power-up keeps
 //   test_firmware_sim serial                  serial console commands
+//   test_firmware_sim oledaddr                display at 0x3D: console report
 //   test_firmware_sim diagboot                knob held at power-up
 //   test_firmware_sim wrap                    across the millis() rollover
 //   test_firmware_sim calfail [screenshot-dir] calibration with no tach
@@ -86,15 +87,21 @@ static void boot1() {
   CHECK(oled.begun);
   CHECK_EQ(oled.i2cAddress, 0x78);
   CHECK_EQ(oled.busClock, 400000);
-  CHECK_EQ(sim::pins[SDA].out, LOW);  // internal 5 V pull-ups disabled
-  CHECK_EQ(sim::pins[SCL].out, LOW);
+  CHECK(Wire.begun);
+  CHECK_EQ(Wire.timeoutUs, 25000);   // I2C can't block forever
+  CHECK(Wire.resetWithTimeout);
+  CHECK_EQ(sim::pins[PIN_TACH].mode, INPUT_PULLUP);  // D2 defined even without R6
   CHECK_EQ(sim::pwmTop(), 3999);      // 4 kHz
   CHECK(PCICR & _BV(2));
   CHECK_EQ(PCMSK2, _BV(3) | _BV(4));
   CHECK(sim::extIsr[0] != nullptr);   // tach on INT0
   CHECK(sim::extIsr[1] == nullptr);   // INT1 unused (D3 is on PCINT2)
   CHECK_EQ(Serial.baud, 115200);
-  CHECK(serialHas(sim::takeSerial(), "Fan OFF"));
+  {
+    const std::string out = sim::takeSerial();
+    CHECK(serialHas(out, "Fan OFF"));
+    CHECK(serialHas(out, "OLED answers at 0x3C"));
+  }
   run(500);
   CHECK(fanStopped());
   CHECK_EQ(sim::pins[PIN_STATUS_LED].out, LOW);
@@ -359,6 +366,16 @@ static void serialScenario() {
   CHECK(serialHas(sim::takeSerial(), "needs the fan ON"));
 }
 
+static void oledaddr() {
+  // Display at the other address: the console says so, nothing hangs.
+  checkPowerUpState();
+  const std::string out = sim::takeSerial();
+  CHECK(serialHas(out, "! no I2C device at 0x3C"));
+  CHECK(serialHas(out, "answers at 0x3D"));
+  run(500);
+  CHECK(fanStopped());
+}
+
 static void diagboot() {
   // Knob held while powering up: diagnostics page, and that press neither
   // toggles the fan nor starts a calibration.
@@ -420,7 +437,7 @@ static void calfail() {
 
 int main(int argc, char **argv) {
   if (argc < 2) {
-    fprintf(stderr, "usage: %s boot1|powercycle|serial|diagboot|wrap|calfail [shot-dir]\n", argv[0]);
+    fprintf(stderr, "usage: %s boot1|powercycle|serial|oledaddr|diagboot|wrap|calfail [shot-dir]\n", argv[0]);
     return 2;
   }
   const char *scenario = argv[1];
@@ -435,6 +452,12 @@ int main(int argc, char **argv) {
   } else if (!strcmp(scenario, "serial")) {
     powerUp();
     serialScenario();
+  } else if (!strcmp(scenario, "oledaddr")) {
+    sim::reset();
+    Wire.present[0x3C] = false;
+    Wire.present[0x3D] = true;
+    setup();
+    oledaddr();
   } else if (!strcmp(scenario, "diagboot")) {
     sim::reset();
     sim::hold(PIN_ENC_SW);

@@ -61,6 +61,7 @@ struct State {
   uint16_t pwmCompare = 0;
   uint16_t pwmTop = 0;
   uint8_t gateMode = 0;       // 0 = constant low, 1 = constant high, 2 = PWM
+  bool inverted = true;       // FAN_PWM_INVERTED: gate HIGH pulls the line low
 };
 
 const uint8_t kWidth = 128;
@@ -222,9 +223,9 @@ void drawDiagnostics(G &g, const State &s) {
   if (s.gateMode == 2)
     snprintf_P(buf, sizeof buf, PSTR("Gate PWM %u/%u"), (unsigned)s.pwmCompare, (unsigned)s.pwmTop);
   else if (s.gateMode == 1)
-    snprintf_P(buf, sizeof buf, PSTR("Gate HIGH (line low)"));
+    snprintf_P(buf, sizeof buf, s.inverted ? PSTR("Gate HIGH (stopped)") : PSTR("Gate HIGH (full)"));
   else
-    snprintf_P(buf, sizeof buf, PSTR("Gate LOW (line high)"));
+    snprintf_P(buf, sizeof buf, s.inverted ? PSTR("Gate LOW (full)") : PSTR("Gate LOW (stopped)"));
   g.drawStr(0, 59, buf);
   snprintf_P(buf, sizeof buf, PSTR("n=%lu"), (unsigned long)s.tachPulses);
   drawRightAligned(g, kWidth, 23, buf);

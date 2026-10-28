@@ -20,6 +20,7 @@ connections in [PINOUT.md](PINOUT.md).
 - [Why the Nano's own regulator and not a buck converter?](#why-the-nanos-own-regulator-and-not-a-buck-converter)
 - [What if the fan's port can't supply enough current?](#what-if-the-fans-port-cant-supply-enough-current)
 - [Why doesn't the knob toggle the fan the moment I press it?](#why-doesnt-the-knob-toggle-the-fan-the-moment-i-press-it)
+- [Why is there an I2C level shifter (U4)?](#why-is-there-an-i2c-level-shifter-u4)
 
 ---
 
@@ -54,16 +55,27 @@ something always does:
 
 | Time after power-up | D9 (Nano pin) | Q1 gate | Fan speed line | Fan |
 |---|---|---|---|---|
-| 0 to ~1 ms: 5 V rail rising | floating | follows +5V through R4; below Q1's threshold for a fraction of a millisecond | briefly released | no reaction: far too short, and the fan's own electronics are starting too |
+| power applied, until the 5 V rail passes ~3 V | floating | follows +5V through R4, below Q1's threshold | **released** (window not measured, see below) | the fan's own electronics are starting at the same moment |
 | reset (~65 ms) and bootloader (up to ~2 s on old-bootloader clones) | **floating input** | **held at 5 V by R4** | **held low by Q1** | **stopped** |
 | `setup()` starts | written HIGH, *then* made an output | 5 V | low | stopped |
 | `setup()` done | firmware state: OFF | 5 V | low | stopped, until you press the knob |
 
-R4 (10 kΩ from the Q1 gate to +5V) is the key part: a MOSFET draws no steady
-gate current, so the resistor alone holds Q1 on. The firmware then drives D9
-HIGH *before* switching it to an output, so there's no glitch at hand-over
-(the simulation checks this). The same applies after a watchdog restart, an
-upload, or a brown-out reset.
+R4 (10 kΩ from the D9 end of R3 to +5V) is the key part: a MOSFET draws no
+steady gate current, so the resistor alone holds Q1 on. The firmware then
+drives D9 HIGH *before* switching it to an output, so there's no glitch at
+hand-over (the simulation checks this). The same applies after a watchdog
+restart, an upload, or a brown-out reset.
+
+**The first moments after power is applied are not covered by R4.** The
+controller's 5 V only appears once the fan's 10 V has charged C1 (220 µF)
+through F1 and D1 and risen past the Nano regulator's dropout, and Q1 needs
+about 3 V on its gate. Until then the line is released. How long that takes
+depends on how fast the fan's own 10 V comes up, which is undocumented; an
+estimate is a few milliseconds to a few tens of milliseconds. Builder
+measurements show the stock controller ramps between speeds over about 2 s,
+so a fan is not expected to react to a pulse that short, but this has **not
+been measured**. Bench test A4 (an oscilloscope on the line, if you have
+one) measures the window, and B2 checks the fan never starts by itself.
 
 If check M4 shows your fan runs the other way round (line low = full speed),
 R4 must go to GND instead and `FAN_PWM_INVERTED` set to 0; otherwise the fan
@@ -198,13 +210,19 @@ measurements:
 
 - Nothing in the controller drives a voltage into the fan. Q1 can only pull
   the speed line towards ground, which is what the stock controller does too
-  (it "grounds and opens" the line, per a builder's measurements). The tach
+  (it "grounds and opens" the line, per chriskoz/AutoFan's measurements on
+  an S6, linked in the README sources). The tach
   pin sees only a 1 kΩ resistor to a clamped 5 V node.
 - The controller draws about 35–60 mA from the fan's +10 V, and check M2
   confirms the port holds its voltage at 45 mA. F1 limits the current to
   well under half an amp if the controller develops a short.
 - Plugging the controller in the wrong way round is prevented by the
-  connector, and D1 protects against a mis-wired cable.
+  connector. D1 protects the **power** input if the +10 V and GND wires of
+  J1 are swapped. It does **not** protect against other mis-wiring: +10 V on
+  the PWM wire would be shorted to ground through Q1 (which is on by
+  default), loading the fan's supply with no fuse in that path. That is why
+  the pre-connection checks identify every pin before anything is
+  soldered.
 
 ## Can I use an Uno, Pro Mini, or ESP32 instead?
 
@@ -234,8 +252,10 @@ exists but is a different module.
 
 **Expected yes, confirmed per fan by check M4.** OFF and a 0 % setting both
 hold the speed line at 0 V continuously. A builder's measurements of the
-stock controller show its "speed 0" is exactly that (0 µs high time), and
-another builder saw 0 tach pulses at speed 0. If M4 shows your fan only
+stock controller show its "speed 0" is exactly that (0 µs high time)
+(chriskoz/AutoFan), and another builder counted 0 tach pulses at speed 0 on
+the newer USB-C version of the S6 (coofercat/ha-ac-infinity-fan). Both are
+linked in the README sources. If M4 shows your fan only
 slows to a minimum speed with the line held low, then:
 
 - OFF means "minimum speed" on that fan; the controller can't remove the
@@ -243,8 +263,10 @@ slows to a minimum speed with the line held low, then:
 - To stop it completely, switch the fan's mains supply (a switched outlet or
   smart plug); the controller will come back OFF when power returns.
 
-Separately, many EC fans won't **start** below a certain duty (the stock
-controller's lowest speed is about 33 % duty). If the fan doesn't turn at
+Separately, many EC fans won't **start** below a certain duty. The stock
+controller's lowest speed setting is about 82 µs high in a 245 µs period,
+i.e. about 33 % duty (chriskoz/AutoFan's measurement), so the fan may not be
+designed to run much slower than that. If the fan doesn't turn at
 low settings, raise `FAN_DUTY_MIN_PCT` so that 1 % maps to the lowest duty
 that turns it ([BENCH_TEST.md B6](BENCH_TEST.md#part-b-the-real-fan)).
 
@@ -321,3 +343,18 @@ Use a P6KE15A for D2 with a 12 V adapter.
 The same button also starts a calibration when held for 3 s, so the firmware
 waits for the release to know which you meant. A short press toggles on
 release (after a 25 ms debounce); a hold never toggles.
+
+## Why is there an I2C level shifter (U4)?
+
+The display runs at 3.3 V and the Nano at 5 V. On the I²C pins the ATmega328P
+datasheet requires at least **0.7 × V<sub>CC</sub> = 3.5 V** to read a
+"high" (the two-wire interface's own input threshold, stricter than the
+0.6 × V<sub>CC</sub> of ordinary pins). Pulling SDA/SCL up to 3.3 V, as many
+hobby builds do, is therefore outside the datasheet even though it often
+works. Pulling them up to 5 V instead would put 5 V on the display's pins.
+
+U4 (a two-MOSFET BSS138 shifter module) solves both: the Nano's side is
+pulled up to 5 V, the display's side to 3.3 V (R1/R2, 2.2 kΩ), and each side
+only ever sees its own voltage. It also means the AVR's internal 5 V
+pull-ups that the `Wire` library switches on are harmless.
+

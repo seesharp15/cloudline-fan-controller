@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "stubs/U8g2lib.h"
+#include "stubs/Wire.h"
 
 // ---------------------------------------------------------------------------
 // Arduino / AVR globals
@@ -15,6 +16,7 @@
 uint8_t TCCR1A, TCCR1B, PCICR, PCIFR, PCMSK2;
 uint16_t ICR1, OCR1A, TCNT1;
 SerialStub Serial;
+TwoWireStub Wire;
 
 namespace sim {
 Pin pins[20];
@@ -34,6 +36,8 @@ void reset() {
   nextTachUs = 0;
   toneHz = 0;
   Serial = SerialStub();
+  Wire = TwoWireStub();
+  Wire.present[0x3C] = true;  // the OLED
 }
 
 // Fire tach edges that fall inside (nowUs, untilUs]. The ISR is attached to

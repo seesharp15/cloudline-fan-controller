@@ -417,7 +417,7 @@ def draw():
     gnd(590, 770)
     text(180, 800, "TACH INPUT  (pin 1 function UNCONFIRMED)", 12, "start", "sec-t", "bold")
     text(180, 815, "Accepts open-collector or push-pull 0-12 V. D2 sees only 0-5 V:", 11, "start", "val")
-    text(180, 829, "R6 pulls up to +5V, R7 limits clamp current to <5 mA into D3/D4.", 11, "start", "val")
+    text(180, 829, "R6 pulls up to +5V, R7 limits clamp current to 6.7 mA (12 V on pin 1).", 11, "start", "val")
 
     # ---------------- 3.3 V regulator U2 ----------------
     ux, uy = 1040, 190
@@ -461,24 +461,48 @@ def draw():
     wire(m_gnd, (1200, 745))
     gnd(1200, 745)
 
-    wire(n_sda, m_sda)
-    wire(n_scl, m_scl)
+    # U4: BSS138 bidirectional level shifter between the 5 V Nano side (HV)
+    # and the 3.3 V module side (LV). Module pull-ups 10k on both sides.
+    ux4, uy4, uw4, uh4 = 925, 440, 110, 80
+    emit(f'<rect x="{ux4}" y="{uy4}" width="{uw4}" height="{uh4}" rx="4" class="blk"/>')
+    text(ux4 + uw4 / 2, uy4 + 30, "U4", 13, "middle", "ref", "bold")
+    text(ux4 + uw4 / 2, uy4 + 44, "BSS138", 10, "middle", "val")
+    text(ux4 + uw4 / 2, uy4 + 56, "lvl shift", 10, "middle", "val")
+    for y, lab in ((460, "HV1"), (500, "HV2")):
+        text(ux4 + 4, y + 4, lab, 9, "start", "pin")
+    for y, lab in ((460, "LV1"), (500, "LV2")):
+        text(ux4 + uw4 - 4, y + 4, lab, 9, "end", "pin")
+    line(ux4 + 25, uy4, ux4 + 25, uy4 - 18)
+    text(ux4 + 29, uy4 + 12, "HV", 9, "start", "pin")
+    pwr(ux4 + 25, uy4 - 18, "+5V")
+    line(ux4 + 85, uy4, ux4 + 85, uy4 - 18)
+    text(ux4 + 81, uy4 + 12, "LV", 9, "end", "pin")
+    pwr(ux4 + 85, uy4 - 18, "+3V3")
+    line(ux4 + 55, uy4 + uh4, ux4 + 55, uy4 + uh4 + 8)
+    gnd(ux4 + 55, uy4 + uh4 + 8)
+    wire(n_sda, (ux4, 460))
+    wire(n_scl, (ux4, 500))
+    wire((ux4 + uw4, 460), m_sda)
+    wire((ux4 + uw4, 500), m_scl)
     wire(n_d3, m_tra)
     wire(n_d4, m_trb)
     wire(n_d5, m_psh)
     wire(n_d6, m_con)
     wire(n_d7, m_bak)
-    for (x, y), name in ((n_sda, "SDA"), (n_scl, "SCL"), (n_d3, "ENC_A"), (n_d4, "ENC_B"),
+    for (x, y), name in ((n_d3, "ENC_A"), (n_d4, "ENC_B"),
                          (n_d5, "ENC_SW"), (n_d6, "KEY_CON (opt.)"), (n_d7, "KEY_BAK (opt.)")):
         text(1140, y - 5, name, 11, "middle", "net")
+    for y, name in ((460, "SDA"), (500, "SCL")):
+        text(1195, y - 5, name, 11, "middle", "net")
+        text(908, y - 5, name, 10, "middle", "net")
 
-    # I2C pull-ups to 3.3 V (R2's lead hops over the SDA wire)
-    dot(990, 460)
-    resistor_v(990, 460, 390, "R1", "2.2k", side="left", body_c=420)
-    pwr(990, 390, "+3V3")
-    dot(1060, 500)
-    resistor_v_hop(1060, 390, 500, 420, [460], "R2", "2.2k")
-    pwr(1060, 390, "+3V3")
+    # I2C pull-ups to 3.3 V on the module side (R2's lead hops over SDA)
+    dot(1085, 460)
+    resistor_v(1085, 460, 390, "R1", "2.2k", side="left", body_c=420)
+    pwr(1085, 390, "+3V3")
+    dot(1150, 500)
+    resistor_v_hop(1150, 390, 500, 420, [460], "R2", "2.2k")
+    pwr(1150, 390, "+3V3")
 
     # ---------------- Notes and title ----------------
     note_box(30, 860, 640, [

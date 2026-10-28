@@ -3,8 +3,9 @@
 # set simulator) and checks its serial output:
 #   1. normal build: boots, prints the banner, loop() runs, fan OFF, the
 #      watchdog is fed (no restart within the run);
-#   2. hang build: loop() stops after 3 s; the watchdog interrupt must stop
-#      the fan and restart the sketch, which then reports the restart.
+#   2. hang build: loop() stops after 3 s (setting 37 %); the watchdog
+#      interrupt must stop the fan and restart the sketch, which reports the
+#      restart, comes back OFF, and keeps the 37 % setting.
 #   3. hang-cli build (INFORMATION ONLY): loop() stops with interrupts
 #      disabled, so the watchdog interrupt cannot run. On the real chip the
 #      second timeout then resets it (ATmega328P datasheet, WDTCSR bit WDIE:
@@ -24,7 +25,8 @@ fail=0
 
 build() { # name, extra flags
   $CLI compile -b $FQBN --build-path "$OUT/$1" \
-    --build-property "compiler.cpp.extra_flags=$2" $SKETCH >/dev/null
+    --build-property "compiler.cpp.extra_flags=$2" $SKETCH >"$OUT/$1-build.log" 2>&1 \
+    || { echo "build '$1' failed, see $OUT/$1-build.log"; exit 1; }
 }
 run() { # name, seconds
   timeout "$2" simavr -m atmega328p -f 16000000 "$OUT/$1/cloudline_controller.ino.elf" \
@@ -54,6 +56,8 @@ expect hang "TEST: loop() hangs now"
 expect hang "restarted by the watchdog"
 # After the restart the fan is OFF and the status shows the soft-restart flag.
 expect hang "reset=0x80"
+# The speed setting (37 % just before the hang) survives the restart; the fan is OFF.
+expect hang "on=0 set=37% duty=0.0%"
 expect hangcli "TEST: hang with interrupts off"
 if grep -q "reset=0x8 " "$OUT/hangcli.log"; then
   echo "  info hangcli: simavr applied the watchdog reset"

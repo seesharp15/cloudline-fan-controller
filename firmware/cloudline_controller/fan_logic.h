@@ -453,8 +453,10 @@ class Controller {
     calResultRpm_ = 0;
     if (calSamples_ > 0) {
       const uint16_t avg = (uint16_t)(calSum_ / calSamples_);
-      // Accept only a steady reading: spread within +/-10 % of the average.
-      const bool steady = (uint32_t)(calMax_ - calMin_) * 10u <= (uint32_t)avg * 2u;
+      // Accept only a steady reading: every sample within +/-10 % of the
+      // average.
+      const bool steady = (uint32_t)(avg - calMin_) * 10u <= avg &&
+                          (uint32_t)(calMax_ - avg) * 10u <= avg;
       if (avg >= c_.calMinValidRpm && steady) {
         maxRpm_ = avg;  // RAM only: lost at power-off by design
         calOk_ = true;

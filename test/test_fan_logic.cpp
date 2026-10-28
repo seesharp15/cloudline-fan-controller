@@ -532,6 +532,27 @@ TEST(controller_calibration_rejects_unsteady_or_missing) {
   CHECK(!c.lastCalOk());
 }
 
+TEST(controller_calibration_rule_is_plus_minus_10_percent) {
+  // One sample 17 % below the average must be rejected (each sample within
+  // +/-10 % of the average), even though the total spread is under 20 %.
+  Controller c(testConfig());
+  c.setOn(true);
+  CHECK(c.startCalibration(0));
+  int n = 0;
+  for (uint32_t t = 12000; t <= 18000; t += 500, n++) c.onTachSample(n == 0 ? 1640 : 2000, t);
+  c.tick(18000);
+  CHECK(c.mode() == Mode::CalResult);
+  CHECK(!c.lastCalOk());
+  // Samples within +/-5 %: accepted.
+  c.onKnob(ButtonEvent::Short, 18100);
+  CHECK(c.startCalibration(20000));
+  n = 0;
+  for (uint32_t t = 32000; t <= 38000; t += 500, n++) c.onTachSample(n % 2 ? 1950 : 2050, t);
+  c.tick(38000);
+  CHECK(c.lastCalOk());
+  CHECK_NEAR(c.maxRpm(), 2000, 5);
+}
+
 TEST(controller_calibration_guards_and_cancel) {
   Controller c(testConfig());
   // OFF: neither a long press nor a command starts it (never starts the fan).
@@ -639,6 +660,7 @@ int main() {
   RUN(controller_min_duty_mapping);
   RUN(controller_calibration_success);
   RUN(controller_calibration_rejects_unsteady_or_missing);
+  RUN(controller_calibration_rule_is_plus_minus_10_percent);
   RUN(controller_calibration_guards_and_cancel);
   RUN(controller_screens);
   RUN(command_parser);
