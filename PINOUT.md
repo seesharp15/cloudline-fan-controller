@@ -120,8 +120,8 @@ Evidence and checks: [VERIFICATION.md §5](VERIFICATION.md#5-hardware-assumption
 |---|---|---|
 | **VCC** | Supply | **+3V3** (U2 output) |
 | **GND** | Ground | GND |
-| **SDA** | I²C data | Nano A4, R1 4.7 kΩ to +3V3 |
-| **SCL** | I²C clock | Nano A5, R2 4.7 kΩ to +3V3 |
+| **SDA** | I²C data | Nano A4, R1 2.2 kΩ to +3V3 |
+| **SCL** | I²C clock | Nano A5, R2 2.2 kΩ to +3V3 |
 | **TRA** | Encoder phase A | Nano D3 |
 | **TRB** | Encoder phase B | Nano D4 |
 | **PSH** | Encoder push button | Nano D5 |
@@ -157,8 +157,8 @@ firmware turns the AVR's 5 V pull-ups off on A4/A5.
 
 | Ref | Value | Between | Purpose |
 |---|---|---|---|
-| R1 | 4.7 kΩ | SDA ↔ +3V3 | I²C pull-up (3.3 V logic) |
-| R2 | 4.7 kΩ | SCL ↔ +3V3 | I²C pull-up |
+| R1 | 2.2 kΩ | SDA ↔ +3V3 | I²C pull-up (3.3 V logic; low enough for 400 kHz rise times) |
+| R2 | 2.2 kΩ | SCL ↔ +3V3 | I²C pull-up |
 | R3 | 220 Ω | D9 ↔ Q1 gate | Limits D9's peak current into the gate capacitance; damps ringing |
 | R4 | 10 kΩ | Q1 gate ↔ +5V | Holds Q1 on (fan **OFF**) while D9 floats during reset/bootloader |
 | R5 | 4.7 kΩ **DNP** | J1 pin 2 ↔ +10V_P | Only if check M3 finds no internal pull-up |

@@ -52,8 +52,9 @@ from the fan's own 10 V supply.
 3. [Tools](#tools)
 4. [Software setup](#software-setup)
 5. [Pre-connection verification](#pre-connection-verification)
-6. [Step-by-step build](#step-by-step-build)
-7. [First power-up on the fan](#first-power-up-on-the-fan)
+6. [Step-by-step build](#step-by-step-build) (steps 1–6, then
+   [7. first power-up](#step-7-first-power-up-on-the-fan-supply) and
+   [8. enclosure](#step-8-fit-it-in-the-enclosure))
 8. [Normal operation](#normal-operation)
 9. [Troubleshooting](#troubleshooting)
 10. [Development and tests](#development-and-tests)
@@ -101,7 +102,7 @@ part with the same value and rating works; the part numbers are examples.
 | C2 | 1 | Ceramic capacitor | 100 nF, 50 V | KEMET C320C104K5R5TA | $0.25 |
 | C3, C4 | 2 | Ceramic capacitor | 1 µF, 25–50 V | TDK FG28X7R1H105KRT06 | $0.60 |
 | C5 | 1 | Ceramic capacitor | 10 nF, 50 V | KEMET C315C103K5R5TA | $0.25 |
-| R1, R2 | 2 | Resistor ¼ W 5 % | 4.7 kΩ | Yageo CFR-25JB-52-4K7 | $0.20 |
+| R1, R2 | 2 | Resistor ¼ W 5 % | 2.2 kΩ | Yageo CFR-25JB-52-2K2 | $0.20 |
 | R3 | 1 | Resistor ¼ W 5 % | 220 Ω | Yageo CFR-25JB-52-220R | $0.10 |
 | R4, R6 | 2 | Resistor ¼ W 5 % | 10 kΩ | Yageo CFR-25JB-52-10K | $0.20 |
 | R5 | (1) | Resistor ¼ W 5 %, **only if check M3 says so** | 4.7 kΩ | Yageo CFR-25JB-52-4K7 | $0.10 |
@@ -270,10 +271,15 @@ middle, fan interface near the J1 entry). Solder:
 Do **not** connect J1's PWM and TACH wires yet. Insulate their ends with
 heat-shrink.
 
+Before soldering D1 and D2, check them on the meter's diode range: D1
+(1N5817) reads **0.15–0.35 V** with red on the plain end and black on the
+band, **OL** the other way round; D2 (P6KE13A) reads **0.5–0.8 V** with red
+on the plain end, **OL** reversed.
+
 ✅ **Check before continuing** (nothing powered):
-- Diode test across D1, red on the F1 side: **0.15–0.35 V**. Reversed: **OL**.
-- Resistance +10V_P to GND: **not below 1 kΩ** (it climbs as C1 charges
-  from the meter, which is normal).
+- Resistance with **red on +10V_P** and black on GND: **not below 1 kΩ** (it
+  climbs as C1 charges from the meter, which is normal). With the probes
+  reversed you'd see D2 conducting, which is also normal.
 - Continuity J1 "GND" to socket pin 29 and pin 4: **beep (< 1 Ω)**.
 - Continuity J1 "+10V" to socket pin 30: **no beep** (D1 is in the way).
 
@@ -283,8 +289,9 @@ Leave the Nano out of its socket. Connect a 9 V battery (or a bench supply
 set to 10.0 V, current limit 100 mA) to J1's +10V and GND wires.
 
 ✅ **Check before continuing:**
-- Socket VIN (pin 30) to GND: **battery voltage minus 0.2–0.4 V** (about
-  8.7 V on a fresh 9 V battery, about 9.7 V on a 10 V supply).
+- Socket VIN (pin 30) to GND: **battery voltage minus 0.05–0.3 V** (D1's
+  drop at almost no current; about 9.2 V on a fresh 9 V battery, about
+  9.8 V on a 10 V supply).
 - Supply current, if your supply shows it: **under 1 mA**.
 - **Reverse-polarity test:** swap the battery leads. Socket VIN now reads
   **0 V (±0.1 V)**. D1 is blocking. Swap back.
@@ -292,7 +299,7 @@ set to 10.0 V, current limit 100 mA) to J1's +10V and GND wires.
 
 If you'd rather use the fan as the source: plug J1 into the fan with only
 the +10V and GND wires attached (PWM and TACH still insulated). Expect VIN =
-**M1 minus 0.2–0.4 V**. The fan runs at full speed during this test because
+**M1 minus 0.05–0.3 V**. The fan runs at full speed during this test because
 nothing holds its speed line low. Unplug J1 afterwards.
 
 ### Step 4. Wire the 3.3 V regulator, OLED and encoder
@@ -322,7 +329,7 @@ nothing holds its speed line low. Unplug J1 afterwards.
 - No continuity between neighbouring socket pins D3–D7, or A4–A5.
 - Resistance socket +5V (27) to GND: **above 1 kΩ**.
 - Resistance module VCC to GND: **above 1 kΩ**.
-- Resistance module SDA to module VCC: **4.7 kΩ or less** (R1, perhaps in
+- Resistance module SDA to module VCC: **2.2 kΩ or less** (R1, perhaps in
   parallel with a pull-up on the module).
 
 ### Step 5. Flash and test with USB power only
@@ -384,17 +391,9 @@ connected, so the Nano runs):
   pressing reset) to open the diagnostics page: the **`n=`** counter at top
   right goes up each time you touch.
 
-### Step 7. Fit it in the enclosure
-
-Cut a window for the OLED and a hole for the encoder shaft (usually 7 mm),
-fit the cable gland for J1, mount the perfboard and the module on standoffs,
-and make sure the Nano's USB socket can still be reached. Tie a knot or use
-the gland so a pull on the fan cable can't reach the solder joints. Then do
-the first power-up on the fan.
-
 ---
 
-## First power-up on the fan
+## Step 7. First power-up on the fan supply
 
 1. Unplug USB from the Nano. Unplug the fan from mains.
 2. Plug J1 into the fan's control lead.
@@ -407,7 +406,7 @@ the first power-up on the fan.
 | Fan | **Not running.** If it was spinning, it coasts to a stop. |
 | Display | **`FAN OFF`**, `0 RPM`, SET **50%**, ACT **`--%`**, footer **`Press knob to start`** |
 | Nano LED L (D13) | off |
-| +10V_P (socket VIN) to GND | **M1 minus 0.2–0.4 V** |
+| +10V_P (socket VIN) to GND | **M1 minus 0.2–0.7 V** |
 | +5V (socket 27) to GND | **4.9–5.1 V** |
 | Module VCC to GND | **3.25–3.35 V** |
 
@@ -428,8 +427,23 @@ Then:
 8. Unplug the fan from mains, wait 10 s, plug it back in. The controller
    comes up **OFF at 50 %** again.
 
+✅ **Check before continuing:** every row of the table above matched, and
+steps 4–8 behaved as described.
+
 Optional, recommended: work through [BENCH_TEST.md](BENCH_TEST.md), which
 tests every requirement one by one.
+
+## Step 8. Fit it in the enclosure
+
+Unplug the fan from mains first. Cut a window for the OLED and a hole for
+the encoder shaft (usually 7 mm), fit the cable gland for J1, mount the
+perfboard and the module on standoffs, and make sure the Nano's USB socket
+can still be reached. Tie a knot or use the gland so a pull on the fan cable
+can't reach the solder joints. Check that no bare lead touches another or
+the Nano's underside.
+
+✅ **Check before continuing:** plug the fan back into mains. The display
+shows `FAN OFF` and the fan doesn't run; press the knob and it runs.
 
 ---
 

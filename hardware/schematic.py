@@ -474,10 +474,10 @@ def draw():
 
     # I2C pull-ups to 3.3 V (R2's lead hops over the SDA wire)
     dot(990, 460)
-    resistor_v(990, 460, 390, "R1", "4.7k", side="left", body_c=420)
+    resistor_v(990, 460, 390, "R1", "2.2k", side="left", body_c=420)
     pwr(990, 390, "+3V3")
     dot(1060, 500)
-    resistor_v_hop(1060, 390, 500, 420, [460], "R2", "4.7k")
+    resistor_v_hop(1060, 390, 500, 420, [460], "R2", "2.2k")
     pwr(1060, 390, "+3V3")
 
     # ---------------- Notes and title ----------------

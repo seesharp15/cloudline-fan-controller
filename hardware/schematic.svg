@@ -360,7 +360,7 @@
 <line x1="990" y1="440" x2="990" y2="460" class="w"/>
 <polyline points="990,400.0 984,403.3 996,410.0 984,416.7 996,423.3 984,430.0 996,436.7 990,440.0" class="w" fill="none"/>
 <text x="978" y="416" font-size="13" text-anchor="end" font-weight="bold" class="ref">R1</text>
-<text x="978" y="431" font-size="12" text-anchor="end" font-weight="normal" class="val">4.7k</text>
+<text x="978" y="431" font-size="12" text-anchor="end" font-weight="normal" class="val">2.2k</text>
 <line x1="990" y1="390" x2="990" y2="376" class="w"/>
 <line x1="980" y1="376" x2="1000" y2="376" class="p"/>
 <text x="990" y="370" font-size="12" text-anchor="middle" font-weight="bold" class="rail">+3V3</text>
@@ -369,7 +369,7 @@
 <path d="M1060,440 L1060,454 A6,6 0 0,1 1060,466 L1060,500" class="w" fill="none"/>
 <polyline points="1060,400.0 1054,403.3 1066,410.0 1054,416.7 1066,423.3 1054,430.0 1066,436.7 1060,440.0" class="w" fill="none"/>
 <text x="1072" y="416" font-size="13" text-anchor="start" font-weight="bold" class="ref">R2</text>
-<text x="1072" y="431" font-size="12" text-anchor="start" font-weight="normal" class="val">4.7k</text>
+<text x="1072" y="431" font-size="12" text-anchor="start" font-weight="normal" class="val">2.2k</text>
 <line x1="1060" y1="390" x2="1060" y2="376" class="w"/>
 <line x1="1050" y1="376" x2="1070" y2="376" class="p"/>
 <text x="1060" y="370" font-size="12" text-anchor="middle" font-weight="bold" class="rail">+3V3</text>

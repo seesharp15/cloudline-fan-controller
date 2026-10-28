@@ -500,6 +500,11 @@ void setup() {
   Serial.println(F("Cloudline controller ready. Fan OFF. Send ? for help."));
   if (gResetFlags & kSoftRestartFlag) Serial.println(F("! restarted by the watchdog"));
 
+#if defined(WIRE_HAS_TIMEOUT)
+  // The AVR core leaves the I2C timeout off by default, so a stuck bus (bad
+  // wiring, display fault) would block forever. 25 ms, then reset the TWI.
+  Wire.setWireTimeout(25000, true);
+#endif
   oled.setI2CAddress(OLED_I2C_ADDRESS << 1);  // U8g2 expects the 8-bit address
   oled.setBusClock(OLED_I2C_CLOCK_HZ);
   oled.begin();

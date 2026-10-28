@@ -11,7 +11,7 @@ C1,1,Aluminium electrolytic capacitor,220 uF 25 V (or 35 V) 105 C,Panasonic EEU-
 C2,1,Ceramic capacitor,100 nF 50 V X7R,KEMET C320C104K5R5TA,Radial 2.54 mm,0.25,
 C3 C4,2,Ceramic capacitor,1 uF 25 V or 50 V X7R,TDK FG28X7R1H105KRT06 (or KEMET C322C105K5R5TA),Radial,0.30,MCP1700 needs >= 1 uF on input and output
 C5,1,Ceramic capacitor,10 nF 50 V X7R,KEMET C315C103K5R5TA,Radial,0.25,
-R1 R2,2,Resistor,4.7 kohm 1/4 W 5 %,Yageo CFR-25JB-52-4K7,Axial,0.10,I2C pull-ups to +3V3
+R1 R2,2,Resistor,2.2 kohm 1/4 W 5 %,Yageo CFR-25JB-52-2K2,Axial,0.10,I2C pull-ups to +3V3 (2.2k for 400 kHz rise time)
 R3,1,Resistor,220 ohm 1/4 W 5 %,Yageo CFR-25JB-52-220R,Axial,0.10,Q1 gate series
 R4,1,Resistor,10 kohm 1/4 W 5 %,Yageo CFR-25JB-52-10K,Axial,0.10,Q1 gate pull-up: keeps fan OFF during reset/boot
 R5,1,Resistor (do not populate by default),4.7 kohm 1/4 W 5 %,Yageo CFR-25JB-52-4K7,Axial,0.10,Fit only if the PWM line floats (pre-connection check M3)

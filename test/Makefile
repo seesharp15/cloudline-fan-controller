@@ -14,7 +14,7 @@ FW_SRC   := $(FW)/app.cpp $(FW)/config.h $(FW)/fan_logic.h $(FW)/display_ui.h
 SIM_SRC  := test_firmware_sim.cpp sim.cpp sim.h check.h $(wildcard stubs/*.h stubs/avr/*.h)
 SCENARIOS := boot1 powercycle serial diagboot wrap calfail
 
-.PHONY: all test shots clean no-eeprom
+.PHONY: all test shots clean no-eeprom pins
 all: test
 
 $(BUILD):
@@ -35,7 +35,11 @@ no-eeprom:
 	  echo "FAIL: firmware references EEPROM"; exit 1; \
 	else echo "no-eeprom: firmware has no EEPROM access"; fi
 
-test: $(BUILD)/test_fan_logic_cxx11 $(BUILD)/test_fan_logic $(BUILD)/test_firmware_sim no-eeprom
+# Pin numbers must agree across config.h, schematic, wiring view, PINOUT, README.
+pins:
+	@python3 check_pins.py | tail -1
+
+test: $(BUILD)/test_fan_logic_cxx11 $(BUILD)/test_fan_logic $(BUILD)/test_firmware_sim no-eeprom pins
 	$(BUILD)/test_fan_logic_cxx11 > /dev/null
 	$(BUILD)/test_fan_logic
 	@set -e; for s in $(SCENARIOS); do $(BUILD)/test_firmware_sim $$s; done

@@ -5,6 +5,7 @@
 | Logic unit tests (`test_fan_logic.cpp`) | `fan_logic.h` on the host, built as C++11 and C++17 | `make -C test` |
 | Firmware simulation (`test_firmware_sim.cpp`) | the unmodified `app.cpp` against Arduino/AVR/U8g2 stubs in `stubs/`, millisecond by millisecond | `make -C test` |
 | No-EEPROM check | greps the firmware for any EEPROM access | `make -C test` |
+| Pin cross-check (`check_pins.py`) | parses `config.h`, the schematic and wiring sources, PINOUT.md and README.md and fails if any pin assignment disagrees | `make -C test` (needs python3) |
 | AVR simulation (`avr/`) | the real Nano binary in simavr, including a watchdog recovery | `sh test/avr/run_simavr.sh` |
 
 `make -C test` needs only a C++17 compiler (g++ or clang++) and make. It

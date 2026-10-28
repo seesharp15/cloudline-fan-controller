@@ -60,7 +60,7 @@
 <text x="346" y="450" font-size="12" text-anchor="start" font-weight="bold" class="sec">3.3 V FOR OLED</text>
 <text x="346" y="467" font-size="12" text-anchor="start" font-weight="normal" class="t">U2 MCP1700-3302E (GND-VIN-VOUT)</text>
 <text x="346" y="482" font-size="12" text-anchor="start" font-weight="normal" class="t">C3, C4 1uF ceramic</text>
-<text x="346" y="497" font-size="12" text-anchor="start" font-weight="normal" class="t">R1, R2 4.7k: SDA/SCL -&gt; +3V3</text>
+<text x="346" y="497" font-size="12" text-anchor="start" font-weight="normal" class="t">R1, R2 2.2k: SDA/SCL -&gt; +3V3</text>
 <text x="346" y="560" font-size="12" text-anchor="start" font-weight="bold" class="warn">Build and test this board first</text>
 <text x="346" y="575" font-size="12" text-anchor="start" font-weight="bold" class="warn">(README steps 2-3) before wiring</text>
 <text x="346" y="590" font-size="12" text-anchor="start" font-weight="bold" class="warn">the Nano to it.</text>

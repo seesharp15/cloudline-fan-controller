@@ -112,7 +112,7 @@ def draw():
         (by + 210, "TACH INPUT", ["R7 1k series, R6 10k -> +5V", "D3 BAT85 -> +5V, D4 BAT85 -> GND",
                                    "C5 10nF -> GND"]),
         (by + 300, "3.3 V FOR OLED", ["U2 MCP1700-3302E (GND-VIN-VOUT)", "C3, C4 1uF ceramic",
-                                       "R1, R2 4.7k: SDA/SCL -> +3V3"]),
+                                       "R1, R2 2.2k: SDA/SCL -> +3V3"]),
     ]
     for y, title, lines in sections:
         text(bx + 16, y, title, 12, "start", "sec", "bold")

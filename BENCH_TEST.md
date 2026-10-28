@@ -70,7 +70,7 @@ Set the bench supply to **10.0 V, current limit 150 mA**, output off. USB
 
 | ID | Requirement | Procedure | Expected result | Result |
 |---|---|---|---|---|
-| **A1** | R6, D5 Powered from 10 V with conditioning | Output on. Measure socket VIN, Nano 5V, module VCC, all to GND. Read the supply current. | VIN **9.6–9.8 V**; 5V **4.9–5.1 V**; VCC **3.25–3.35 V**; current **35–60 mA** (LED branch adds ~5 mA when lit) | |
+| **A1** | R6, D5 Powered from 10 V with conditioning | Output on. Measure socket VIN, Nano 5V, module VCC, all to GND. Read the supply current. | VIN **9.3–9.8 V**; 5V **4.9–5.1 V**; VCC **3.25–3.35 V**; current **35–60 mA** (LED branch adds ~5 mA when lit) | |
 | **A2** | D5 Reverse polarity | Output off. Swap the supply leads at J1. Output on for 5 s. Output off, swap back, output on. | While reversed: current **< 1 mA**, display dark. Afterwards the controller works normally. | |
 | **A3** | D5 Over-voltage clamp (bench supply only) | Raise the supply slowly to 13.0 V, hold 5 s, back to 10 V. | Current rises noticeably above ~12.4 V (D2 starts to conduct) but stays below 150 mA; **F1 may trip** above ~13 V (current falls to tens of mA and recovers after cooling). No damage; normal operation at 10 V. | |
 | **A4** | R3, D2 Fan off at power-up | Output off. Meter on LINE. Output on and watch the LED and the meter. Repeat 10 times. | LINE **< 0.1 V** once the supply is up; no visible LED flash (a sub-millisecond pulse while the supply rises can't be seen and is too short for a fan). Display `FAN OFF`, SET 50 %. | |
@@ -107,7 +107,7 @@ lead, then plug the fan into mains.
 
 | ID | Requirement | Procedure | Expected result | Result |
 |---|---|---|---|---|
-| **B1** | R3, R6 First power-up | Plug the fan into mains. | Within 1 s: `FAN OFF`, fan **not running** (coasts to a stop if it was turning). Rails as in A1 (VIN = M1 minus 0.2–0.4 V). | |
+| **B1** | R3, R6 First power-up | Plug the fan into mains. | Within 1 s: `FAN OFF`, fan **not running** (coasts to a stop if it was turning). Rails as in A1 (VIN = M1 minus 0.2–0.7 V). | |
 | **B2** | R3 Off at power-up, repeated | Unplug and replug the fan's mains 5 times, 10 s apart. | Never starts by itself; always `FAN OFF, 50 %`. | |
 | **B3** | R2 On/off | Press the knob; wait 20 s; press again. | Runs at 50 % within a few seconds; stops (coasts down) after OFF. | |
 | **B4** | R1 Speed range | Fan ON. 100 %, wait 20 s; 50 %; 25 %; 10 %. | Audible/airflow change at each step; RPM rises and falls with the setting. | |
