@@ -551,4 +551,22 @@ void loop() {
   digitalWrite(PIN_STATUS_LED, gCtl.on() ? HIGH : LOW);
 
   updateDisplay(now);
+
+  // Hooks for the AVR simulation test (test/avr/run_simavr.sh). They are
+  // compiled in only when the test passes -D flags; normal builds skip them.
+#ifdef TEST_STATUS_EVERY_MS
+  static uint32_t lastStatus = 0;
+  if (now - lastStatus >= TEST_STATUS_EVERY_MS) {
+    lastStatus = now;
+    printStatus(now);
+  }
+#endif
+#ifdef TEST_HANG_AFTER_MS
+  if (!(gResetFlags & kSoftRestartFlag) && now > TEST_HANG_AFTER_MS) {
+    Serial.println(F("TEST: loop() hangs now"));
+    Serial.flush();
+    for (;;) {
+    }
+  }
+#endif
 }

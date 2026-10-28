@@ -1,0 +1,7 @@
+# For the Wokwi VS Code extension or wokwi-cli. Build the firmware first:
+#   arduino-cli compile -b arduino:avr:nano --build-property "compiler.cpp.extra_flags=-DTARGET_WOKWI=1" \
+#     --output-dir sim/build firmware/cloudline_controller
+[wokwi]
+version = 1
+firmware = "build/cloudline_controller.ino.hex"
+elf = "build/cloudline_controller.ino.elf"

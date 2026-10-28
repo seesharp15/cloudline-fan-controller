@@ -3,9 +3,9 @@
 // =========================================================================
 //  CONFIGURATION BLOCK - this is the only file you should need to edit.
 // =========================================================================
-// It is included first by the sketch. See DESIGN_NOTES.md in docs/ for the
-// reasoning behind each default and README.md "Pre-connection verification"
-// for how to measure the values on your own fan.
+// It is included first by the sketch. The reasoning behind each default is
+// in FAQ.md and VERIFICATION.md; README.md "Pre-connection verification"
+// explains how to measure the values on your own fan.
 #pragma once
 
 // ---------------------------------------------------------------------------
@@ -14,7 +14,10 @@
 // 0 = real hardware (Arduino Nano + AITRIP SH1106 module).
 // 1 = Wokwi simulator: SSD1306 display, and a fake tach signal generated on
 //     PIN_SIM_TACH_OUT (wire it to D2 in the simulator). See sim/README.md.
+//     Can also be set on the command line: -DTARGET_WOKWI=1.
+#ifndef TARGET_WOKWI
 #define TARGET_WOKWI 0
+#endif
 
 // ---------------------------------------------------------------------------
 // Pin assignments (Arduino Nano, ATmega328P). Must match PINOUT.md.

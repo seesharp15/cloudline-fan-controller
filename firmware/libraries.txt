@@ -1,0 +1,15 @@
+# Libraries and platform used to build the firmware (pinned versions).
+#
+# Arduino IDE 2.x: Tools > Board > Boards Manager: "Arduino AVR Boards" 1.8.6
+#                  Library Manager: "U8g2" by oliver, version 2.35.30
+# arduino-cli:
+#   arduino-cli core install arduino:avr@1.8.6
+#   arduino-cli lib install "U8g2@2.35.30"
+#
+# Wire is part of the Arduino AVR core. No other libraries are needed.
+#
+# Verified build (2026-10-28): arduino-cli 1.1.1, ArduinoCore-avr 1.8.6,
+# avr-gcc 7.3.0, U8g2_Arduino git tag 2.35.30 (its library.properties
+# reports 2.35.28; the source is the 2.35.30 release).
+arduino:avr@1.8.6
+U8g2@2.35.30
