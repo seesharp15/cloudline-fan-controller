@@ -1,0 +1,405 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1010" viewBox="0 0 1500 1010">
+
+<style>
+  .bg { fill: #ffffff; }
+  .w { stroke: #1d2733; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .p { stroke: #1d2733; stroke-width: 3; stroke-linecap: round; }
+  .dnp { stroke: #8a96a3; stroke-width: 2; stroke-dasharray: 4 3; }
+  .fill { fill: #1d2733; }
+  .dot { fill: #1d2733; }
+  .blk { fill: #f4f7fb; stroke: #1d2733; stroke-width: 2; }
+  .note { fill: #fffbea; stroke: #c9a227; stroke-width: 1.5; }
+  .sec { fill: none; stroke: #b8c4d2; stroke-width: 1.2; stroke-dasharray: 6 4; }
+  text { font-family: "Helvetica Neue", Arial, sans-serif; }
+  .t, .pin { fill: #1d2733; }
+  .ref { fill: #0b3d75; }
+  .val { fill: #3b4754; }
+  .num { fill: #7a4b00; font-family: Menlo, Consolas, monospace; }
+  .rail { fill: #b3261e; }
+  .net { fill: #2e6b2e; font-style: italic; }
+  .warn { fill: #b3261e; }
+  .sec-t { fill: #6b7a8a; letter-spacing: 0.5px; }
+</style>
+
+<rect class="bg" width="1500" height="1010"/>
+<rect x="30" y="60" width="640" height="230" rx="6" class="sec"/>
+<text x="38" y="76" font-size="12" text-anchor="start" font-weight="bold" class="sec-t">POWER INPUT CONDITIONING  (fan +10 V -&gt; Nano VIN)</text>
+<rect x="910" y="130" width="300" height="190" rx="6" class="sec"/>
+<text x="918" y="146" font-size="12" text-anchor="start" font-weight="bold" class="sec-t">3.3 V SUPPLY FOR OLED MODULE</text>
+<rect x="60" y="330" width="70" height="230" rx="4" class="blk"/>
+<text x="95" y="308" font-size="14" text-anchor="middle" font-weight="bold" class="ref">J1</text>
+<text x="95" y="323" font-size="12" text-anchor="middle" font-weight="normal" class="val">to fan cable</text>
+<text x="95" y="580" font-size="12" text-anchor="middle" font-weight="normal" class="val">4-pin Molex</text>
+<text x="95" y="595" font-size="12" text-anchor="middle" font-weight="normal" class="val">5.08 mm</text>
+<text x="95" y="610" font-size="12" text-anchor="middle" font-weight="bold" class="warn">VERIFY pins!</text>
+<line x1="130" y1="360" x2="170" y2="360" class="w"/>
+<text x="124" y="364" font-size="12" text-anchor="end" font-weight="normal" class="pin">+10V</text>
+<text x="134" y="356" font-size="10" text-anchor="start" font-weight="normal" class="num">4</text>
+<line x1="130" y1="410" x2="170" y2="410" class="w"/>
+<text x="124" y="414" font-size="12" text-anchor="end" font-weight="normal" class="pin">GND</text>
+<text x="134" y="406" font-size="10" text-anchor="start" font-weight="normal" class="num">3</text>
+<line x1="130" y1="480" x2="170" y2="480" class="w"/>
+<text x="124" y="484" font-size="12" text-anchor="end" font-weight="normal" class="pin">PWM</text>
+<text x="134" y="476" font-size="10" text-anchor="start" font-weight="normal" class="num">2</text>
+<line x1="130" y1="520" x2="170" y2="520" class="w"/>
+<text x="124" y="524" font-size="12" text-anchor="end" font-weight="normal" class="pin">TACH</text>
+<text x="134" y="516" font-size="10" text-anchor="start" font-weight="normal" class="num">1</text>
+<polyline points="170,360 170,360 170,140 190,140" class="w" fill="none"/>
+<line x1="190" y1="140" x2="208.0" y2="140" class="w"/>
+<line x1="252.0" y1="140" x2="270" y2="140" class="w"/>
+<rect x="208.0" y="132" width="44" height="16" class="w" fill="none"/>
+<polyline points="202.0,154 210.0,154 256.0,126" class="w" fill="none"/>
+<text x="230.0" y="106" font-size="13" text-anchor="middle" font-weight="bold" class="ref">F1</text>
+<text x="230.0" y="121" font-size="12" text-anchor="middle" font-weight="normal" class="val">PTC 0.2 A hold</text>
+<line x1="270" y1="140" x2="300.0" y2="140" class="w"/>
+<line x1="320.0" y1="140" x2="350" y2="140" class="w"/>
+<polygon points="300.0,130 300.0,150 320.0,140" class="w" fill="none"/>
+<line x1="320.0" y1="130" x2="320.0" y2="150" class="p"/>
+<text x="310.0" y="106" font-size="13" text-anchor="middle" font-weight="bold" class="ref">D1</text>
+<text x="310.0" y="121" font-size="12" text-anchor="middle" font-weight="normal" class="val">1N5817</text>
+<polyline points="350,140 640,140" class="w" fill="none"/>
+<circle cx="400" cy="140" r="3.5" class="dot"/>
+<circle cx="480" cy="140" r="3.5" class="dot"/>
+<circle cx="580" cy="140" r="3.5" class="dot"/>
+<line x1="400" y1="140" x2="400" y2="175.0" class="w"/>
+<line x1="400" y1="195.0" x2="400" y2="230" class="w"/>
+<polygon points="390,195.0 410,195.0 400,175.0" class="w" fill="none"/>
+<polyline points="386,170.0 390,175.0 410,175.0 414,180.0" class="w" fill="none"/>
+<text x="382" y="181.0" font-size="13" text-anchor="end" font-weight="bold" class="ref">D2</text>
+<text x="382" y="196.0" font-size="12" text-anchor="end" font-weight="normal" class="val">P6KE13A</text>
+<line x1="400" y1="230" x2="400" y2="240" class="w"/>
+<line x1="388" y1="240" x2="412" y2="240" class="p"/>
+<line x1="393" y1="245" x2="407" y2="245" class="p"/>
+<line x1="397" y1="250" x2="403" y2="250" class="p"/>
+<line x1="480" y1="140" x2="480" y2="181.0" class="w"/>
+<line x1="480" y1="189.0" x2="480" y2="230" class="w"/>
+<line x1="467" y1="181.0" x2="493" y2="181.0" class="p"/>
+<path d="M467,194.0 Q480,186.0 493,194.0" class="p" fill="none"/>
+<text x="460" y="176.0" font-size="14" text-anchor="middle" font-weight="bold" class="t">+</text>
+<text x="498" y="181.0" font-size="13" text-anchor="start" font-weight="bold" class="ref">C1</text>
+<text x="498" y="196.0" font-size="12" text-anchor="start" font-weight="normal" class="val">100µF 25V</text>
+<line x1="480" y1="230" x2="480" y2="240" class="w"/>
+<line x1="468" y1="240" x2="492" y2="240" class="p"/>
+<line x1="473" y1="245" x2="487" y2="245" class="p"/>
+<line x1="477" y1="250" x2="483" y2="250" class="p"/>
+<line x1="580" y1="140" x2="580" y2="181.0" class="w"/>
+<line x1="580" y1="189.0" x2="580" y2="230" class="w"/>
+<line x1="567" y1="181.0" x2="593" y2="181.0" class="p"/>
+<line x1="567" y1="189.0" x2="593" y2="189.0" class="p"/>
+<text x="598" y="181.0" font-size="13" text-anchor="start" font-weight="bold" class="ref">C2</text>
+<text x="598" y="196.0" font-size="12" text-anchor="start" font-weight="normal" class="val">100nF</text>
+<line x1="580" y1="230" x2="580" y2="240" class="w"/>
+<line x1="568" y1="240" x2="592" y2="240" class="p"/>
+<line x1="573" y1="245" x2="587" y2="245" class="p"/>
+<line x1="577" y1="250" x2="583" y2="250" class="p"/>
+<line x1="640" y1="140" x2="640" y2="126" class="w"/>
+<line x1="630" y1="126" x2="650" y2="126" class="p"/>
+<text x="640" y="120" font-size="12" text-anchor="middle" font-weight="bold" class="rail">+10V_P</text>
+<text x="190" y="270" font-size="11" text-anchor="start" font-weight="normal" class="val">Rev-polarity (D1), surge clamp (D2), short protection (F1),</text>
+<text x="190" y="284" font-size="11" text-anchor="start" font-weight="normal" class="val">bulk + HF decoupling (C1, C2). ~9.6 V reaches the Nano VIN.</text>
+<polyline points="170,410 190,410" class="w" fill="none"/>
+<line x1="190" y1="410" x2="190" y2="420" class="w"/>
+<line x1="178" y1="420" x2="202" y2="420" class="p"/>
+<line x1="183" y1="425" x2="197" y2="425" class="p"/>
+<line x1="187" y1="430" x2="193" y2="430" class="p"/>
+<rect x="720" y="320" width="150" height="480" rx="4" class="blk"/>
+<text x="795.0" y="298" font-size="14" text-anchor="middle" font-weight="bold" class="ref">U1  Arduino Nano</text>
+<text x="795.0" y="313" font-size="12" text-anchor="middle" font-weight="normal" class="val">ATmega328P, 5 V / 16 MHz</text>
+<line x1="696" y1="360" x2="720" y2="360" class="w"/>
+<text x="726" y="364" font-size="12" text-anchor="start" font-weight="normal" class="pin">VIN</text>
+<text x="716" y="356" font-size="10" text-anchor="end" font-weight="normal" class="num">30</text>
+<line x1="696" y1="400" x2="720" y2="400" class="w"/>
+<text x="726" y="404" font-size="12" text-anchor="start" font-weight="normal" class="pin">GND</text>
+<text x="716" y="396" font-size="10" text-anchor="end" font-weight="normal" class="num">29</text>
+<line x1="696" y1="520" x2="720" y2="520" class="w"/>
+<text x="726" y="524" font-size="12" text-anchor="start" font-weight="normal" class="pin">D9 / OC1A</text>
+<text x="716" y="516" font-size="10" text-anchor="end" font-weight="normal" class="num">12</text>
+<line x1="696" y1="660" x2="720" y2="660" class="w"/>
+<text x="726" y="664" font-size="12" text-anchor="start" font-weight="normal" class="pin">D2 / INT0</text>
+<text x="716" y="656" font-size="10" text-anchor="end" font-weight="normal" class="num">5</text>
+<line x1="870" y1="360" x2="894" y2="360" class="w"/>
+<text x="864" y="364" font-size="12" text-anchor="end" font-weight="normal" class="pin">+5V</text>
+<text x="874" y="356" font-size="10" text-anchor="start" font-weight="normal" class="num">27</text>
+<line x1="870" y1="400" x2="894" y2="400" class="w"/>
+<text x="864" y="404" font-size="12" text-anchor="end" font-weight="normal" class="pin">GND</text>
+<text x="874" y="396" font-size="10" text-anchor="start" font-weight="normal" class="num">4</text>
+<line x1="870" y1="460" x2="894" y2="460" class="w"/>
+<text x="864" y="464" font-size="12" text-anchor="end" font-weight="normal" class="pin">A4 / SDA</text>
+<text x="874" y="456" font-size="10" text-anchor="start" font-weight="normal" class="num">23</text>
+<line x1="870" y1="500" x2="894" y2="500" class="w"/>
+<text x="864" y="504" font-size="12" text-anchor="end" font-weight="normal" class="pin">A5 / SCL</text>
+<text x="874" y="496" font-size="10" text-anchor="start" font-weight="normal" class="num">24</text>
+<line x1="870" y1="560" x2="894" y2="560" class="w"/>
+<text x="864" y="564" font-size="12" text-anchor="end" font-weight="normal" class="pin">D3</text>
+<text x="874" y="556" font-size="10" text-anchor="start" font-weight="normal" class="num">6</text>
+<line x1="870" y1="600" x2="894" y2="600" class="w"/>
+<text x="864" y="604" font-size="12" text-anchor="end" font-weight="normal" class="pin">D4</text>
+<text x="874" y="596" font-size="10" text-anchor="start" font-weight="normal" class="num">7</text>
+<line x1="870" y1="640" x2="894" y2="640" class="w"/>
+<text x="864" y="644" font-size="12" text-anchor="end" font-weight="normal" class="pin">D5</text>
+<text x="874" y="636" font-size="10" text-anchor="start" font-weight="normal" class="num">8</text>
+<line x1="870" y1="680" x2="894" y2="680" class="w"/>
+<text x="864" y="684" font-size="12" text-anchor="end" font-weight="normal" class="pin">D6</text>
+<text x="874" y="676" font-size="10" text-anchor="start" font-weight="normal" class="num">9</text>
+<line x1="870" y1="720" x2="894" y2="720" class="w"/>
+<text x="864" y="724" font-size="12" text-anchor="end" font-weight="normal" class="pin">D7</text>
+<text x="874" y="716" font-size="10" text-anchor="start" font-weight="normal" class="num">10</text>
+<text x="795.0" y="766" font-size="11" text-anchor="middle" font-weight="normal" class="val">D13: on-board LED</text>
+<text x="795.0" y="780" font-size="11" text-anchor="middle" font-weight="normal" class="val">(lit = fan ON)</text>
+<text x="795.0" y="794" font-size="11" text-anchor="middle" font-weight="normal" class="val">USB: programming only</text>
+<polyline points="696,360 680,360" class="w" fill="none"/>
+<line x1="680" y1="360" x2="680" y2="346" class="w"/>
+<line x1="670" y1="346" x2="690" y2="346" class="p"/>
+<text x="680" y="340" font-size="12" text-anchor="middle" font-weight="bold" class="rail">+10V_P</text>
+<polyline points="696,400 680,400" class="w" fill="none"/>
+<line x1="680" y1="400" x2="680" y2="410" class="w"/>
+<line x1="668" y1="410" x2="692" y2="410" class="p"/>
+<line x1="673" y1="415" x2="687" y2="415" class="p"/>
+<line x1="677" y1="420" x2="683" y2="420" class="p"/>
+<polyline points="894,360 910,360" class="w" fill="none"/>
+<line x1="910" y1="360" x2="910" y2="346" class="w"/>
+<line x1="900" y1="346" x2="920" y2="346" class="p"/>
+<text x="910" y="340" font-size="12" text-anchor="middle" font-weight="bold" class="rail">+5V</text>
+<polyline points="894,400 925,400" class="w" fill="none"/>
+<line x1="925" y1="400" x2="925" y2="410" class="w"/>
+<line x1="913" y1="410" x2="937" y2="410" class="p"/>
+<line x1="918" y1="415" x2="932" y2="415" class="p"/>
+<line x1="922" y1="420" x2="928" y2="420" class="p"/>
+<circle cx="329" cy="520" r="24" class="w" fill="none"/>
+<line x1="360" y1="520" x2="342" y2="520" class="w"/>
+<line x1="342" y1="505" x2="342" y2="535" class="p"/>
+<line x1="334" y1="502" x2="334" y2="512" class="p"/>
+<line x1="334" y1="515" x2="334" y2="525" class="p"/>
+<line x1="334" y1="528" x2="334" y2="538" class="p"/>
+<polyline points="334,507 320,507 320,480" class="w" fill="none"/>
+<polyline points="334,533 320,533 320,560" class="w" fill="none"/>
+<polyline points="320,520 334,520" class="w" fill="none"/>
+<line x1="320" y1="520" x2="320" y2="533" class="w"/>
+<polygon points="334,520 326,516 326,524" class="fill"/>
+<text x="360" y="474" font-size="13" text-anchor="start" font-weight="bold" class="ref">Q1</text>
+<text x="360" y="489" font-size="12" text-anchor="start" font-weight="normal" class="val">2N7000</text>
+<text x="314" y="490" font-size="10" text-anchor="end" font-weight="normal" class="pin">D</text>
+<text x="314" y="558" font-size="10" text-anchor="end" font-weight="normal" class="pin">S</text>
+<text x="360" y="514" font-size="10" text-anchor="end" font-weight="normal" class="pin">G</text>
+<polyline points="170,480 320,480" class="w" fill="none"/>
+<circle cx="260" cy="480" r="3.5" class="dot"/>
+<line x1="260" y1="380" x2="260" y2="410.0" class="w"/>
+<line x1="260" y1="450.0" x2="260" y2="480" class="w"/>
+<polyline points="260,410.0 254,413.3 266,420.0 254,426.7 266,433.3 254,440.0 266,446.7 260,450.0" class="dnp" fill="none"/>
+<text x="272" y="426.0" font-size="13" text-anchor="start" font-weight="bold" class="ref">R5</text>
+<text x="272" y="441.0" font-size="12" text-anchor="start" font-weight="normal" class="val">4.7k  DNP</text>
+<line x1="260" y1="380" x2="260" y2="366" class="w"/>
+<line x1="250" y1="366" x2="270" y2="366" class="p"/>
+<text x="260" y="360" font-size="12" text-anchor="middle" font-weight="bold" class="rail">+10V_P</text>
+<polyline points="320,560 320,570" class="w" fill="none"/>
+<line x1="320" y1="570" x2="320" y2="580" class="w"/>
+<line x1="308" y1="580" x2="332" y2="580" class="p"/>
+<line x1="313" y1="585" x2="327" y2="585" class="p"/>
+<line x1="317" y1="590" x2="323" y2="590" class="p"/>
+<line x1="360" y1="520" x2="395.0" y2="520" class="w"/>
+<line x1="435.0" y1="520" x2="470" y2="520" class="w"/>
+<polyline points="395.0,520 398.3,514 405.0,526 411.7,514 418.3,526 425.0,514 431.7,526 435.0,520" class="w" fill="none"/>
+<text x="415.0" y="538" font-size="13" text-anchor="middle" font-weight="bold" class="ref">R3</text>
+<text x="415.0" y="553" font-size="12" text-anchor="middle" font-weight="normal" class="val">220Ω</text>
+<polyline points="470,520 696,520" class="w" fill="none"/>
+<circle cx="540" cy="520" r="3.5" class="dot"/>
+<line x1="540" y1="450" x2="540" y2="460" class="w"/>
+<line x1="540" y1="500" x2="540" y2="520" class="w"/>
+<polyline points="540,460.0 534,463.3 546,470.0 534,476.7 546,483.3 534,490.0 546,496.7 540,500.0" class="w" fill="none"/>
+<text x="552" y="476" font-size="13" text-anchor="start" font-weight="bold" class="ref">R4</text>
+<text x="552" y="491" font-size="12" text-anchor="start" font-weight="normal" class="val">10k</text>
+<line x1="540" y1="450" x2="540" y2="436" class="w"/>
+<line x1="530" y1="436" x2="550" y2="436" class="p"/>
+<text x="540" y="430" font-size="12" text-anchor="middle" font-weight="bold" class="rail">+5V</text>
+<text x="380" y="448" font-size="12" text-anchor="start" font-weight="bold" class="sec-t">FAN SPEED OUTPUT</text>
+<text x="440" y="572" font-size="11" text-anchor="start" font-weight="normal" class="val">D9 HIGH = Q1 on = line LOW</text>
+<text x="440" y="585" font-size="11" text-anchor="start" font-weight="normal" class="val">= fan slower / stopped.</text>
+<text x="440" y="598" font-size="11" text-anchor="start" font-weight="normal" class="val">R4: fan OFF during boot.</text>
+<polyline points="170,520 170,520 170,720 300,720" class="w" fill="none"/>
+<circle cx="230" cy="720" r="3.5" class="dot"/>
+<line x1="230" y1="650" x2="230" y2="660" class="w"/>
+<line x1="230" y1="700" x2="230" y2="720" class="w"/>
+<polyline points="230,660.0 224,663.3 236,670.0 224,676.7 236,683.3 224,690.0 236,696.7 230,700.0" class="w" fill="none"/>
+<text x="218" y="676" font-size="13" text-anchor="end" font-weight="bold" class="ref">R6</text>
+<text x="218" y="691" font-size="12" text-anchor="end" font-weight="normal" class="val">10k</text>
+<line x1="230" y1="650" x2="230" y2="636" class="w"/>
+<line x1="220" y1="636" x2="240" y2="636" class="p"/>
+<text x="230" y="630" font-size="12" text-anchor="middle" font-weight="bold" class="rail">+10V_P</text>
+<line x1="300" y1="720" x2="315.0" y2="720" class="w"/>
+<line x1="355.0" y1="720" x2="370" y2="720" class="w"/>
+<polyline points="315.0,720 318.3,714 325.0,726 331.7,714 338.3,726 345.0,714 351.7,726 355.0,720" class="w" fill="none"/>
+<text x="335.0" y="690" font-size="13" text-anchor="middle" font-weight="bold" class="ref">R7</text>
+<text x="335.0" y="705" font-size="12" text-anchor="middle" font-weight="normal" class="val">10k</text>
+<polyline points="370,720 390,720" class="w" fill="none"/>
+<circle cx="380" cy="720" r="3.5" class="dot"/>
+<line x1="380" y1="720" x2="380" y2="740" class="w"/>
+<line x1="380" y1="780" x2="380" y2="790" class="w"/>
+<polyline points="380,740.0 374,743.3 386,750.0 374,756.7 386,763.3 374,770.0 386,776.7 380,780.0" class="w" fill="none"/>
+<text x="368" y="756" font-size="13" text-anchor="end" font-weight="bold" class="ref">R8</text>
+<text x="368" y="771" font-size="12" text-anchor="end" font-weight="normal" class="val">10k</text>
+<line x1="380" y1="790" x2="380" y2="800" class="w"/>
+<line x1="368" y1="800" x2="392" y2="800" class="p"/>
+<line x1="373" y1="805" x2="387" y2="805" class="p"/>
+<line x1="377" y1="810" x2="383" y2="810" class="p"/>
+<circle cx="420" cy="720" r="24" class="w" fill="none"/>
+<line x1="390" y1="720" x2="412" y2="720" class="w"/>
+<line x1="412" y1="706" x2="412" y2="734" class="p"/>
+<polyline points="412,714 430,700 430,680" class="w" fill="none"/>
+<polyline points="412,726 430,740 430,760" class="w" fill="none"/>
+<polygon points="430,740 421,739 426,732" class="fill"/>
+<text x="450" y="716" font-size="13" text-anchor="start" font-weight="bold" class="ref">Q2</text>
+<text x="450" y="731" font-size="12" text-anchor="start" font-weight="normal" class="val">2N3904</text>
+<text x="388" y="714" font-size="10" text-anchor="end" font-weight="normal" class="pin">B</text>
+<text x="436" y="690" font-size="10" text-anchor="start" font-weight="normal" class="pin">C</text>
+<text x="436" y="758" font-size="10" text-anchor="start" font-weight="normal" class="pin">E</text>
+<polyline points="430,760 430,780" class="w" fill="none"/>
+<line x1="430" y1="780" x2="430" y2="790" class="w"/>
+<line x1="418" y1="790" x2="442" y2="790" class="p"/>
+<line x1="423" y1="795" x2="437" y2="795" class="p"/>
+<line x1="427" y1="800" x2="433" y2="800" class="p"/>
+<polyline points="430,680 430,660 696,660" class="w" fill="none"/>
+<circle cx="620" cy="660" r="3.5" class="dot"/>
+<line x1="620" y1="600" x2="620" y2="610" class="w"/>
+<line x1="620" y1="650" x2="620" y2="660" class="w"/>
+<polyline points="620,610.0 614,613.3 626,620.0 614,626.7 626,633.3 614,640.0 626,646.7 620,650.0" class="w" fill="none"/>
+<text x="608" y="626" font-size="13" text-anchor="end" font-weight="bold" class="ref">R9</text>
+<text x="608" y="641" font-size="12" text-anchor="end" font-weight="normal" class="val">10k</text>
+<line x1="620" y1="600" x2="620" y2="586" class="w"/>
+<line x1="610" y1="586" x2="630" y2="586" class="p"/>
+<text x="620" y="580" font-size="12" text-anchor="middle" font-weight="bold" class="rail">+5V</text>
+<circle cx="670" cy="660" r="3.5" class="dot"/>
+<line x1="670" y1="660" x2="670" y2="696.0" class="w"/>
+<line x1="670" y1="704.0" x2="670" y2="740" class="w"/>
+<line x1="657" y1="696.0" x2="683" y2="696.0" class="p"/>
+<line x1="657" y1="704.0" x2="683" y2="704.0" class="p"/>
+<text x="688" y="696.0" font-size="13" text-anchor="start" font-weight="bold" class="ref">C5</text>
+<text x="688" y="711.0" font-size="12" text-anchor="start" font-weight="normal" class="val">1nF</text>
+<line x1="670" y1="740" x2="670" y2="750" class="w"/>
+<line x1="658" y1="750" x2="682" y2="750" class="p"/>
+<line x1="663" y1="755" x2="677" y2="755" class="p"/>
+<line x1="667" y1="760" x2="673" y2="760" class="p"/>
+<text x="180" y="772" font-size="12" text-anchor="start" font-weight="bold" class="sec-t">TACH INPUT</text>
+<text x="180" y="786" font-size="11" text-anchor="start" font-weight="normal" class="val">3.3-12 V or open-collector</text>
+<text x="460" y="800" font-size="11" text-anchor="start" font-weight="normal" class="val">Tach HIGH = Q2 on = D2 LOW.</text>
+<text x="460" y="813" font-size="11" text-anchor="start" font-weight="normal" class="val">Inverted, which the firmware ignores (it counts edges).</text>
+<rect x="1040" y="190" width="90" height="60" rx="4" class="blk"/>
+<text x="1085" y="210" font-size="13" text-anchor="middle" font-weight="bold" class="ref">U2</text>
+<text x="1085" y="226" font-size="12" text-anchor="middle" font-weight="normal" class="val">MCP1700</text>
+<text x="1085" y="240" font-size="12" text-anchor="middle" font-weight="normal" class="val">-3302E</text>
+<text x="1036" y="206" font-size="10" text-anchor="end" font-weight="normal" class="pin">VIN</text>
+<text x="1134" y="206" font-size="10" text-anchor="start" font-weight="normal" class="pin">VOUT</text>
+<line x1="1040" y1="220" x2="990" y2="220" class="w"/>
+<line x1="1130" y1="220" x2="1180" y2="220" class="w"/>
+<line x1="1085" y1="250" x2="1085" y2="270" class="w"/>
+<text x="1090" y="262" font-size="10" text-anchor="start" font-weight="normal" class="pin">GND</text>
+<line x1="1085" y1="270" x2="1085" y2="280" class="w"/>
+<line x1="1073" y1="280" x2="1097" y2="280" class="p"/>
+<line x1="1078" y1="285" x2="1092" y2="285" class="p"/>
+<line x1="1082" y1="290" x2="1088" y2="290" class="p"/>
+<line x1="990" y1="220" x2="990" y2="206" class="w"/>
+<line x1="980" y1="206" x2="1000" y2="206" class="p"/>
+<text x="990" y="200" font-size="12" text-anchor="middle" font-weight="bold" class="rail">+5V</text>
+<circle cx="1015" cy="220" r="3.5" class="dot"/>
+<line x1="1015" y1="220" x2="1015" y2="246.0" class="w"/>
+<line x1="1015" y1="254.0" x2="1015" y2="280" class="w"/>
+<line x1="1002" y1="246.0" x2="1028" y2="246.0" class="p"/>
+<line x1="1002" y1="254.0" x2="1028" y2="254.0" class="p"/>
+<text x="997" y="246.0" font-size="13" text-anchor="end" font-weight="bold" class="ref">C3</text>
+<text x="997" y="261.0" font-size="12" text-anchor="end" font-weight="normal" class="val">1µF</text>
+<line x1="1015" y1="280" x2="1015" y2="290" class="w"/>
+<line x1="1003" y1="290" x2="1027" y2="290" class="p"/>
+<line x1="1008" y1="295" x2="1022" y2="295" class="p"/>
+<line x1="1012" y1="300" x2="1018" y2="300" class="p"/>
+<circle cx="1155" cy="220" r="3.5" class="dot"/>
+<line x1="1155" y1="220" x2="1155" y2="246.0" class="w"/>
+<line x1="1155" y1="254.0" x2="1155" y2="280" class="w"/>
+<line x1="1142" y1="246.0" x2="1168" y2="246.0" class="p"/>
+<line x1="1142" y1="254.0" x2="1168" y2="254.0" class="p"/>
+<text x="1173" y="246.0" font-size="13" text-anchor="start" font-weight="bold" class="ref">C4</text>
+<text x="1173" y="261.0" font-size="12" text-anchor="start" font-weight="normal" class="val">1µF</text>
+<line x1="1155" y1="280" x2="1155" y2="290" class="w"/>
+<line x1="1143" y1="290" x2="1167" y2="290" class="p"/>
+<line x1="1148" y1="295" x2="1162" y2="295" class="p"/>
+<line x1="1152" y1="300" x2="1158" y2="300" class="p"/>
+<line x1="1180" y1="220" x2="1180" y2="206" class="w"/>
+<line x1="1170" y1="206" x2="1190" y2="206" class="p"/>
+<text x="1180" y="200" font-size="12" text-anchor="middle" font-weight="bold" class="rail">+3V3</text>
+<rect x="1250" y="400" width="180" height="360" rx="4" class="blk"/>
+<text x="1340.0" y="378" font-size="14" text-anchor="middle" font-weight="bold" class="ref">U3  AITRIP 1.3" OLED</text>
+<text x="1340.0" y="393" font-size="12" text-anchor="middle" font-weight="normal" class="val">SH1106 128x64 I2C + EC11</text>
+<line x1="1226" y1="420" x2="1250" y2="420" class="w"/>
+<text x="1256" y="424" font-size="12" text-anchor="start" font-weight="normal" class="pin">VCC (3.3 V)</text>
+<line x1="1226" y1="460" x2="1250" y2="460" class="w"/>
+<text x="1256" y="464" font-size="12" text-anchor="start" font-weight="normal" class="pin">SDA</text>
+<line x1="1226" y1="500" x2="1250" y2="500" class="w"/>
+<text x="1256" y="504" font-size="12" text-anchor="start" font-weight="normal" class="pin">SCL</text>
+<line x1="1226" y1="560" x2="1250" y2="560" class="w"/>
+<text x="1256" y="564" font-size="12" text-anchor="start" font-weight="normal" class="pin">TRA (enc A)</text>
+<line x1="1226" y1="600" x2="1250" y2="600" class="w"/>
+<text x="1256" y="604" font-size="12" text-anchor="start" font-weight="normal" class="pin">TRB (enc B)</text>
+<line x1="1226" y1="640" x2="1250" y2="640" class="w"/>
+<text x="1256" y="644" font-size="12" text-anchor="start" font-weight="normal" class="pin">PSH (push)</text>
+<line x1="1226" y1="680" x2="1250" y2="680" class="w"/>
+<text x="1256" y="684" font-size="12" text-anchor="start" font-weight="normal" class="pin">CON / KEY1</text>
+<line x1="1226" y1="720" x2="1250" y2="720" class="w"/>
+<text x="1256" y="724" font-size="12" text-anchor="start" font-weight="normal" class="pin">BAK / KEY0</text>
+<line x1="1226" y1="745" x2="1250" y2="745" class="w"/>
+<text x="1256" y="749" font-size="12" text-anchor="start" font-weight="normal" class="pin">GND</text>
+<text x="1340.0" y="778" font-size="11" text-anchor="middle" font-weight="normal" class="val">keys switch to GND</text>
+<text x="1340.0" y="792" font-size="11" text-anchor="middle" font-weight="normal" class="val">I2C address 0x3C</text>
+<polyline points="1226,420 1200,420" class="w" fill="none"/>
+<line x1="1200" y1="420" x2="1200" y2="406" class="w"/>
+<line x1="1190" y1="406" x2="1210" y2="406" class="p"/>
+<text x="1200" y="400" font-size="12" text-anchor="middle" font-weight="bold" class="rail">+3V3</text>
+<polyline points="1226,745 1200,745" class="w" fill="none"/>
+<line x1="1200" y1="745" x2="1200" y2="755" class="w"/>
+<line x1="1188" y1="755" x2="1212" y2="755" class="p"/>
+<line x1="1193" y1="760" x2="1207" y2="760" class="p"/>
+<line x1="1197" y1="765" x2="1203" y2="765" class="p"/>
+<polyline points="894,460 1226,460" class="w" fill="none"/>
+<polyline points="894,500 1226,500" class="w" fill="none"/>
+<polyline points="894,560 1226,560" class="w" fill="none"/>
+<polyline points="894,600 1226,600" class="w" fill="none"/>
+<polyline points="894,640 1226,640" class="w" fill="none"/>
+<polyline points="894,680 1226,680" class="w" fill="none"/>
+<polyline points="894,720 1226,720" class="w" fill="none"/>
+<text x="1140" y="455" font-size="11" text-anchor="middle" font-weight="normal" class="net">SDA</text>
+<text x="1140" y="495" font-size="11" text-anchor="middle" font-weight="normal" class="net">SCL</text>
+<text x="1140" y="555" font-size="11" text-anchor="middle" font-weight="normal" class="net">ENC_A</text>
+<text x="1140" y="595" font-size="11" text-anchor="middle" font-weight="normal" class="net">ENC_B</text>
+<text x="1140" y="635" font-size="11" text-anchor="middle" font-weight="normal" class="net">ENC_SW</text>
+<text x="1140" y="675" font-size="11" text-anchor="middle" font-weight="normal" class="net">KEY_CON (opt.)</text>
+<text x="1140" y="715" font-size="11" text-anchor="middle" font-weight="normal" class="net">KEY_BAK (opt.)</text>
+<circle cx="990" cy="460" r="3.5" class="dot"/>
+<line x1="990" y1="390" x2="990" y2="400" class="w"/>
+<line x1="990" y1="440" x2="990" y2="460" class="w"/>
+<polyline points="990,400.0 984,403.3 996,410.0 984,416.7 996,423.3 984,430.0 996,436.7 990,440.0" class="w" fill="none"/>
+<text x="978" y="416" font-size="13" text-anchor="end" font-weight="bold" class="ref">R1</text>
+<text x="978" y="431" font-size="12" text-anchor="end" font-weight="normal" class="val">4.7k</text>
+<line x1="990" y1="390" x2="990" y2="376" class="w"/>
+<line x1="980" y1="376" x2="1000" y2="376" class="p"/>
+<text x="990" y="370" font-size="12" text-anchor="middle" font-weight="bold" class="rail">+3V3</text>
+<circle cx="1060" cy="500" r="3.5" class="dot"/>
+<line x1="1060" y1="390" x2="1060" y2="400" class="w"/>
+<path d="M1060,440 L1060,454 A6,6 0 0,1 1060,466 L1060,500" class="w" fill="none"/>
+<polyline points="1060,400.0 1054,403.3 1066,410.0 1054,416.7 1066,423.3 1054,430.0 1066,436.7 1060,440.0" class="w" fill="none"/>
+<text x="1072" y="416" font-size="13" text-anchor="start" font-weight="bold" class="ref">R2</text>
+<text x="1072" y="431" font-size="12" text-anchor="start" font-weight="normal" class="val">4.7k</text>
+<line x1="1060" y1="390" x2="1060" y2="376" class="w"/>
+<line x1="1050" y1="376" x2="1070" y2="376" class="p"/>
+<text x="1060" y="370" font-size="12" text-anchor="middle" font-weight="bold" class="rail">+3V3</text>
+<rect x="30" y="850" width="640" height="106" rx="4" class="note"/>
+<text x="40" y="868" font-size="13" text-anchor="start" font-weight="bold" class="ref">NOTES</text>
+<text x="40" y="886" font-size="12" text-anchor="start" font-weight="normal" class="val">1. J1 pin functions come from field reports on Cloudline EC fans. Measure your fan first:</text>
+<text x="40" y="902" font-size="12" text-anchor="start" font-weight="normal" class="val">   docs/VERIFICATION.md. Fit R5 only if the PWM line does not idle near +10 V on its own.</text>
+<text x="40" y="918" font-size="12" text-anchor="start" font-weight="normal" class="val">2. Q1/Q2 TO-92 pinouts: 2N7000 = S-G-D, 2N3904 = E-B-C (flat face towards you, legs down).</text>
+<text x="40" y="934" font-size="12" text-anchor="start" font-weight="normal" class="val">3. U3 pin ORDER differs between batches - wire by the printed labels, not by position.</text>
+<text x="40" y="950" font-size="12" text-anchor="start" font-weight="normal" class="val">4. All resistors 1/4 W 5 %. C1 electrolytic &gt;= 25 V. DNP = do not populate by default.</text>
+<rect x="940" y="850" width="530" height="130" rx="4" class="blk"/>
+<text x="954" y="876" font-size="17" text-anchor="start" font-weight="bold" class="ref">Cloudline AI-CLS6 fan controller</text>
+<text x="954" y="896" font-size="13" text-anchor="start" font-weight="normal" class="val">Arduino Nano + AITRIP 1.3" OLED / EC11 encoder</text>
+<text x="954" y="922" font-size="12" text-anchor="start" font-weight="normal" class="val">Sheet 1/1  ·  Rev A  ·  2026-10-28</text>
+<text x="954" y="940" font-size="12" text-anchor="start" font-weight="normal" class="val">Firmware: firmware/cloudline_controller</text>
+<text x="954" y="958" font-size="12" text-anchor="start" font-weight="normal" class="val">Generated by tools/gen_schematic.py</text>
+<text x="1456" y="970" font-size="10" text-anchor="end" font-weight="normal" class="val">github.com/seesharp15/cloudline-fan-controller</text>
+</svg>
