@@ -41,8 +41,8 @@ reject() { # name, text
 
 mkdir -p "$OUT"
 echo "building..."
-build normal "-DTEST_STATUS_EVERY_MS=1000"
-build hang "-DTEST_STATUS_EVERY_MS=1000 -DTEST_HANG_AFTER_MS=3000"
+build normal "-DTEST_STATUS_EVERY_MS=1000 -DTEST_FORCE_DISPLAY"
+build hang "-DTEST_STATUS_EVERY_MS=1000 -DTEST_FORCE_DISPLAY -DTEST_HANG_AFTER_MS=3000"
 build hangcli "-DTEST_STATUS_EVERY_MS=1000 -DTEST_HANG_CLI_AFTER_MS=3000"
 echo "running (simulated time is slower than real time)..."
 run normal 20

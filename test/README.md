@@ -21,6 +21,7 @@ Simulation scenarios (one process per power-up):
 | `powercycle` | a new power-up keeps nothing (OFF, default setting, max RPM unknown) |
 | `serial` | every console command, invalid input, over-long lines |
 | `oledaddr` | display at 0x3D instead of 0x3C: the console says so, nothing hangs |
+| `nodisplay` | no display at power-up, display connected later, bus failure mid-run: fan control keeps working |
 | `diagboot` | knob held at power-up opens diagnostics without toggling the fan |
 | `wrap` | running across the 32-bit `millis()` rollover (49.7 days) |
 | `calfail` | calibration with no tach signal |

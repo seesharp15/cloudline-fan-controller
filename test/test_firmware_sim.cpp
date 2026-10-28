@@ -9,6 +9,7 @@
 //   test_firmware_sim powercycle              what a fresh power-up keeps
 //   test_firmware_sim serial                  serial console commands
 //   test_firmware_sim oledaddr                display at 0x3D: console report
+//   test_firmware_sim nodisplay               no display / I2C failure: fan control continues
 //   test_firmware_sim diagboot                knob held at power-up
 //   test_firmware_sim wrap                    across the millis() rollover
 //   test_firmware_sim calfail [screenshot-dir] calibration with no tach
@@ -376,6 +377,39 @@ static void oledaddr() {
   CHECK(fanStopped());
 }
 
+static void nodisplay() {
+  // No display answers: setup() completes, nothing is sent to the OLED, and
+  // the controller is fully usable without it.
+  checkPowerUpState();
+  CHECK(!oled.begun);
+  CHECK(serialHas(sim::takeSerial(), "! no I2C device at 0x3C"));
+  sim::press(PIN_ENC_SW, 100);
+  CHECK(gCtl.on());
+  sim::turn(10, 60);
+  CHECK_EQ(gCtl.setting(), 60);
+  CHECK_NEAR(fanLineDuty(), 600, 1);
+  sim::advance(3000);
+  CHECK_EQ(oled.frames, 0);
+  // The display appears later: picked up at the next retry (5 s).
+  Wire.present[0x3C] = true;
+  sim::advance(5000);
+  CHECK(oled.begun);
+  CHECK(oled.frames > 0);
+  CHECK(oled.last.hasText("FAN ON"));
+  // The bus then fails (I2C timeout): drawing stops after the current page,
+  // the console reports it, and fan control carries on.
+  Wire.timeoutFlag = true;
+  Wire.present[0x3C] = false;
+  sim::advance(300);
+  CHECK(serialHas(sim::takeSerial(), "display stopped answering"));
+  const unsigned frames = oled.frames;
+  sim::advance(2000);
+  CHECK_EQ(oled.frames, frames);
+  sim::press(PIN_ENC_SW, 100);
+  CHECK(!gCtl.on());
+  CHECK(fanStopped());
+}
+
 static void diagboot() {
   // Knob held while powering up: diagnostics page, and that press neither
   // toggles the fan nor starts a calibration.
@@ -437,7 +471,7 @@ static void calfail() {
 
 int main(int argc, char **argv) {
   if (argc < 2) {
-    fprintf(stderr, "usage: %s boot1|powercycle|serial|oledaddr|diagboot|wrap|calfail [shot-dir]\n", argv[0]);
+    fprintf(stderr, "usage: %s boot1|powercycle|serial|oledaddr|nodisplay|diagboot|wrap|calfail [shot-dir]\n", argv[0]);
     return 2;
   }
   const char *scenario = argv[1];
@@ -458,6 +492,11 @@ int main(int argc, char **argv) {
     Wire.present[0x3D] = true;
     setup();
     oledaddr();
+  } else if (!strcmp(scenario, "nodisplay")) {
+    sim::reset();
+    Wire.present[0x3C] = false;
+    setup();
+    nodisplay();
   } else if (!strcmp(scenario, "diagboot")) {
     sim::reset();
     sim::hold(PIN_ENC_SW);

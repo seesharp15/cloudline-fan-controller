@@ -202,6 +202,12 @@ fan::GateDrive gGate = {fan::GateDrive::ConstantHigh, 0};
 
 fan::Mode gLastMode = fan::Mode::Normal;
 bool gDirty = true;
+// The display is only driven while it answers on I2C. If it is missing or
+// the bus fails, the controller keeps running without it (knob, button, fan
+// and serial still work) and probes again every kDisplayRetryMs.
+bool gDisplayOk = false;
+uint32_t gDisplayProbeMs = 0;
+const uint32_t kDisplayRetryMs = 5000;
 uint32_t gLastDrawMs = 0;
 
 char gLine[24];
@@ -438,7 +444,60 @@ void reportModeChange() {
 // ---------------------------------------------------------------------------
 // Display
 // ---------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
+// I2C check: report on the console whether the display answers, and at
+// which address. Helps with a blank screen (README troubleshooting).
+// ---------------------------------------------------------------------------
+bool i2cAcks(uint8_t addr) {
+  Wire.beginTransmission(addr);
+  return Wire.endTransmission() == 0;
+}
+
+void reportOledPresence() {
+  if (i2cAcks(OLED_I2C_ADDRESS)) {
+    Serial.print(F("OLED answers at 0x"));
+    Serial.println(OLED_I2C_ADDRESS, HEX);
+    return;
+  }
+  Serial.print(F("! no I2C device at 0x"));
+  Serial.println(OLED_I2C_ADDRESS, HEX);
+  const uint8_t other = OLED_I2C_ADDRESS == 0x3C ? 0x3D : 0x3C;
+  if (i2cAcks(other)) {
+    Serial.print(F("! but a device answers at 0x"));
+    Serial.print(other, HEX);
+    Serial.println(F(": set OLED_I2C_ADDRESS in config.h"));
+  }
+}
+
+// After an I2C timeout, stop driving the display until it answers again.
+bool displayFailed() {
+  if (!Wire.getWireTimeoutFlag()) return false;
+  Wire.clearWireTimeoutFlag();
+  gDisplayOk = false;
+  gDisplayProbeMs = millis();
+  Serial.println(F("! display stopped answering (I2C timeout); fan control continues"));
+  return true;
+}
+
+// Bring the display up if it answers. A healthy display needs one begin()
+// (~170 short transfers); the probe first makes sure the bus works, so a
+// missing or shorted display never stalls setup() or loop().
+void startDisplay() {
+  gDisplayProbeMs = millis();
+#ifndef TEST_FORCE_DISPLAY  // simavr test: draw even with no display on the bus
+  if (!i2cAcks(OLED_I2C_ADDRESS)) return;
+#endif
+  Wire.clearWireTimeoutFlag();
+  oled.begin();
+  gDisplayOk = !displayFailed();
+  gDirty = true;
+}
+
 void updateDisplay(uint32_t now) {
+  if (!gDisplayOk) {
+    if (now - gDisplayProbeMs >= kDisplayRetryMs) startDisplay();
+    if (!gDisplayOk) return;
+  }
   const uint32_t since = now - gLastDrawMs;
   if (!(gDirty && since >= DISPLAY_MIN_GAP_MS) && since < DISPLAY_REFRESH_MS) return;
   gDirty = false;
@@ -492,40 +551,24 @@ void updateDisplay(uint32_t now) {
   s.inverted = FAN_PWM_INVERTED != 0;
 
 #if OLED_PAGE_BUFFER
+  // Check the I2C timeout after every page, so a bus that fails mid-frame
+  // costs at most one page of timeouts (8 transfers x 25 ms), not a frame.
   oled.firstPage();
-  do {
+  for (;;) {
     ui::draw(oled, s);
-  } while (oled.nextPage());
+    const bool more = oled.nextPage();
+    if (displayFailed()) return;
+    if (!more) break;
+#if WATCHDOG_ENABLE
+    wdt_reset();
+#endif
+  }
 #else
   oled.clearBuffer();
   ui::draw(oled, s);
   oled.sendBuffer();
+  displayFailed();
 #endif
-}
-
-// ---------------------------------------------------------------------------
-// I2C check: report on the console whether the display answers, and at
-// which address. Helps with a blank screen (README troubleshooting).
-// ---------------------------------------------------------------------------
-bool i2cAcks(uint8_t addr) {
-  Wire.beginTransmission(addr);
-  return Wire.endTransmission() == 0;
-}
-
-void reportOledPresence() {
-  if (i2cAcks(OLED_I2C_ADDRESS)) {
-    Serial.print(F("OLED answers at 0x"));
-    Serial.println(OLED_I2C_ADDRESS, HEX);
-    return;
-  }
-  Serial.print(F("! no I2C device at 0x"));
-  Serial.println(OLED_I2C_ADDRESS, HEX);
-  const uint8_t other = OLED_I2C_ADDRESS == 0x3C ? 0x3D : 0x3C;
-  if (i2cAcks(other)) {
-    Serial.print(F("! but a device answers at 0x"));
-    Serial.print(other, HEX);
-    Serial.println(F(": set OLED_I2C_ADDRESS in config.h"));
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -572,7 +615,7 @@ void setup() {
   reportOledPresence();
   oled.setI2CAddress(OLED_I2C_ADDRESS << 1);  // U8g2 expects the 8-bit address
   oled.setBusClock(OLED_I2C_CLOCK_HZ);
-  oled.begin();
+  startDisplay();
 #if WATCHDOG_ENABLE
   wdt_reset();
 #endif

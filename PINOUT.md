@@ -22,7 +22,7 @@ all four documents agree.
 |---|---|---|---|
 | **+10V_FAN** | ~10 V DC (measured on your fan in check M1) | Fan, J1 pin 4 | F1 |
 | **+10V_P** (protected) | ~9.6 V | After F1 (PTC, ~0.1 V) and D1 (Schottky, ~0.3 V) | Nano **VIN**, D2, C1, C2, R5 (only if fitted) |
-| **+5V** | 5.0 V | Nano on-board regulator (VIN → 5 V) | Nano, U2 input, R4 (Q1 gate pull-up), R6 (tach pull-up), D3 clamp, U4 HV |
+| **+5V** | 5.0 V | Nano on-board regulator (VIN → 5 V) | Nano, U2 input, R4 (pull-up at the D9 end of R3), R6 (tach pull-up), D3 clamp, U4 HV |
 | **+3V3** | 3.3 V | U2 MCP1700-3302E (from +5V) | OLED module VCC, R1/R2 I²C pull-ups, U4 LV |
 | **GND** | 0 V | Fan, J1 pin 3 | Everything. One common ground. |
 
@@ -77,7 +77,7 @@ numbering runs back to pin 30 (VIN). The labels are printed on the board.
 | 4 | GND | Ground | GND | — | — |
 | 27 | **+5V** | Power out (on-board regulator) | U2 VIN, R4, R6, D3 cathode, U4 HV | — | — |
 | 17 | 3V3 | **not used** | — | — | — |
-| 5 | **D2** / INT0 | Tach input | R7, R6, D3 anode, D4 cathode, C5 | `PIN_TACH 2` | `INPUT`, falling-edge interrupt |
+| 5 | **D2** / INT0 | Tach input | R7, R6, D3 anode, D4 cathode, C5 | `PIN_TACH 2` | `INPUT_PULLUP` (in parallel with R6), falling-edge interrupt |
 | 6 | **D3** / PCINT19 | Encoder A | U3 **TRA** | `PIN_ENC_A 3` | `INPUT_PULLUP`, pin-change interrupt |
 | 7 | **D4** / PCINT20 | Encoder B | U3 **TRB** | `PIN_ENC_B 4` | `INPUT_PULLUP`, pin-change interrupt |
 | 8 | **D5** | Encoder push switch | U3 **PSH** | `PIN_ENC_SW 5` | `INPUT_PULLUP`, polled, active LOW |
@@ -160,7 +160,7 @@ U4, so the display only ever sees 3.3 V and the Nano 5 V.
 
 | Ref | Value | Between | Purpose |
 |---|---|---|---|
-| R1 | 2.2 kΩ | U3 SDA / U4 LV1 ↔ +3V3 | I²C pull-up, display side (low enough for 400 kHz rise times) |
+| R1 | 2.2 kΩ | U3 SDA / U4 LV1 ↔ +3V3 | I²C pull-up, display side (low enough for 400 kHz rise times). Leave R1/R2 out if check M7 finds ≤ 4.7 kΩ pull-ups on the module. |
 | R2 | 2.2 kΩ | U3 SCL / U4 LV2 ↔ +3V3 | I²C pull-up, display side |
 | R3 | 220 Ω | D9 ↔ Q1 gate | Limits D9's peak current into the gate capacitance; damps ringing |
 | R4 | 10 kΩ | D9 end of R3 ↔ +5V | Holds Q1 on through R3 (fan **OFF**) while D9 floats during reset/bootloader |

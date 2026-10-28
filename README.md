@@ -179,8 +179,8 @@ part with the same value and rating works; the part numbers are examples.
    few bytes depending on IDE and library versions:
 
    ```
-   Sketch uses 25976 bytes (84%) of program storage space. Maximum is 30720 bytes.
-   Global variables use 1282 bytes (62%) of dynamic memory, leaving 766 bytes for local variables. Maximum is 2048 bytes.
+   Sketch uses 26236 bytes (85%) of program storage space. Maximum is 30720 bytes.
+   Global variables use 1287 bytes (62%) of dynamic memory, leaving 761 bytes for local variables. Maximum is 2048 bytes.
    ```
 
    ("Old Bootloader" shows the same numbers.) Don't upload yet: that is
@@ -223,7 +223,7 @@ Record every reading in a table like the one below; you'll need them later.
 | **M2 Supply under load** | Hold a **220 Ω 1 W** resistor across pins 4 and 3 for 5 s and measure pins 4–3 again | Within **0.5 V** of M1 (45 mA load, more than the controller draws) | Drop of more than 1 V: the port can't power the controller. Power the Nano from a separate 9–12 V adapter (FAQ) and leave J1 pin 4 unconnected. |
 | **M3 Speed line pull-up** | DC volts, pin 3 (black) to pin 2 (red), nothing else connected | **About the same as M1** (an internal pull-up to the fan's supply) | **Below 1 V or drifting:** the line floats. Fit R5 (4.7 kΩ). **Above M1 + 0.5 V:** don't connect. |
 | **M3b Pull-up strength** | Connect a **10 kΩ** resistor from pin 2 to pin 3 and measure pins 2–3 | **Between 1 V and 0.9 × M1** (the internal pull-up is between about 1.1 kΩ and 100 kΩ). Note the value: pull-up R ≈ 10 kΩ × (M3 ÷ reading − 1). While connected, watch the fan for M4b. | **Below 0.1 V:** the pull-up is very weak (> 1 MΩ); fit R5. **Above 0.9 × M1:** pin 2 is a stiff source, not a pulled-up control line. Don't do M4; recheck the numbering. |
-| **M4b PWM or analogue input?** | (During M3b.) The 10 kΩ holds the line at the M3b voltage, part-way between 0 and M1. Wait 15 s and listen. | Either result is fine; note which. **Fan settles at an in-between speed:** the input reacts to the average voltage (analogue-style); the 4 kHz PWM's average does the same job. **Fan runs at full speed (or stops):** it is a switching (logic) input; PWM is what it expects. | If later (bench B4) the speed hunts or surges at mid settings, the input is analogue without filtering: add 10 kΩ in series between Q1's drain and J1 pin 2 and 10 µF from J1 pin 2 to GND, and re-test. |
+| **M4b PWM or analogue input?** | Take the pull-up value you worked out in M3b and connect a resistor of about that value (nearest standard value) from pin 2 to pin 3. The line now sits near **half of M1** (measure it). Wait 15 s and listen. | Either result is fine; note which. **Fan settles at a clearly in-between speed:** the input reacts to the average voltage (analogue-style); the 4 kHz PWM's average does the same job. **Fan runs at full speed or stops:** it is a switching (logic) input, which is what PWM expects. | If later (bench B4) the speed hunts or surges at mid settings, the input is analogue without filtering. Add an RC filter: a series resistor between Q1's drain and J1 pin 2 of **at most 1/20 of the M3b pull-up** (e.g. 470 Ω for a 10 kΩ pull-up), and a capacitor from J1 pin 2 to GND so that the series R × C ≥ 2.5 ms (e.g. 10 µF with 470 Ω). A larger series resistor would stop 0 % / OFF from pulling the line low enough to stop the fan. Re-run M4 and bench B4, B7. |
 | **M4 Polarity and stop** | Connect pin 2 to pin 3 through a **100 Ω** resistor. Wait 15 s. Remove it. Wait 15 s. | Linked: the fan **slows down and stops** (it may coast for several seconds). Released: it **speeds up to full**. | **Opposite** (linked = full, released = stop): set `FAN_PWM_INVERTED 0` in `config.h` **and** connect R4 (at the D9 end of R3) to GND instead of +5V. **Linked = slow but never stops:** this fan does not stop at 0 %; OFF will mean "minimum speed" ([FAQ](FAQ.md#does-0-or-off-actually-stop-the-fan)). **No change at all:** pin 2 isn't the speed line; recheck the numbering. |
 | **M5 Tach pin** | Fan at full speed (pin 2 released). DC volts pin 3 (black) to pin 1 (red). If your meter has Hz, measure that too. Then connect a **10 kΩ** resistor from pin 1 to pin 4 and repeat. Then stop the fan (100 Ω link on pin 2) and repeat. | A tach shows up as a **frequency of roughly 10–200 Hz while running** (or a steady DC reading between 2 and 8 V that changes when the fan stops), at least with the 10 kΩ pull-up connected. Write down the frequency at full speed. | **Steady 0 V, no frequency in any case:** no tach on this port. The controller still works; ACT shows `--%`. **Steady voltage equal to M1 that doesn't change:** not a tach (another supply pin); it is still safe to connect (R7 limits the current) but there will be no RPM. **Above 12 V:** don't connect pin 1; leave R7 unconnected at J1. |
 | **M5b Tach type and pulses per revolution** (optional) | From M5: a frequency **without** the 10 kΩ pull-up means a **push-pull** output (note its high voltage: DC reading ≈ half of it); a frequency only **with** the pull-up means **open collector**. For pulses per revolution you need the true RPM: an optical (laser) tachometer on a piece of reflective tape on the impeller, or a phone slow-motion video of a marked blade at a low setting (count turns per second). PPR = frequency × 60 ÷ RPM. | Usually 1, 2 or 4. Put it in `TACH_PULSES_PER_REV`. | If you can't measure it, leave 2: only the RPM number is affected, not the ACT %. |
@@ -232,10 +232,14 @@ Record every reading in a table like the one below; you'll need them later.
 **M7 OLED module** (no power needed). With the module unpowered: resistance
 VCC to GND **above 1 kΩ**; SDA to VCC and SCL to VCC: either **OL** (no
 pull-ups on the module) or **2–10 kΩ** (pull-ups fitted), both fine; TRA,
-TRB, PSH to GND: **OL**, and **0 Ω while the knob is turned/pressed**
-through a click (they are plain switches to GND). If a TRA/TRB/PSH pin reads
-a fixed resistance to VCC instead, the module has pull-ups on the encoder
-too, which is also fine. The display driver (SH1106 vs SSD1306) and the I²C
+TRB to GND: **toggles between OL and about 0 Ω** as you turn the knob slowly
+(at rest either can be open or closed, depending on the encoder type); PSH to
+GND: **OL**, and **0 Ω while pressed**. They are plain switches to GND. If a
+pin reads a fixed resistance to VCC instead, the module has its own pull-ups
+on the encoder, which is also fine. If SDA/SCL read **4.7 kΩ or less** to
+VCC (strong pull-ups already on the module), leave **R1/R2 out** in step 4:
+with them as well, the display-side pull-ups would sink more than the 3 mA
+I²C allows. The display driver (SH1106 vs SSD1306) and the I²C
 address can't be measured with a meter: build step 5 checks them (the
 serial console reports which address answers).
 
@@ -326,7 +330,8 @@ nothing holds its speed line low. Unplug J1 afterwards.
    (+3V3), **GND** to GND, **HV1** to socket **A4** (pin 23), **HV2** to
    socket **A5** (pin 24). U4 lets the 5 V Nano and the 3.3 V display talk
    without either seeing the other's voltage.
-3. Solder **R1** (U2 VOUT to U4 **LV1**) and **R2** (U2 VOUT to U4 **LV2**).
+3. Solder **R1** (U2 VOUT to U4 **LV1**) and **R2** (U2 VOUT to U4 **LV2**),
+   unless check M7 found 4.7 kΩ or less pull-ups on the module.
 4. Run the module wires, **matching the labels printed on your module**
    (the pin order varies between batches):
 
@@ -519,7 +524,7 @@ the fan is plugged in ([FAQ](FAQ.md#can-i-power-the-nano-from-usb-and-the-fan-at
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| **Blank display**, LED L works | No 3.3 V at the module; SDA/SCL swapped or not connected; U4 not powered; module at address 0x3D; wrong module pin order | Open the Serial Monitor: it says whether a display answers and at which address (`OLED answers at 0x3C`, or `! but a device answers at 0x3D`). Measure module VCC (3.25–3.35 V) and U4 HV (5 V) / LV (3.3 V). Check SDA/SCL by label, not position. |
+| **Blank display**, LED L works (the controller keeps working without a display and looks for it again every 5 s) | No 3.3 V at the module; SDA/SCL swapped or not connected; U4 not powered; module at address 0x3D; wrong module pin order | Open the Serial Monitor: it says whether a display answers and at which address (`OLED answers at 0x3C`, or `! but a device answers at 0x3D`). Measure module VCC (3.25–3.35 V) and U4 HV (5 V) / LV (3.3 V). Check SDA/SCL by label, not position. |
 | **Blank display**, nothing works | No power: F1 tripped, D1 reversed, J1 wires swapped | Measure VIN (Step 3 values). Unplug, let F1 cool for a minute, look for a short. |
 | **Garbled display** (random dots, shifted picture, a column of noise at one edge) | Your board has an SSD1306, not an SH1106 | Set `OLED_SSD1306 1` in `config.h` and upload. |
 | **Garbled display** that changes when the fan starts | Noise or a poor ground on the I²C wires | Keep the OLED wires short (< 30 cm) and away from the fan cable; check the GND wire to the module. |

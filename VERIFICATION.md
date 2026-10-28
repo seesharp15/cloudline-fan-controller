@@ -55,7 +55,7 @@ scenario, "AVR" = `test/avr/run_simavr.sh`, bench IDs = [BENCH_TEST.md](BENCH_TE
 |---|---|---|---|---|---|
 | REQ-1 | Encoder controls fan speed | `fan_logic.h` `QuadratureDecoder`, `applyDetents`, `Controller::onDetents`; `app.cpp` `ISR(PCINT2_vect)`, `handleEncoder` | U3 TRA/TRB → D3/D4 | Unit `decoder_*`, `detents_*`; Sim `boot1`; bench A6, B4 | PASS (sim) |
 | REQ-2 | Encoder button toggles on/off | `fan_logic.h` `Button`, `Controller::onKnob`; `app.cpp` `handleButtons` | U3 PSH → D5 | Unit `button_*`, `controller_on_off_keeps_setting`; Sim `boot1` (incl. bounce); bench A8, B3 | PASS (sim) |
-| REQ-3 | Fan off at power-up | `Controller` (`on_ = false`); `app.cpp` `setupFanPwm()` (gate HIGH before OUTPUT), `setup()` | **R4** 10 kΩ gate pull-up, Q1 | Unit `controller_power_up_state`; Sim `checkPowerUpState` in every scenario; AVR `normal` (duty 0.0 %); bench A4, A5, B1, B2 | PASS (sim); HW PENDING (fan polarity, M4) |
+| REQ-3 | Fan off at power-up | `Controller` (`on_ = false`); `app.cpp` `setupFanPwm()` (gate HIGH before OUTPUT), `setup()` | **R4** 10 kΩ, D9 end of R3 → +5V; Q1 | Unit `controller_power_up_state`; Sim `checkPowerUpState` in every scenario; AVR `normal` (duty 0.0 %); bench A4, A5, B1, B2 | PASS (sim); HW PENDING (fan polarity, M4) |
 | REQ-4 | Setting persists while powered | `Controller::setting_` (RAM); OFF does not change it | — | Unit `controller_on_off_keeps_setting`; Sim `boot1`, `powercycle`; bench A9, B11 | PASS (sim) |
 | REQ-5 | Display: setting and tach speed; on/off status, bars, percentages | `display_ui.h` `drawMain`; `app.cpp` `updateDisplay` | U3 SDA/SCL via U4 | Sim `boot1` text and layout checks on every frame; screenshots `docs/img/`; bench A10, A14, B9 | PASS (sim); ACT % needs a calibration first; tach HW PENDING (ASM-6) |
 | REQ-6 | Arduino and OLED powered from the fan's 10 V, with conditioning | — | F1, D1, D2, C1, C2 → VIN; U2, C3, C4 → +3V3 | Calculations §2.1–2.5; bench A1–A3, A13, B1, B10, B13 | PASS (calc); HW PENDING (ASM-2) |
@@ -100,9 +100,9 @@ scenario, "AVR" = `test/avr/run_simavr.sh`, bench IDs = [BENCH_TEST.md](BENCH_TE
 | ID | Issue | Code | Schematic | Tests / bench | Status |
 |---|---|---|---|---|---|
 | DES-1 | Interrupt allocation | `app.cpp` header comment, `onTachPulse` (INT0), `ISR(PCINT2_vect)`; compile-time `#error` checks | D2 tach, D3/D4 encoder | Sim checks INT0 attached, INT1 unused, PCMSK2 = D3/D4; PINOUT §3 | PASS |
-| DES-2 | Boot-time fan state, hardware hold-off | `setupFanPwm()` | **R4** 10 kΩ Q1 gate → +5V | Sim `outWhenMadeOutput == HIGH`; calc §2.6; bench A4, A5 | PASS (sim/calc); HW PENDING |
+| DES-2 | Boot-time fan state, hardware hold-off | `setupFanPwm()` | **R4** 10 kΩ, D9 end of R3 → +5V | Sim `outWhenMadeOutput == HIGH`; calc §2.6; bench A4, A5 | PASS (sim/calc); HW PENDING |
 | DES-3 | PWM level shifting into 10 V input; inversion in code | `fan::gateDriveFor`, `FAN_PWM_INVERTED` | **Q1** 2N7000, **R3** 220 Ω, R4, R5 (DNP) | Unit `gate_drive_*`, `polarity_inversion`; Sim duty checks; bench A7 | PASS (sim/calc); HW PENDING (M4) |
-| DES-4 | Tach pulled up to 5 V, protected | `onTachPulse` (FALLING); D2 `INPUT_PULLUP` | **R6** 10 kΩ → +5V, **R7** 1 kΩ, **D3/D4** BAT85, **C5** 10 nF | Calc §2.7; bench A10, A11 | PASS (calc); HW PENDING |
+| DES-4 | Tach pulled up to 5 V, protected | `onTachPulse` (FALLING); D2 `INPUT_PULLUP` | **R6** 10 kΩ → +5V, **R7** 1 kΩ, **D3/D4** BAT85, **C5** 10 nF | Calc §2.7; README step 6 check (tach node 4.5–5.1 V, 0.45 V when shorted); bench A10, A11 | PASS (calc); HW PENDING |
 | DES-5 | Power: VIN regulator vs buck, dissipation at 10 V, reverse polarity, bulk/decoupling, transients, brown-out | — | F1, D1, D2, C1, C2 | Calc §2.2–2.5; FAQ; bench A1–A3, A13, B10 | PASS (calc); HW PENDING |
 | DES-6 | Encoder: state machine, no skip/reverse, step and range | `QuadratureDecoder`, `applyDetents`, `ENC_*`, `SETTING_*` in `config.h` | — | Unit `decoder_*` (bounce, rapid reversal, half-step), `detents_at_limits`; Sim bounce | PASS (sim) |
 | DES-7 | Button: debounced, one toggle per press | `fan::Button` (25 ms) | — | Unit `button_bounce_gives_one_press`; Sim bounce block in `boot1`; bench A8 | PASS (sim) |
@@ -269,15 +269,23 @@ BOB-12009: one BSS138 per channel, 10 kΩ pull-ups to HV and LV):
 | Side | Pull-up | High level | Low level | Rise time (30→70 %) |
 |---|---|---|---|---|
 | Nano (HV, 5 V) | U4 10 kΩ ‖ AVR internal 20–50 kΩ ≈ 7 kΩ | 5 V ≥ 3.5 V ✓ | via BSS138 from the LV side, < 0.4 V | short on-board wires, ~20 pF: 0.85 × 7 kΩ × 20 pF ≈ **120 ns** |
-| Display (LV, 3.3 V) | R1/R2 2.2 kΩ ‖ U4 10 kΩ ≈ 1.8 kΩ (‖ module pull-ups, if any) | 3.3 V | SH1106 or BSS138, sink ≤ 1.9 mA (I²C limit 3 mA) | module wires, ~100 pF: 0.85 × 1.8 kΩ × 100 pF ≈ **150 ns** |
+| Display (LV, 3.3 V) | R1/R2 2.2 kΩ ‖ U4 10 kΩ ≈ 1.8 kΩ (‖ module pull-ups, if any) | 3.3 V | SH1106 or BSS138; the device pulling low also sinks the 5 V side's pull-up current through the BSS138: 3.3 V / 1.8 kΩ + 5 V / 7 kΩ ≈ **2.5 mA** (I²C limit 3 mA). With extra ≤ 4.7 kΩ pull-ups on the module it would be ≈ 3.2 mA, so R1/R2 are left out in that case (README M7). | module wires, ~100 pF: 0.85 × 1.8 kΩ × 100 pF ≈ **150 ns** |
 
 Both are below the 300 ns fast-mode limit at the 400 kHz clock. (Rev A had
 4.7 kΩ to 3.3 V directly on the Nano pins: ≈ 400 ns and a 3.3 V high
 below V<sub>IH</sub>; review finding 6 and self-found S-1.)
 
 The `Wire` timeout is enabled in `setup()` (25 ms, with TWI reset), so a
-stuck bus cannot block. Its reset re-enables the AVR's internal 5 V
-pull-ups, which is harmless on U4's 5 V side.
+single transfer can't block. A stuck bus would still make a whole display
+operation slow (U8g2's `begin()` is ~165 transfers ≈ 4 s of timeouts, more
+than the 2 s watchdog), so the firmware drives the display **only while it
+answers**: `startDisplay()` probes the address first (one 25 ms timeout at
+most) and skips `begin()` if there's no answer; each page of a frame is
+followed by a timeout check that stops drawing after at most one page
+(8 transfers ≈ 200 ms); the display is probed again every 5 s. The timeout's
+TWI reset re-enables the AVR's internal 5 V pull-ups, which is harmless on
+U4's 5 V side. Sim scenario `nodisplay` covers a missing display, a late
+display and a mid-run bus failure.
 
 Encoder/keys: switches to GND with the AVR's 5 V internal pull-ups; assumed
 not to connect to the SH1106 (README check M7).
@@ -287,7 +295,9 @@ not to connect to the SH1106 (README check M7).
 - Display: page buffer, 4 passes per frame, 1 KB at 400 kHz ≈ 25–30 ms per
   frame (estimate). 10 Hz refresh ≈ 30 % of the time. Encoder and tach are
   interrupt-driven, so no edges are lost during transfers.
-- Worst `loop()` pass ≈ one frame (< 50 ms) ≪ 2 s watchdog.
+- Worst `loop()` pass, display working: ≈ one frame (< 50 ms). Display
+  failing: one page of timeouts (≈ 200 ms) once, then 25 ms probes every
+  5 s. Both ≪ 2 s watchdog.
 
 ### 2.10 Logic level summary
 
@@ -304,10 +314,10 @@ not to connect to the SH1106 (README check M7).
 
 | | Used | Limit | Headroom |
 |---|---|---|---|
-| Flash | 25 976 B | 30 720 B | 4 744 B (15 %) |
-| Static RAM | 1 282 B | 2 048 B | 766 B for stack |
+| Flash | 26 236 B | 30 720 B | 4 484 B (15 %) |
+| Static RAM | 1 287 B | 2 048 B | 761 B for stack |
 | Stack, estimated | ≈ 360 B | | deepest path: `loop` 11 + `updateDisplay` 56 + `drawDiagnostics` 67 + `vfprintf` + U8g2 + one ISR frame (`-fstack-usage`) |
-| Stack, measured | min. 563 B never touched | | simavr run, main screen (§8.3) |
+| Stack, measured | min. 561 B never touched | | simavr run with the display code forced on, main screen (§8.3) |
 
 The full 1 KB frame buffer was tried first and **does not fit** (2 044 B
 static, 4 B left): the firmware uses the 256-byte page buffer
@@ -355,7 +365,7 @@ PINOUT.md, config.h and `sim/diagram.json`.
 | Flash and RAM fit, with stack headroom | size report; `-fstack-usage`; simavr stack paint (§2.11) |
 | No EEPROM code | grep check and `avr-nm` of the linked ELF |
 | Logic: encoder, button, duty mapping, inversion, Timer1 values, tach maths, timeout, % and guards, controller state machine, calibration, serial parser | 1 113 unit checks, C++11 and C++17 (§8.1) |
-| Whole sketch behaviour, screen content and layout, power-up state, millis() wrap | 7 simulation scenarios, 1 431 checks, 1 225 frames layout-checked (§8.2) |
+| Whole sketch behaviour, screen content and layout, power-up state, millis() wrap | 8 simulation scenarios, 1 451 checks, 1 225 frames layout-checked (§8.2) |
 | Real AVR binary boots, prints status, keeps the fan at 0 %; watchdog-interrupt recovery with the fan forced off and the setting kept | simavr (§8.3) |
 | Pin numbers agree in all documents | `check_pins.py` (§3) |
 | Watchdog second-timeout reset when the interrupt can't run | ATmega328P datasheet (WDTCSR bit WDIE); **not** reproducible in simavr |
@@ -480,7 +490,7 @@ forum post or repository, not a manufacturer document.
 | Calibration lost at power-off | ACT `--%` until recalibrated. | Copy `TACH_MAX_RPM` into `config.h`. |
 | Wrong `TACH_PULSES_PER_REV` | RPM figure off by a factor; ACT % unaffected. | Optical tachometer (FAQ). |
 | `millis()` wrap (49.7 days) | Handled (tested). | — |
-| I²C bus stuck (display fault, bad wiring) | The core's `Wire` timeout is **off by default**; the firmware turns it on (25 ms, bus reset), so transfers give up instead of blocking. If anything still blocked `loop()`, the watchdog would stop the fan and restart. A hang inside `setup()` (before the watchdog starts) leaves the fan stopped, because D9 is already driven to "stopped" first. | — |
+| I²C bus stuck, display missing or failing | The firmware enables the `Wire` timeout (off by default in the core), probes the display before `begin()`, and stops drawing at the first timeout. The controller keeps working without the display (knob, button, fan, serial) and re-probes every 5 s. If something still stalled `setup()` or `loop()` for 2 s, the watchdog stops the fan and restarts. | Sim `nodisplay`. |
 | Upload or serial-monitor open | Nano resets → fan stops, controller restarts OFF. | Expected (FAQ). |
 | Large surge above D2's clamp capability | Could exceed an AMS1117's 15 V absolute maximum. | Residual risk (§2.2). |
 | Open-loop control | The knob sets duty, not RPM; ACT shows the result. | Possible extension. |
@@ -539,10 +549,26 @@ review):
 | S-8 | In-circuit diode test of D1 is misleading (C1 charges through it). | D1/D2 tested before soldering. |
 | S-9 | Expected VIN readings ignored the PTC's resistance range. | Ranges widened (loaded: M1 − 0.2…0.7 V; unloaded: − 0.05…0.3 V). |
 
-**After the fixes:** host tests, the pin cross-check, link check, both
-Nano builds, the Wokwi build and the simavr run were repeated (§8).
-**Not re-reviewed by the independent agent:** the fixes themselves were
-verified by these re-runs and by reading the diffs, not by a second review.
+**Second independent review (of the fixes).** A new agent that had written
+none of the work reviewed the fix commit: it checked the `.init3` code in
+the disassembly (runs after `__zero_reg__`/SP set-up, falls through into
+`__do_copy_data`, `.noinit` sits below `__heap_start`), the watchdog ISR,
+the U4 connections and arithmetic, and the new README checks. It confirmed
+those and reported one new major problem caused by a fix, plus five minor
+ones:
+
+| # | Sev. | Finding | Resolution |
+|---|---|---|---|
+| 2-1 | Major | Starting the watchdog at the top of `setup()` (fix 1) meant a stuck I²C bus made `oled.begin()` take ≈ 4 s of 25 ms timeouts: endless watchdog restarts, controller unusable (fan safely OFF). | Display is driven only while it answers: probe before `begin()`, timeout check after every page, re-probe every 5 s; controller fully usable without a display. New Sim scenario `nodisplay`. §2.8, §2.9, §6 corrected. |
+| 2-2 | Minor | M4b's RC-filter fallback (10 kΩ series) would stop 0 %/OFF from stopping the fan. | Series R ≤ 1/20 of the measured pull-up, R × C ≥ 2.5 ms; re-run M4, B4, B7. |
+| 2-3 | Minor | M4b's test voltage could be near 9 V, so an analogue input would look like "full speed". | M4b now uses a resistor ≈ the measured pull-up, putting the line near M1/2. |
+| 2-4 | Minor | I²C low-side sink current understated (1.9 mA); with module pull-ups it could exceed 3 mA. | Restated as ≈ 2.5 mA; R1/R2 are left out if M7 finds ≤ 4.7 kΩ pull-ups on the module (README M7, step 4, PINOUT). |
+| 2-5 | Minor | Stale text: setup-hang wording, D2 `INPUT`, R4 "gate pull-up" in three places, DES-4 bench references. | All corrected. |
+| 2-6 | Minor | M7 assumed encoder contacts read open at rest. | "Toggles between OL and ~0 Ω while turning". |
+
+After these fixes the host tests, pin cross-check, link check, both Nano
+builds, the Wokwi build and the simavr run were repeated (§8). The second
+round of fixes was checked by these re-runs, not by a third review.
 
 ---
 
@@ -606,6 +632,8 @@ serial: 30 frames layout-checked
 serial: 59 checks, 0 failures
 oledaddr: 5 frames layout-checked
 oledaddr: 15 checks, 0 failures
+nodisplay: 0 frames layout-checked
+nodisplay: 20 checks, 0 failures
 diagboot: 43 frames layout-checked
 diagboot: 55 checks, 0 failures
 wrap: 180 frames layout-checked
@@ -633,58 +661,56 @@ logs: /tmp/cloudline-simavr/normal.log /tmp/cloudline-simavr/hang.log /tmp/cloud
 SIMAVR TESTS PASSED
 ```
 
-Serial output of the `normal` build (simavr has no display on its I²C bus,
-hence the `no I2C device` line; it also shows that the timeout keeps the
-firmware running without a display):
+Serial output of the `normal` build (`TEST_FORCE_DISPLAY` makes the display
+code run although simavr has no display; `ram_free_min` is the stack
+high-water figure in §2.11):
 
 ```
-Cloudline controller ready. Fan OFF. Send ? for help.
+Cloudline controller ready. Fan OFF. Send ? for help
 ! no I2C device at 0x3C
-on=0 set=50% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=566 reset=0x1
-on=0 set=50% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=566 reset=0x1
-on=0 set=50% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=566 reset=0x1
-on=0 set=50% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=566 reset=0x1
-on=0 set=50% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=566 reset=0x1
-on=0 set=50% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=566 reset=0x1
+on=0 set=50% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=568 reset=0x1
+on=0 set=50% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=561 reset=0x1
+on=0 set=50% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=561 reset=0x1
+on=0 set=50% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=561 reset=0x1
 ```
 
-Serial output of the `hang` build (watchdog recovery; `reset=0x80` = soft
-restart; the setting 37 % survives, fan OFF):
+Serial output of the `hang` build (watchdog recovery: `reset=0x80` = soft
+restart; the 37 % setting survives; the fan is OFF):
 
 ```
-Cloudline controller ready. Fan OFF. Send ? for help.
+Cloudline controller ready. Fan OFF. Send ? for help
 ! no I2C device at 0x3C
-on=0 set=50% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=563 reset=0x1
-on=0 set=50% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=563 reset=0x1
-on=0 set=50% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=563 reset=0x1
+on=0 set=50% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=561 reset=0x1
+on=0 set=50% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=561 reset=0x1
+on=0 set=50% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=561 reset=0x1
 TEST: loop() hangs now
-Cloudline controller ready. Fan OFF. Send ? for help.
+Cloudline controller ready. Fan OFF. Send ? for help
 ! restarted by the watchdog (fan OFF, setting kept)
 ! no I2C device at 0x3C
-on=0 set=37% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=563 reset=0x80
+on=0 set=37% duty=0.0% rpm=0 act=-- max=0(unknown) tach_mHz=0 fault=0 mode=0 ram_free_min=561 reset=0x80
 ```
 
 ### 8.4 Nano compile (arduino-cli 1.1.1, arduino:avr 1.8.6, avr-gcc 7.3.0, U8g2 2.35.30)
 
+`--warnings all`, processor "ATmega328P" then "ATmega328P (Old Bootloader)":
+
 ```
-$ arduino-cli compile -b arduino:avr:nano:cpu=atmega328 --warnings all firmware/cloudline_controller
-$ arduino-cli compile -b arduino:avr:nano:cpu=atmega328old --warnings all firmware/cloudline_controller
-== cpu=atmega328
-Sketch uses 25976 bytes (84%) of program storage space. Maximum is 30720 bytes.
-Global variables use 1282 bytes (62%) of dynamic memory, leaving 766 bytes for local variables. Maximum is 2048 bytes.
-== cpu=atmega328old
-Sketch uses 25976 bytes (84%) of program storage space. Maximum is 30720 bytes.
-Global variables use 1282 bytes (62%) of dynamic memory, leaving 766 bytes for local variables. Maximum is 2048 bytes.
+Sketch uses 26236 bytes (85%) of program storage space. Maximum is 30720 bytes.
+Global variables use 1287 bytes (62%) of dynamic memory, leaving 761 bytes for local variables. Maximum is 2048 bytes.
+(project-file warnings: 0)
+Sketch uses 26236 bytes (85%) of program storage space. Maximum is 30720 bytes.
+Global variables use 1287 bytes (62%) of dynamic memory, leaving 761 bytes for local variables. Maximum is 2048 bytes.
+(project-file warnings: 0)
 ```
 
-Warnings with `--warnings all`: 7, all in the Arduino core (`new.cpp`) and
-U8g2 (`mui.c`, `mui_u8g2.c`, `u8g2_arc.c`); **0 in project files**.
+All 7 warnings come from the Arduino core (`new.cpp`) and U8g2 (`mui.c`,
+`mui_u8g2.c`, `u8g2_arc.c`); **none from project files**.
 
 Wokwi build (`-DTARGET_WOKWI=1`):
 
 ```
-Sketch uses 27328 bytes (88%) of program storage space. Maximum is 30720 bytes.
-Global variables use 1299 bytes (63%) of dynamic memory, leaving 749 bytes for local variables. Maximum is 2048 bytes.
+Sketch uses 27580 bytes (89%) of program storage space. Maximum is 30720 bytes.
+Global variables use 1304 bytes (63%) of dynamic memory, leaving 744 bytes for local variables. Maximum is 2048 bytes.
 ```
 
 No EEPROM routines in the linked binary (`avr-nm -C … | grep -i eeprom`
@@ -777,4 +803,3 @@ pin cross-check: 72 checks, 0 mismatches
 ### 8.6 Link check
 
 Every relative link and `#anchor` in the Markdown files resolves (0 broken).
-

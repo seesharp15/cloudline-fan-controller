@@ -6,8 +6,8 @@ checks the serial output of two builds:
 
 | Build | Extra flags | Checks |
 |---|---|---|
-| normal | `-DTEST_STATUS_EVERY_MS=1000` | boots, prints the banner, `loop()` keeps running, fan duty 0 %, no watchdog restart |
-| hang | `-DTEST_STATUS_EVERY_MS=1000 -DTEST_HANG_AFTER_MS=3000` | after 3 s `loop()` stops feeding the watchdog; the watchdog interrupt restarts the sketch, which reports `restarted by the watchdog` and `reset=0x80` and starts with the fan OFF |
+| normal | `-DTEST_STATUS_EVERY_MS=1000 -DTEST_FORCE_DISPLAY` | boots, prints the banner, `loop()` keeps running, fan duty 0 %, no watchdog restart |
+| hang | `-DTEST_STATUS_EVERY_MS=1000 -DTEST_FORCE_DISPLAY -DTEST_HANG_AFTER_MS=3000` | after 3 s `loop()` stops feeding the watchdog; the watchdog interrupt restarts the sketch, which reports `restarted by the watchdog` and `reset=0x80` and starts with the fan OFF |
 
 | hang-cli (information only) | `-DTEST_HANG_CLI_AFTER_MS=3000` | `loop()` stops with interrupts disabled. On the real chip the second timeout resets it (ATmega328P datasheet, WDTCSR bit WDIE). simavr does not model that rule, so the script only reports what happened. |
 
@@ -21,6 +21,7 @@ Requirements: `arduino-cli` with `arduino:avr@1.8.6` and `U8g2@2.35.30`, and
 sh test/avr/run_simavr.sh
 ```
 
-simavr has no SH1106, so the I2C transfers go nowhere; the display code
-still runs. The status line also reports `ram_free_min`, the least free stack
-seen since power-up (570 bytes in the recorded run).
+simavr has no SH1106, so the I²C transfers go nowhere. Normally the
+firmware would then skip the display; `TEST_FORCE_DISPLAY` makes it draw
+anyway, so the display code (the deepest stack user) runs. The status line also reports `ram_free_min`, the least free stack
+seen since power-up (see VERIFICATION.md §8.3 for the recorded value).

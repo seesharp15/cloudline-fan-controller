@@ -20,7 +20,7 @@ Firmware
 - First real AVR build (arduino-cli, avr-gcc 7.3.0). It showed that the full
   1 KB frame buffer leaves only 4 bytes of RAM: switched to the 256-byte
   page buffer, moved all UI strings to flash, and use the smaller `_tr`
-  fonts. Now 25 976 bytes flash (84 %), 1 282 bytes RAM (62 %).
+  fonts. Now 26 236 bytes flash (85 %), 1 287 bytes RAM (62 %).
 - **No EEPROM at all.** The calibration result is kept in RAM until
   power-off and printed on the serial console for copying into `config.h`.
   The max RPM defaults to "unknown" (`--%`) because no RPM figure is
@@ -37,6 +37,10 @@ Firmware
   and keeps the speed setting; 32-bit restart marker; D2 internal pull-up;
   calibration rule now exactly "every sample within ±10 %"; diagnostics text
   follows the polarity setting.
+- Second review fix: the display is driven only while it answers on I²C
+  (probe before `begin()`, timeout check after every page, retry every
+  5 s), so a missing display or stuck bus can no longer cause a watchdog
+  restart loop.
 - Logic restructured: the ON/OFF/setting/calibration state machine and the
   command parser moved into `fan_logic.h` (`fan::Controller`) and are unit
   tested; the hardware glue moved from the `.ino` into `app.cpp`.
@@ -48,7 +52,7 @@ Tests
   machine, command parser, half-step encoders, rapid reversals, button
   bounce, duty and polarity edge cases, tach fault and the divide-by-zero
   guard (1 113 checks). New simulation scenarios (`powercycle`, `serial`,
-  `oledaddr`).
+  `oledaddr`, `nodisplay`).
 - `test/avr/run_simavr.sh` runs the real Nano binary in simavr and checks
   boot and watchdog recovery.
 - Wokwi project in `sim/` (prepared, not run).
