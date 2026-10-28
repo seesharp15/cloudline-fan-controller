@@ -104,6 +104,6 @@
 <text x="24" y="132" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="40.0" textLength="72" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">SET</text>
 <text x="464" y="132" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="40.0" textLength="72" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">50%</text>
 <text x="24" y="200" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="40.0" textLength="72" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">ACT</text>
-<text x="488" y="200" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="40.0" textLength="48" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">0%</text>
+<text x="464" y="200" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="40.0" textLength="72" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">--%</text>
 <text x="24" y="268" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="40.0" textLength="456" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">Press knob to start</text>
 </svg>

@@ -15,8 +15,9 @@
 <rect x="24" y="68" width="512" height="4" fill="#e8f4ff"/>
 <rect x="24" y="72" width="512" height="4" fill="#e8f4ff"/>
 <rect x="24" y="76" width="512" height="4" fill="#e8f4ff"/>
-<text x="36" y="68" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="46.7" textLength="252" lengthAdjust="spacingAndGlyphs" font-weight="bold" fill="#000" xml:space="preserve">CAL SAVED</text>
+<text x="36" y="68" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="46.7" textLength="224" lengthAdjust="spacingAndGlyphs" font-weight="bold" fill="#000" xml:space="preserve">CAL DONE</text>
 <text x="24" y="144" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="40.0" textLength="144" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">100% =</text>
 <text x="200" y="148" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="46.7" textLength="224" lengthAdjust="spacingAndGlyphs" font-weight="bold" fill="#e8f4ff" xml:space="preserve">1836 RPM</text>
-<text x="24" y="216" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="40.0" textLength="408" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">Stored in EEPROM.</text>
+<text x="24" y="208" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="40.0" textLength="504" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">Kept until power-off.</text>
+<text x="24" y="256" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="40.0" textLength="456" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">Serial: how to keep</text>
 </svg>

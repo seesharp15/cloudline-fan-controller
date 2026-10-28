@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include "stubs/Arduino.h"
 
 void setup();
@@ -14,6 +16,7 @@ namespace sim {
 
 // Pulse rate (Hz) the simulated fan produces on the tach input; 0 = stopped.
 extern double tachHz;
+extern unsigned toneHz;
 
 void reset();                   // fresh "power-up" state for pins and registers
 void advance(uint32_t ms);      // run loop() once per millisecond for `ms`
@@ -29,7 +32,7 @@ uint16_t pwmTop();
 // Gate duty in permille (time D9 is HIGH), from the register state.
 uint16_t gateDutyPermille();
 
-bool eepromLoad(const char *path);
-bool eepromSave(const char *path);
+void serial(const char *line);  // send one console line, then run 10 ms
+std::string takeSerial();       // console output so far (and clear it)
 
 }  // namespace sim
