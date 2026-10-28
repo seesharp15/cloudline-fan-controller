@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "author": "cloudline-fan-controller",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-nano", "id": "nano", "top": 0, "left": 0, "attrs": {} },
+    { "type": "board-ssd1306", "id": "oled", "top": -150, "left": 260, "attrs": { "i2cAddress": "0x3c" } },
+    { "type": "wokwi-ky-040", "id": "enc", "top": 120, "left": 300, "attrs": {} },
+    { "type": "wokwi-pushbutton", "id": "btnCon", "top": 220, "left": 60, "attrs": { "color": "blue", "label": "CON" } },
+    { "type": "wokwi-pushbutton", "id": "btnBak", "top": 220, "left": 170, "attrs": { "color": "red", "label": "BAK" } },
+    { "type": "wokwi-resistor", "id": "rLed", "top": -110, "left": -40, "rotate": 90, "attrs": { "value": "1000" } },
+    { "type": "wokwi-led", "id": "ledGate", "top": -170, "left": -30, "attrs": { "color": "orange", "label": "D9 gate (ON = fan slower)" } },
+    { "type": "wokwi-logic-analyzer", "id": "logic", "top": -150, "left": 120, "attrs": {} }
+  ],
+  "connections": [
+    [ "oled:GND", "nano:GND.2", "black", [] ],
+    [ "oled:VCC", "nano:5V", "red", [] ],
+    [ "oled:SDA", "nano:A4", "blue", [] ],
+    [ "oled:SCL", "nano:A5", "white", [] ],
+    [ "enc:GND", "nano:GND.2", "black", [] ],
+    [ "enc:VCC", "nano:5V", "red", [] ],
+    [ "enc:CLK", "nano:3", "purple", [] ],
+    [ "enc:DT", "nano:4", "gray", [] ],
+    [ "enc:SW", "nano:5", "cyan", [] ],
+    [ "btnCon:1.l", "nano:6", "blue", [] ],
+    [ "btnCon:2.l", "nano:GND.1", "black", [] ],
+    [ "btnBak:1.l", "nano:7", "violet", [] ],
+    [ "btnBak:2.l", "nano:GND.1", "black", [] ],
+    [ "nano:9", "rLed:1", "brown", [] ],
+    [ "rLed:2", "ledGate:A", "brown", [] ],
+    [ "ledGate:C", "nano:GND.1", "black", [] ],
+    [ "nano:8", "nano:2", "green", [] ],
+    [ "logic:D0", "nano:9", "brown", [] ],
+    [ "logic:D1", "nano:2", "green", [] ],
+    [ "logic:GND", "nano:GND.1", "black", [] ]
+  ],
+  "dependencies": {}
+}

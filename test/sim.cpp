@@ -7,21 +7,23 @@
 #include <string>
 #include <vector>
 
-#include "stubs/EEPROM.h"
 #include "stubs/U8g2lib.h"
+#include "stubs/Wire.h"
 
 // ---------------------------------------------------------------------------
 // Arduino / AVR globals
 // ---------------------------------------------------------------------------
 uint8_t TCCR1A, TCCR1B, PCICR, PCIFR, PCMSK2;
 uint16_t ICR1, OCR1A, TCNT1;
-EEPROMClass EEPROM;
+SerialStub Serial;
+TwoWireStub Wire;
 
 namespace sim {
 Pin pins[20];
 uint64_t nowUs = 0;
 void (*extIsr[2])() = {nullptr, nullptr};
 double tachHz = 0;
+unsigned toneHz = 0;
 static double nextTachUs = 0;
 
 void reset() {
@@ -32,6 +34,10 @@ void reset() {
   ICR1 = OCR1A = TCNT1 = 0;
   tachHz = 0;
   nextTachUs = 0;
+  toneHz = 0;
+  Serial = SerialStub();
+  Wire = TwoWireStub();
+  Wire.present[0x3C] = true;  // the OLED
 }
 
 // Fire tach edges that fall inside (nowUs, untilUs]. The ISR is attached to
@@ -112,20 +118,16 @@ uint16_t gateDutyPermille() {
   return (uint16_t)(((uint32_t)(OCR1A + 1u) * 1000u + (ICR1 + 1u) / 2u) / (ICR1 + 1u));
 }
 
-bool eepromLoad(const char *path) {
-  FILE *f = fopen(path, "rb");
-  if (!f) return false;
-  const size_t n = fread(EEPROM.bytes, 1, sizeof EEPROM.bytes, f);
-  fclose(f);
-  return n == sizeof EEPROM.bytes;
+void serial(const char *line) {
+  Serial.inject(line);
+  Serial.inject("\n");
+  advance(10);  // the firmware reads at most 16 characters per loop pass
 }
 
-bool eepromSave(const char *path) {
-  FILE *f = fopen(path, "wb");
-  if (!f) return false;
-  const size_t n = fwrite(EEPROM.bytes, 1, sizeof EEPROM.bytes, f);
-  fclose(f);
-  return n == sizeof EEPROM.bytes;
+std::string takeSerial() {
+  std::string o = Serial.out;
+  Serial.out.clear();
+  return o;
 }
 }  // namespace sim
 
@@ -133,9 +135,9 @@ bool eepromSave(const char *path) {
 // Fake U8g2 fonts and frame tools
 // ---------------------------------------------------------------------------
 // Metrics of the real U8g2 fonts (BDF bounding boxes of the X11 fixed fonts).
-const FakeFont u8g2_font_6x10_tf = {"6x10", 6, 7, 8, 2, false};
-const FakeFont u8g2_font_7x13B_tf = {"7x13B", 7, 9, 11, 2, true};
-const FakeFont u8g2_font_5x8_tf = {"5x8", 5, 6, 7, 1, false};
+const FakeFont u8g2_font_6x10_tr = {"6x10", 6, 7, 8, 2, false};
+const FakeFont u8g2_font_7x13B_tr = {"7x13B", 7, 9, 11, 2, true};
+const FakeFont u8g2_font_5x8_tr = {"5x8", 5, 6, 7, 1, false};
 
 bool FakeFrame::hasText(const char *needle) const {
   for (const FakeText &t : texts)

@@ -28,9 +28,9 @@ struct FakeFont {
   bool bold;
 };
 
-extern const FakeFont u8g2_font_6x10_tf;
-extern const FakeFont u8g2_font_7x13B_tf;
-extern const FakeFont u8g2_font_5x8_tf;
+extern const FakeFont u8g2_font_6x10_tr;
+extern const FakeFont u8g2_font_7x13B_tr;
+extern const FakeFont u8g2_font_5x8_tr;
 
 struct FakeText {
   int x, baseline, color;
@@ -48,9 +48,20 @@ struct FakeFrame {
   bool writeSvg(const char *path, int scale) const;
 };
 
-class U8G2_SH1106_128X64_NONAME_F_HW_I2C {
+// One fake serves every buffer mode. Page mode (firstPage/nextPage) runs
+// the drawing code kPages times like the real 256-byte page buffer does,
+// and commits the frame after the last pass.
+class FakeU8g2 {
  public:
-  U8G2_SH1106_128X64_NONAME_F_HW_I2C(const void *, uint8_t) {}
+  FakeU8g2(const void *, uint8_t) {}
+  static const int kPages = 4;
+
+  void firstPage() { clearBuffer(); pass = 0; }
+  bool nextPage() {
+    if (++pass < kPages) { clearBuffer(); return true; }
+    sendBuffer();
+    return false;
+  }
 
   void setI2CAddress(uint8_t a) { i2cAddress = a; }
   void setBusClock(uint32_t hz) { busClock = hz; }
@@ -98,6 +109,7 @@ class U8G2_SH1106_128X64_NONAME_F_HW_I2C {
   uint8_t i2cAddress = 0;
   uint32_t busClock = 0;
   bool begun = false;
+  int pass = 0;
 
  private:
   void plot(int x, int y) {
@@ -105,6 +117,11 @@ class U8G2_SH1106_128X64_NONAME_F_HW_I2C {
     uint8_t &p = cur.px[y][x];
     p = color == 2 ? (uint8_t)!p : color;
   }
-  const FakeFont *font = &u8g2_font_6x10_tf;
+  const FakeFont *font = &u8g2_font_6x10_tr;
   uint8_t color = 1;
 };
+
+typedef FakeU8g2 U8G2_SH1106_128X64_NONAME_F_HW_I2C;
+typedef FakeU8g2 U8G2_SH1106_128X64_NONAME_2_HW_I2C;
+typedef FakeU8g2 U8G2_SSD1306_128X64_NONAME_F_HW_I2C;
+typedef FakeU8g2 U8G2_SSD1306_128X64_NONAME_2_HW_I2C;

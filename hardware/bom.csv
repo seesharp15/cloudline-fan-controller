@@ -1,0 +1,30 @@
+Ref,Qty,Part,Value / rating,Example part number or listing,Package,Approx. unit cost (USD),Notes
+U1,1,Arduino Nano (ATmega328P 5 V 16 MHz),Clone with CH340 USB chip is fine,Arduino A000005 (genuine) or ELEGOO Nano V3.0 3-pack (Amazon),Module,8.00,Clone ~$5-8; genuine ~$25. Get one with headers NOT soldered if you will socket it.
+U3,1,1.3in OLED + EC11 encoder module,SH1106 128x64 I2C 0x3C; 3.3 V; EC11 20 pulses/20 detents,AITRIP 1.3 inch OLED with EC11 (Amazon ASIN B0F87DZ51P),Module,10.00,Pin labels VCC GND SDA SCL TRA TRB PSH CON BAK; order varies by batch
+U2,1,LDO regulator 3.3 V,MCP1700 3.3 V 250 mA; Vin max 6 V,Microchip MCP1700-3302E/TO,TO-92,0.45,Pinout flat face towards you: GND VIN VOUT (check datasheet)
+Q1,1,N-channel MOSFET,60 V; 200 mA; Vgs(th) 0.8-3 V; Rds(on) <= 5.3 ohm at 4.5 V,onsemi 2N7000TA (or 2N7000BU),TO-92,0.30,Pinout flat face towards you: S G D
+D1,1,Schottky diode (reverse-polarity),1 A 20 V,onsemi 1N5817RLG (or Vishay 1N5817-E3/54),DO-41,0.20,Band = cathode = towards +10V_P
+D2,1,TVS diode unidirectional,Vrwm 11.1 V; Vbr 12.4-13.7 V; 600 W,Littelfuse P6KE13A,DO-15,0.45,Use P6KE15A if the fan rail measures above 10.8 V
+D3 D4,2,Small-signal Schottky diode (tach clamps),30 V 200 mA,Nexperia BAT85 (BAT85.133) or Vishay BAT85-TAP,DO-34,0.15,Band = cathode. D3 cathode to +5V; D4 cathode to tach node
+F1,1,PTC resettable fuse,0.20 A hold; 0.40 A trip; 60 V,Bourns MF-R020,Radial,0.35,
+C1,1,Aluminium electrolytic capacitor,220 uF 25 V (or 35 V) 105 C,Panasonic EEU-FR1E221 (or Nichicon UVR1E221MED),Radial 8 mm,0.40,Observe polarity: stripe = negative
+C2,1,Ceramic capacitor,100 nF 50 V X7R,KEMET C320C104K5R5TA,Radial 2.54 mm,0.25,
+C3 C4,2,Ceramic capacitor,1 uF 25 V or 50 V X7R,TDK FG28X7R1H105KRT06 (or KEMET C322C105K5R5TA),Radial,0.30,MCP1700 needs >= 1 uF on input and output
+C5,1,Ceramic capacitor,10 nF 50 V X7R,KEMET C315C103K5R5TA,Radial,0.25,
+U4,1,Bidirectional I2C level shifter (BSS138),2 channels used; 5 V HV side / 3.3 V LV side; 10 kohm pull-ups on board,SparkFun BOB-12009 (or Adafruit 757),Module,3.95,Between Nano A4/A5 (HV) and OLED SDA/SCL (LV). Solder header pins.
+R1 R2,2,Resistor,2.2 kohm 1/4 W 5 %,Yageo CFR-25JB-52-2K2,Axial,0.10,I2C pull-ups to +3V3 (2.2k for 400 kHz rise time)
+R3,1,Resistor,220 ohm 1/4 W 5 %,Yageo CFR-25JB-52-220R,Axial,0.10,Q1 gate series
+R4,1,Resistor,10 kohm 1/4 W 5 %,Yageo CFR-25JB-52-10K,Axial,0.10,Q1 gate pull-up: keeps fan OFF during reset/boot
+R5,1,Resistor (do not populate by default),4.7 kohm 1/4 W 5 %,Yageo CFR-25JB-52-4K7,Axial,0.10,Fit only if the PWM line floats (pre-connection check M3)
+R6,1,Resistor,10 kohm 1/4 W 5 %,Yageo CFR-25JB-52-10K,Axial,0.10,Tach pull-up to +5V
+R7,1,Resistor,1 kohm 1/4 W 5 %,Yageo CFR-25JB-52-1K0,Axial,0.10,Tach series / clamp current limit
+J1,1,4-pin PC peripheral (Molex 8981) extension cable,Male-to-female; 18-20 AWG; 30 cm,StarTech.com LP4POWEXT12 (or any 4-pin Molex extension),Cable,4.00,Cut in half; keep the end that plugs into the fan's control lead
+-,1,Perfboard (protoboard),5 x 7 cm double-sided 2.54 mm pitch,ElectroCookie or generic 5x7 cm FR4 protoboard,Board,1.00,
+-,2,Female header strip for Nano socket,1 x 15 pin 2.54 mm,Sullins PPTC151LFBN-RC,Through-hole,1.00,Lets you unplug the Nano; optional
+-,1,Female-female jumper wires (OLED module),20 cm 2.54 mm Dupont; 10 needed,Generic 40-pin F-F Dupont ribbon (Amazon),Wire,3.00,Or solder 24-26 AWG wire directly
+-,1,Hook-up wire,22 AWG stranded (power) and 24-26 AWG stranded (signals); several colours,Generic silicone wire kit (e.g. Striveday 22 AWG 6 colours),Wire,8.00,Colours per hardware/wiring.svg
+-,1,Heat-shrink tubing assortment,2-6 mm 2:1 polyolefin,Generic 2:1 assortment kit,Tubing,6.00,For the J1 cable splices and exposed leads
+-,1,Enclosure,ABS ~112 x 62 x 31 mm,Hammond 1591XXSSBK (or a 3D-printed box),Box,6.00,Cut a window for the OLED and a 7 mm hole for the encoder shaft
+-,1,Cable gland,PG7 for 3-6.5 mm cable,Generic nylon PG7 gland,Hardware,0.50,Strain relief for the fan cable
+-,4,Standoffs and screws,M2.5 or M3 x 6-10 mm nylon,Generic nylon standoff kit,Hardware,0.25,Mount the perfboard and OLED module
+-,1,Knob for EC11 D-shaft,6 mm,Generic 6 mm D-shaft knob,Hardware,1.00,Optional; some modules include one

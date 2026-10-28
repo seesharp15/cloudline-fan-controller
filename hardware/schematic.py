@@ -1,20 +1,24 @@
 #!/usr/bin/env python3
-"""Generate docs/schematic.svg for the Cloudline AI-CLS6 controller.
+"""Generate hardware/schematic.svg (and .png) for the Cloudline controller.
 
 Pure standard-library Python: every symbol is drawn from primitives here so
-the schematic can be regenerated and reviewed as a diff. Run from the repo
-root:
+the schematic can be edited and reviewed as a diff. Run from the repo root:
 
-    python3 tools/gen_schematic.py            # writes docs/schematic.svg
+    python3 hardware/schematic.py      # writes hardware/schematic.svg + .png
+
+The PNG is rendered with `rsvg-convert` (librsvg) if it is installed, or
+with the `cairosvg` Python package otherwise.
 
 Coordinates are on a 10 px grid. Power rails use named power flags
 (+10V_P, +5V, +3V3, GND); every signal is drawn as an explicit wire.
 """
 
 import os
+import shutil
+import subprocess
 import sys
 
-W, H = 1500, 1010
+W, H = 1500, 1030
 out = []
 
 
@@ -170,6 +174,21 @@ def tvs_v(x, ytop, ybot, ref, value, side="right"):
         label(x - 18, mid - 4, ref, value, "end")
 
 
+def schottky_v(x, ytop, ybot, ref, value, side="right"):
+    """Schottky diode drawn vertically, cathode at the TOP."""
+    mid = (ytop + ybot) / 2
+    k, a = mid - 9, mid + 9
+    line(x, ytop, x, k)
+    line(x, a, x, ybot)
+    emit(f'<polygon points="{x - 9},{a} {x + 9},{a} {x},{k}" class="w" fill="none"/>')
+    # cathode bar with the Schottky "S" hooks
+    wire((x - 13, k + 4), (x - 13, k), (x + 13, k), (x + 13, k - 4))
+    if side == "right":
+        label(x + 18, mid - 4, ref, value)
+    else:
+        label(x - 18, mid - 4, ref, value, "end")
+
+
 def gnd(x, y):
     line(x, y, x, y + 10)
     line(x - 12, y + 10, x + 12, y + 10, "p")
@@ -263,6 +282,26 @@ def section(x, y, w, h, title):
     text(x + 8, y + 16, title, 12, "start", "sec-t", "bold")
 
 
+def connector_face(x, y):
+    """J1 mating face: the fan-lead end of the cable, looking into its pins."""
+    text(x, y, "J1 MATING FACE", 12, "start", "sec-t", "bold")
+    text(x, y + 14, "fan lead end, looking into the", 11, "start", "val")
+    text(x, y + 27, "contacts, chamfered corners UP", 11, "start", "val")
+    bx, by, bw, bh = x + 10, y + 40, 200, 50
+    c = 12  # chamfer
+    pts = [(bx + c, by), (bx + bw - c, by), (bx + bw, by + c), (bx + bw, by + bh),
+           (bx, by + bh), (bx, by + c)]
+    emit('<polygon points="%s" class="blk"/>' % " ".join(f"{a},{b}" for a, b in pts))
+    names = {1: "TACH?", 2: "PWM", 3: "GND", 4: "+10V"}
+    for i in range(4):
+        px = bx + 25 + i * 50
+        emit(f'<circle cx="{px}" cy="{by + 25}" r="8" class="w" fill="#ffffff"/>')
+        text(px, by + 29, str(i + 1), 10, "middle", "num", "bold")
+        text(px, by + bh + 16, names[i + 1], 11, "middle", "pin")
+    text(x, by + bh + 34, "Pin numbers follow the builder report", 10, "start", "val")
+    text(x, by + bh + 46, "(PINOUT.md). Identify by MEASURING.", 10, "start", "warn")
+
+
 # --------------------------------------------------------------------------
 # Sheet
 # --------------------------------------------------------------------------
@@ -277,8 +316,9 @@ def draw():
     text(jx + 35, jy - 22, "J1", 14, "middle", "ref", "bold")
     text(jx + 35, jy - 7, "to fan cable", 12, "middle", "val")
     text(jx + 35, jy + 250, "4-pin Molex", 12, "middle", "val")
-    text(jx + 35, jy + 265, "5.08 mm", 12, "middle", "val")
+    text(jx + 35, jy + 265, "(8981, 5.08 mm)", 12, "middle", "val")
     text(jx + 35, jy + 280, "VERIFY pins!", 12, "middle", "warn", "bold")
+    text(jx + 35, jy + 295, "face view: below", 11, "middle", "val")
     j4 = pin_r(jx + 70, 360, "+10V", 4, 40)
     j3 = pin_r(jx + 70, 410, "GND", 3, 40)
     j2 = pin_r(jx + 70, 480, "PWM", 2, 40)
@@ -294,13 +334,13 @@ def draw():
         dot(x, ry)
     tvs_v(400, ry, 230, "D2", "P6KE13A", side="left")
     gnd(400, 230)
-    cap_v(480, ry, 230, "C1", "100µF 25V", polarized=True)
+    cap_v(480, ry, 230, "C1", "220µF 25V", polarized=True)
     gnd(480, 230)
     cap_v(580, ry, 230, "C2", "100nF")
     gnd(580, 230)
     pwr(640, ry, "+10V_P")
     text(190, 270, "Rev-polarity (D1), surge clamp (D2), short protection (F1),", 11, "start", "val")
-    text(190, 284, "bulk + HF decoupling (C1, C2). ~9.6 V reaches the Nano VIN.", 11, "start", "val")
+    text(190, 284, "bulk/hold-up + HF decoupling (C1, C2). ~9.6 V reaches the Nano VIN.", 11, "start", "val")
 
     # J1 ground
     wire(j3, (190, 410))
@@ -312,7 +352,7 @@ def draw():
     n_vin = pin_l(nx, 360, "VIN", 30)
     n_gnd_l = pin_l(nx, 400, "GND", 29)
     n_d9 = pin_l(nx, 520, "D9 / OC1A", 12)
-    n_d2 = pin_l(nx, 660, "D2 / INT0", 5)
+    n_d2 = pin_l(nx, 700, "D2 / INT0", 5)
     n_5v = pin_r(nx + nw, 360, "+5V", 27)
     n_gnd_r = pin_r(nx + nw, 400, "GND", 4)
     n_sda = pin_r(nx + nw, 460, "A4 / SDA", 23)
@@ -356,32 +396,28 @@ def draw():
     text(440, 585, "= fan slower / stopped.", 11, "start", "val")
     text(440, 598, "R4: fan OFF during boot.", 11, "start", "val")
 
-    # ---------------- Tach input: Q2 ----------------
-    tx, ty = 420, 720
-    wire(j1, (170, 520), (170, ty), (300, ty))
-    dot(230, ty)
-    resistor_v(230, ty, 650, "R6", "10k", side="left", body_c=680)
-    pwr(230, 650, "+10V_P")
-    resistor_h(300, 370, ty, "R7", "10k", lab_dy=-30)
-    wire((370, ty), (tx - 30, ty))
-    dot(380, ty)
-    resistor_v(380, ty, 790, "R8", "10k", side="left", body_c=760)
-    gnd(380, 790)
-    npn(tx, ty, "Q2", "2N3904")
-    wire((tx + 10, ty + 40), (tx + 10, 780))
-    gnd(tx + 10, 780)
-    wire((tx + 10, ty - 40), (tx + 10, 660), n_d2)
-    # R9 pulls the collector / D2 node up to +5V; C5 filters noise on it.
-    dot(620, 660)
-    resistor_v(620, 600, 660, "R9", "10k", side="left", body_c=630)
-    pwr(620, 600, "+5V")
-    dot(670, 660)
-    cap_v(670, 660, 740, "C5", "1nF", side="right")
-    gnd(670, 740)
-    text(180, 772, "TACH INPUT", 12, "start", "sec-t", "bold")
-    text(180, 786, "3.3-12 V or open-collector", 11, "start", "val")
-    text(460, 800, "Tach HIGH = Q2 on = D2 LOW.", 11, "start", "val")
-    text(460, 813, "Inverted, which the firmware ignores (it counts edges).", 11, "start", "val")
+    # ---------------- Tach input: 5 V pull-up, series R, clamps ----------
+    # The fan side only ever sees R7. The D2 node is pulled up to +5V (never
+    # to the fan's 10 V) and clamped to 0..5 V by D3/D4.
+    ty = 700
+    wire(j1, (170, 520), (170, ty), (200, ty))
+    resistor_h(200, 290, ty, "R7", "1k", lab_dy=-30)
+    wire((290, ty), n_d2)
+    dot(360, ty)
+    resistor_v(360, ty, 630, "R6", "10k", side="left", body_c=660)
+    pwr(360, 630, "+5V")
+    dot(430, ty)
+    schottky_v(430, 630, ty, "D3", "BAT85", side="right")
+    pwr(430, 630, "+5V")
+    dot(500, ty)
+    schottky_v(500, ty, 770, "D4", "BAT85", side="right")
+    gnd(500, 770)
+    dot(590, ty)
+    cap_v(590, ty, 770, "C5", "10nF", side="right")
+    gnd(590, 770)
+    text(180, 800, "TACH INPUT  (pin 1 function UNCONFIRMED)", 12, "start", "sec-t", "bold")
+    text(180, 815, "Accepts open-collector or push-pull 0-12 V. D2 sees only 0-5 V:", 11, "start", "val")
+    text(180, 829, "R6 pulls up to +5V, R7 limits clamp current to 6.7 mA (12 V on pin 1).", 11, "start", "val")
 
     # ---------------- 3.3 V regulator U2 ----------------
     ux, uy = 1040, 190
@@ -425,40 +461,66 @@ def draw():
     wire(m_gnd, (1200, 745))
     gnd(1200, 745)
 
-    wire(n_sda, m_sda)
-    wire(n_scl, m_scl)
+    # U4: BSS138 bidirectional level shifter between the 5 V Nano side (HV)
+    # and the 3.3 V module side (LV). Module pull-ups 10k on both sides.
+    ux4, uy4, uw4, uh4 = 925, 440, 110, 80
+    emit(f'<rect x="{ux4}" y="{uy4}" width="{uw4}" height="{uh4}" rx="4" class="blk"/>')
+    text(ux4 + uw4 / 2, uy4 + 30, "U4", 13, "middle", "ref", "bold")
+    text(ux4 + uw4 / 2, uy4 + 44, "BSS138", 10, "middle", "val")
+    text(ux4 + uw4 / 2, uy4 + 56, "lvl shift", 10, "middle", "val")
+    for y, lab in ((460, "HV1"), (500, "HV2")):
+        text(ux4 + 4, y + 4, lab, 9, "start", "pin")
+    for y, lab in ((460, "LV1"), (500, "LV2")):
+        text(ux4 + uw4 - 4, y + 4, lab, 9, "end", "pin")
+    line(ux4 + 25, uy4, ux4 + 25, uy4 - 18)
+    text(ux4 + 29, uy4 + 12, "HV", 9, "start", "pin")
+    pwr(ux4 + 25, uy4 - 18, "+5V")
+    line(ux4 + 85, uy4, ux4 + 85, uy4 - 18)
+    text(ux4 + 81, uy4 + 12, "LV", 9, "end", "pin")
+    pwr(ux4 + 85, uy4 - 18, "+3V3")
+    line(ux4 + 55, uy4 + uh4, ux4 + 55, uy4 + uh4 + 8)
+    gnd(ux4 + 55, uy4 + uh4 + 8)
+    wire(n_sda, (ux4, 460))
+    wire(n_scl, (ux4, 500))
+    wire((ux4 + uw4, 460), m_sda)
+    wire((ux4 + uw4, 500), m_scl)
     wire(n_d3, m_tra)
     wire(n_d4, m_trb)
     wire(n_d5, m_psh)
     wire(n_d6, m_con)
     wire(n_d7, m_bak)
-    for (x, y), name in ((n_sda, "SDA"), (n_scl, "SCL"), (n_d3, "ENC_A"), (n_d4, "ENC_B"),
+    for (x, y), name in ((n_d3, "ENC_A"), (n_d4, "ENC_B"),
                          (n_d5, "ENC_SW"), (n_d6, "KEY_CON (opt.)"), (n_d7, "KEY_BAK (opt.)")):
         text(1140, y - 5, name, 11, "middle", "net")
+    for y, name in ((460, "SDA"), (500, "SCL")):
+        text(1195, y - 5, name, 11, "middle", "net")
+        text(908, y - 5, name, 10, "middle", "net")
 
-    # I2C pull-ups to 3.3 V (R2's lead hops over the SDA wire)
-    dot(990, 460)
-    resistor_v(990, 460, 390, "R1", "4.7k", side="left", body_c=420)
-    pwr(990, 390, "+3V3")
-    dot(1060, 500)
-    resistor_v_hop(1060, 390, 500, 420, [460], "R2", "4.7k")
-    pwr(1060, 390, "+3V3")
+    # I2C pull-ups to 3.3 V on the module side (R2's lead hops over SDA)
+    dot(1085, 460)
+    resistor_v(1085, 460, 390, "R1", "2.2k", side="left", body_c=420)
+    pwr(1085, 390, "+3V3")
+    dot(1150, 500)
+    resistor_v_hop(1150, 390, 500, 420, [460], "R2", "2.2k")
+    pwr(1150, 390, "+3V3")
 
     # ---------------- Notes and title ----------------
-    note_box(30, 850, 640, [
-        "1. J1 pin functions come from field reports on Cloudline EC fans. Measure your fan first:",
-        "   docs/VERIFICATION.md. Fit R5 only if the PWM line does not idle near +10 V on its own.",
-        "2. Q1/Q2 TO-92 pinouts: 2N7000 = S-G-D, 2N3904 = E-B-C (flat face towards you, legs down).",
+    note_box(30, 860, 640, [
+        "1. J1 pin functions come from builder reports, not AC Infinity. Measure your fan first",
+        "   (README: Pre-connection verification). Fit R5 only if PWM does not idle near +10 V.",
+        "2. TO-92 pinouts, flat face towards you, legs down: 2N7000 = S-G-D, MCP1700 = GND-VIN-VOUT.",
         "3. U3 pin ORDER differs between batches - wire by the printed labels, not by position.",
-        "4. All resistors 1/4 W 5 %. C1 electrolytic >= 25 V. DNP = do not populate by default.",
+        "4. Resistors 1/4 W 5 %. C1 electrolytic >= 25 V. Diode band = cathode. DNP = not fitted.",
+        "5. Full-size wiring view with wire colours: hardware/wiring.svg.",
     ], "NOTES")
-    tbx, tby = 940, 850
+    connector_face(690, 870)
+    tbx, tby = 940, 860
     emit(f'<rect x="{tbx}" y="{tby}" width="530" height="130" rx="4" class="blk"/>')
     text(tbx + 14, tby + 26, "Cloudline AI-CLS6 fan controller", 17, "start", "ref", "bold")
     text(tbx + 14, tby + 46, "Arduino Nano + AITRIP 1.3\" OLED / EC11 encoder", 13, "start", "val")
-    text(tbx + 14, tby + 72, "Sheet 1/1  ·  Rev A  ·  2026-10-28", 12, "start", "val")
+    text(tbx + 14, tby + 72, "Sheet 1/1  ·  Rev B  ·  2026-10-28", 12, "start", "val")
     text(tbx + 14, tby + 90, "Firmware: firmware/cloudline_controller", 12, "start", "val")
-    text(tbx + 14, tby + 108, "Generated by tools/gen_schematic.py", 12, "start", "val")
+    text(tbx + 14, tby + 108, "Generated by hardware/schematic.py", 12, "start", "val")
     text(tbx + 516, tby + 120, "github.com/seesharp15/cloudline-fan-controller", 10, "end", "val")
 
 
@@ -486,16 +548,33 @@ CSS = """
 """
 
 
+def svg_to_png(svg_path, png_path, width):
+    """Render an SVG to PNG with rsvg-convert, or cairosvg as a fallback."""
+    if shutil.which("rsvg-convert"):
+        subprocess.run(["rsvg-convert", "-w", str(width), "-b", "white", svg_path,
+                        "-o", png_path], check=True)
+    else:
+        try:
+            import cairosvg
+        except ImportError:
+            print("PNG skipped: install librsvg (rsvg-convert) or `pip install cairosvg`")
+            return
+        cairosvg.svg2png(url=svg_path, write_to=png_path, output_width=width,
+                         background_color="white")
+    print(f"wrote {png_path}")
+
+
 def main():
     draw()
     svg = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">',
            CSS, f'<rect class="bg" width="{W}" height="{H}"/>'] + out + ["</svg>"]
-    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    path = sys.argv[1] if len(sys.argv) > 1 else os.path.join(root, "docs", "schematic.svg")
+    here = os.path.dirname(os.path.abspath(__file__))
+    path = sys.argv[1] if len(sys.argv) > 1 else os.path.join(here, "schematic.svg")
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w") as f:
         f.write("\n".join(svg) + "\n")
     print(f"wrote {path}")
+    svg_to_png(path, os.path.splitext(path)[0] + ".png", 2 * W)
 
 
 if __name__ == "__main__":

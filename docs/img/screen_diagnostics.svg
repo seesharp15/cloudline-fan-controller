@@ -18,9 +18,9 @@
 <text x="36" y="68" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="46.7" textLength="112" lengthAdjust="spacingAndGlyphs" font-weight="bold" fill="#000" xml:space="preserve">DIAG</text>
 <text x="380" y="64" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="40.0" textLength="144" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#000" xml:space="preserve">fan on</text>
 <text x="24" y="116" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="33.3" textLength="280" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">Tach 42.800 Hz</text>
-<text x="24" y="152" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="33.3" textLength="380" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">RPM  1284 (2 p/rev)</text>
-<text x="24" y="188" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="33.3" textLength="380" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">Max  1836 RPM (cal)</text>
+<text x="24" y="152" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="33.3" textLength="380" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">RPM  1161 (2 p/rev)</text>
+<text x="24" y="188" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="33.3" textLength="260" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">Max  1836 RPM</text>
 <text x="24" y="224" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="33.3" textLength="300" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">Line 70.0% high</text>
-<text x="24" y="260" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="33.3" textLength="380" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">Gate PWM 4799/15999</text>
-<text x="416" y="116" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="33.3" textLength="120" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">n=2681</text>
+<text x="24" y="260" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="33.3" textLength="360" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">Gate PWM 1199/3999</text>
+<text x="416" y="116" font-family="Menlo, Consolas, 'DejaVu Sans Mono', monospace" font-size="33.3" textLength="120" lengthAdjust="spacingAndGlyphs" font-weight="normal" fill="#e8f4ff" xml:space="preserve">n=2974</text>
 </svg>
