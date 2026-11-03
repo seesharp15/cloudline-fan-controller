@@ -11,8 +11,9 @@ short. The expected netlist below is transcribed from PINOUT.md section 6
 
   fan cable J1 -> screw terminal J2 (1 +10V, 2 TACH, 3 GND, 4 PWM)
   OLED module U3 -> J3 (BAK, CON, PSH, TRB, TRA) and J4 (SDA, SCL, VCC, GND)
-  only one GND pin each of the Nano (29) and of U4 (GND_LV) is wired; the
-  modules join their own GND pins.
+  only one GND pin of the Nano (29) is wired (the Nano joins its GND pins);
+  U4's GND pins are not wired: on the BOB-12009 they connect only to each
+  other (SparkFun's board file), nothing on the module uses GND.
 
 Pin numbers are footprint pad numbers: diodes 1 = cathode, 2 = anode;
 TO-92 2N7000 1 S, 2 G, 3 D; MCP1700 1 GND, 2 VIN, 3 VOUT; CP 1 = +.
@@ -30,18 +31,18 @@ EXPECTED = {
     "N_F1_D1": ["F1.2", "D1.2"],
     "+10V_P": ["D1.1", "U1.30", "C1.1", "C2.1", "D2.1"],
     "GND": ["J2.3", "U1.29", "C1.2", "C2.2", "D2.2", "Q1.1", "D4.2", "C5.2", "C3.2", "C4.2",
-            "U2.1", "J4.4", "U4.GND_LV"],
+            "U2.1", "J4.4"],
     "FAN_PWM": ["J2.4", "Q1.3", "R5.1"],
     "PWM_D9": ["U1.12", "R3.1", "R4.1"],
     "GATE": ["R3.2", "Q1.2"],
     "TACH_IN": ["J2.2", "R7.2"],
     "TACH_5V": ["R7.1", "U1.5", "R6.1", "D3.2", "D4.1", "C5.1"],
     "+5V": ["U1.27", "U2.2", "C3.1", "R4.2", "R6.2", "D3.1", "U4.HV"],
-    "+3V3": ["U2.3", "C4.1", "R1.2", "R2.2", "U4.LV", "J4.3"],
+    "+3V3": ["U2.3", "C4.1", "R1.1", "R2.1", "U4.LV", "J4.3"],
     "SDA_5V": ["U1.23", "U4.HV1"],
     "SCL_5V": ["U1.24", "U4.HV2"],
-    "SDA_3V3": ["U4.LV1", "R1.1", "J4.1"],
-    "SCL_3V3": ["U4.LV2", "R2.1", "J4.2"],
+    "SDA_3V3": ["U4.LV1", "R1.2", "J4.1"],
+    "SCL_3V3": ["U4.LV2", "R2.2", "J4.2"],
     "ENC_A": ["U1.6", "J3.5"],
     "ENC_B": ["U1.7", "J3.4"],
     "ENC_SW": ["U1.8", "J3.3"],

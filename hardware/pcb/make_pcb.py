@@ -67,21 +67,24 @@ PARTS = [
      "OLED keys: BAK CON PSH TRB TRA", (18.2, 18.5), 90,
      {"1": "KEY_BAK", "2": "KEY_CON", "3": "ENC_SW", "4": "ENC_B", "5": "ENC_A"}),
     ("J4", ("Connector_PinHeader_2.54mm", "PinHeader_1x04_P2.54mm_Vertical"),
-     "OLED: SDA SCL VCC GND", (23.28, 72.2), 90,
+     "OLED: SDA SCL VCC GND", (23.28, 68.8), 90,
      {"1": "SDA_3V3", "2": "SCL_3V3", "3": "+3V3", "4": "GND"}),
+    # U4's GND pins are not wired: on the BOB-12009 they connect only to
+    # each other (SparkFun's board file), none of its parts use GND.
     ("U4", ("custom", "BOB-12009"), "SparkFun BOB-12009", (23.28, 51.5), 0,
      {"HV1": "SDA_5V", "HV2": "SCL_5V", "HV": "+5V",
-      "LV1": "SDA_3V3", "LV2": "SCL_3V3", "LV": "+3V3", "GND_LV": "GND"}),
-    # I2C pull-ups standing upright between neighbouring columns
-    ("R2", ("Resistor_THT", "R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical"), "2.2k", (25.82, 65.0), 0, {"1": "SCL_3V3", "2": "+3V3"}),
-    ("R1", ("Resistor_THT", "R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical"), "2.2k", (23.28, 68.4), 180, {"1": "SDA_3V3", "2": "+3V3"}),
+      "LV1": "SDA_3V3", "LV2": "SCL_3V3", "LV": "+3V3"}),
+    # I2C pull-ups standing upright side by side below the LV row; each body
+    # stands over its +3V3 lead (pad 1), the bare leads go to SDA/SCL.
+    ("R1", ("Resistor_THT", "R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical"), "2.2k", (20.74, 64.9), 0, {"1": "+3V3", "2": "SDA_3V3"}),
+    ("R2", ("Resistor_THT", "R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical"), "2.2k", (28.36, 64.9), 180, {"1": "+3V3", "2": "SCL_3V3"}),
     # 3.3 V regulator, VOUT towards the level shifter
     ("U2", ("Package_TO_SOT_THT", "TO-92_Inline_Wide"), "MCP1700-3302E", (47.0, 60.0), 180,
      {"1": "GND", "2": "+5V", "3": "+3V3"}),
     ("C3", ("Capacitor_THT", "C_Disc_D5.0mm_W2.5mm_P5.00mm"), "1uF", (44.46, 55.5), 0, {"1": "+5V", "2": "GND"}),
     ("C4", ("Capacitor_THT", "C_Disc_D5.0mm_W2.5mm_P5.00mm"), "1uF", (41.92, 64.5), 0, {"1": "+3V3", "2": "GND"}),
     # Power input: J2.1 -> F1 -> D1 -> +10V_P line (D2, C1, C2) -> Nano VIN
-    ("F1", ("Fuse", "Fuse_BelFuse_0ZRE0005FF_L8.3mm_W3.8mm"), "PTC 0.2A MF-R020",
+    ("F1", ("custom", "PTC_Radial_P5.10mm"), "PTC 0.2A MF-R020",
      (88.0, 40.0), 0, {"1": "+10V_FAN", "2": "N_F1_D1"}),
     ("D1", ("Diode_THT", "D_DO-41_SOD81_P10.16mm_Horizontal"), "1N5817",
      (70.0, 46.5), 0, {"1": "+10V_P", "2": "N_F1_D1"}),
@@ -196,9 +199,31 @@ def wire_link(board, length):
     return fp
 
 
+def ptc_radial(board):
+    """Radial PTC fuse such as the Bourns MF-R020: straight leads 5.1 mm apart."""
+    fp = pcbnew.FOOTPRINT(board)
+    fp.SetFPID(pcbnew.LIB_ID("cloudline", "PTC_Radial_P5.10mm"))
+    for i, x in enumerate((0.0, 5.1)):
+        p = pcbnew.PAD(fp)
+        p.SetNumber(str(i + 1))
+        p.SetAttribute(pcbnew.PAD_ATTRIB_PTH)
+        p.SetShape(pcbnew.PAD_SHAPE_RECT if i == 0 else pcbnew.PAD_SHAPE_CIRCLE)
+        p.SetSize(pcbnew.VECTOR2I(mm(1.8), mm(1.8)))
+        p.SetDrillSize(pcbnew.VECTOR2I(mm(0.8), mm(0.8)))
+        p.SetPos0(pcbnew.VECTOR2I(mm(x), 0))
+        p.SetPosition(pcbnew.VECTOR2I(mm(x), 0))
+        fp.Add(p)
+    for layer, (x0, y0, x1, y1), w in ((pcbnew.F_SilkS, (-1.4, -1.8, 6.5, 1.8), 0.12),
+                                       (pcbnew.F_Fab, (-1.25, -1.6, 6.35, 1.6), 0.1),
+                                       (pcbnew.F_CrtYd, (-1.65, -2.05, 6.75, 2.05), 0.05)):
+        for a, b in (((x0, y0), (x1, y0)), ((x1, y0), (x1, y1)), ((x1, y1), (x0, y1)), ((x0, y1), (x0, y0))):
+            fp_line(fp, a, b, layer, w)
+    return fp
+
+
 def load_fp(board, lib, name):
     if lib == "custom":
-        return bob12009(board)
+        return {"BOB-12009": bob12009, "PTC_Radial_P5.10mm": ptc_radial}[name](board)
     fp = pcbnew.FootprintLoad(os.path.join(FPLIB, lib + ".pretty"), name)
     if fp is None:
         sys.exit(f"footprint not found: {lib}:{name}")
@@ -436,6 +461,9 @@ def main():
         fp.SetOrientationDegrees(rot)
         fp.SetPosition(vec(x, y))
         single_sided_pads(fp)
+        if ref == "J2":  # screw terminal: bigger copper so the pads survive torque
+            for p in fp.Pads():
+                p.SetSize(pcbnew.VECTOR2I(mm(3.3), mm(3.3)))
         fp.Value().SetVisible(False)
         for p in fp.Pads():
             num = p.GetNumber()
@@ -686,19 +714,22 @@ def add_silk(board):
         t.SetLayer(layer)
         t.SetPosition(vec(x, y))
         t.SetTextSize(pcbnew.VECTOR2I(mm(size), mm(size)))
-        t.SetTextThickness(mm(size * (0.2 if bold else 0.15)))
+        t.SetTextThickness(mm(max(0.15, size * (0.2 if bold else 0.16))))
         t.SetTextAngleDegrees(rot)
         board.Add(t)
 
     text("CLOUDLINE AI-CLS6 CONTROLLER  Rev B", 30.0, 4.0, 1.4, bold=True)
     text("single-sided, 1 copper layer (bottom)", 30.0, 6.5, 1.0)
     # Pin functions next to the connectors (builders wire by these).
+    # Text 1.0 mm high, 0.16 mm stroke (fab minimum is typically 0.8-1.0 mm).
     for y, name in ((17.0, "PWM"), (22.08, "GND"), (27.16, "TACH"), (32.24, "+10V")):
-        text(name, 98.6, y, 0.8, rot=90)
-    text("FAN", 98.6, 11.5, 0.8, rot=90)
+        text(name, 98.6, y, 1.0, rot=90)
+    text("FAN", 98.6, 11.0, 1.0, rot=90)
     for i, name in enumerate(("BAK", "CON", "PSH", "TRB", "TRA")):
-        text(name, 18.2 + 2.54 * i, 16.3, 0.8)
-    text("OLED: 1 SDA  2 SCL  3 VCC  4 GND", 44.0, 72.2, 0.8)
+        text(name, 18.2 + 2.54 * i, 14.6, 1.0, rot=90)
+    for i, name in enumerate(("SDA", "SCL", "VCC", "GND")):
+        text(name, 23.28 + 2.54 * i, 72.2, 1.0, rot=90)
+    text("OLED", 18.6, 68.8, 1.0)
 
 
 if __name__ == "__main__":

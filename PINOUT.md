@@ -150,7 +150,7 @@ U4, so the display only ever sees 3.3 V and the Nano 5 V.
 | **D2** | P6KE13A TVS, DO-15 | band = cathode | anode → GND · cathode → +10V_P |
 | **D3** | BAT85 Schottky, DO-34 | band = cathode | anode → tach node (D2) · cathode → +5V |
 | **D4** | BAT85 Schottky, DO-34 | band = cathode | anode → GND · cathode → tach node (D2) |
-| **U4** | BSS138 level-shifter module (SparkFun BOB-12009) | labels on the board | HV → +5V · LV → +3V3 · GND → GND · HV1 → A4 · LV1 → U3 SDA · HV2 → A5 · LV2 → U3 SCL (channels 3, 4 unused) |
+| **U4** | BSS138 level-shifter module (SparkFun BOB-12009) | labels on the board | HV → +5V · LV → +3V3 · GND → GND (optional: on this module GND connects to nothing but its other GND pin; the PCB leaves it unwired) · HV1 → A4 · LV1 → U3 SDA · HV2 → A5 · LV2 → U3 SCL (channels 3, 4 unused) |
 
 > Substitutes may have different pin orders. **BS170 is D-G-S** (reversed
 > from the 2N7000). The SOT-23 MCP1700 has a different order. Check the

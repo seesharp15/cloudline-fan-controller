@@ -99,7 +99,7 @@ part with the same value and rating works; the part numbers are examples.
 | D2 | 1 | TVS diode, unidirectional | V<sub>RWM</sub> 11.1 V, 600 W | Littelfuse P6KE13A (P6KE15A if your fan measures > 10.8 V) | $0.45 |
 | D3, D4 | 2 | Small Schottky diode | 30 V, 200 mA | BAT85 | $0.30 |
 | F1 | 1 | Resettable PTC fuse | 0.2 A hold, 0.4 A trip | Bourns MF-R020 | $0.35 |
-| U4 | 1 | I²C level shifter module (BSS138) | 5 V ↔ 3.3 V, bidirectional, 2 channels used | SparkFun BOB-12009 (or Adafruit 757) | $4 |
+| U4 | 1 | I²C level shifter module (BSS138) | 5 V ↔ 3.3 V, bidirectional, 2 channels used | SparkFun BOB-12009 | $4 |
 | C1 | 1 | Electrolytic capacitor | 220 µF, 25 V | Panasonic EEU-FR1E221 | $0.40 |
 | C2 | 1 | Ceramic capacitor | 100 nF, 50 V, 5 mm lead pitch | TDK FG28X7R1H104KNT06 | $0.25 |
 | C3, C4 | 2 | Ceramic capacitor | 1 µF, 25 V, 5 mm lead pitch | TDK FG28X7R1E105KRT06 | $0.60 |
@@ -115,7 +115,7 @@ part with the same value and rating works; the part numbers are examples.
 | — | 10 | Female-female jumper wires | 20 cm Dupont, for the OLED module | any | $3 |
 | — | — | Hook-up wire | 22 AWG stranded (power), 24–26 AWG stranded (signals), several colours | any silicone wire kit | $8 |
 | — | — | Heat-shrink tubing | 2–6 mm assortment, 2:1 | any | $6 |
-| — | 1 | Enclosure | ABS, about 112 × 85 × 45 mm (check the maker's drawing) | Hammond 1591XXSSBK, or 3D-printed | $8 |
+| — | 1 | Enclosure | ABS box, **inside** at least 75 × 60 × 35 mm (perfboard) or 115 × 90 × 35 mm (PCB, so its corners clear the box's screw posts) | a Hammond 1591-series size chosen from its drawing, or 3D-printed | $8 |
 | — | 1 | Cable gland | PG7 | any | $0.50 |
 | — | 4 | Nylon standoffs and screws | M2.5 or M3 | any | $1 |
 | | | | | **Total** | **≈ $60** |

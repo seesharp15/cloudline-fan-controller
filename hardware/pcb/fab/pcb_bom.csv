@@ -6,7 +6,7 @@ C5,1,10nF,Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm,
 D1,1,1N5817,Diode_THT:D_DO-41_SOD81_P10.16mm_Horizontal,
 D2,1,P6KE13A,Diode_THT:D_DO-15_P12.70mm_Horizontal,
 D3 D4,2,BAT85,Diode_THT:D_DO-34_SOD68_P7.62mm_Horizontal,
-F1,1,PTC 0.2A MF-R020,Fuse:Fuse_BelFuse_0ZRE0005FF_L8.3mm_W3.8mm,
+F1,1,PTC 0.2A MF-R020,cloudline:PTC_Radial_P5.10mm,
 J2,1,Fan: 1 +10V 2 TACH 3 GND 4 PWM,"TerminalBlock_Phoenix:TerminalBlock_Phoenix_MKDS-1,5-4-5.08_1x04_P5.08mm_Horizontal","Phoenix MKDS 1,5/4-5,08 (1715747) or any 5.08 mm 4-way screw terminal"
 J3,1,OLED keys: BAK CON PSH TRB TRA,Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical,1x5 male pin header 2.54 mm
 J4,1,OLED: SDA SCL VCC GND,Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical,1x4 male pin header 2.54 mm
@@ -20,4 +20,3 @@ R7,1,1k,Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal,
 U1,1,Arduino Nano (socketed),Module:Arduino_Nano,Plug into two 1x15 female headers (2.54 mm); see hardware/bom.csv
 U2,1,MCP1700-3302E,Package_TO_SOT_THT:TO-92_Inline_Wide,
 U4,1,SparkFun BOB-12009,cloudline:SparkFun_BOB-12009,"SparkFun BOB-12009 on its 1x6 male headers, HV row towards the Nano"
-W1,1,wire link,cloudline:WireLink_P7.50mm,"Bare tinned copper wire ~0.6 mm, on the TOP side"

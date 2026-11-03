@@ -8,8 +8,8 @@ Steps:
   1. DRC (must report 0 errors and 0 unconnected) and the copper netlist check.
   2. Gerbers for the ONE copper layer and the layers a single-sided board needs:
      B.Cu (copper), B.Mask (solder mask, copper side), F.SilkS (top legend),
-     Edge.Cuts (outline). F.Cu is KiCad's "jumper" layer holding the wire
-     links and is deliberately NOT exported.
+     Edge.Cuts (outline). F.Cu (KiCad's "jumper" layer, for wire links if
+     the router ever needs one) is deliberately NOT exported.
   3. Excellon drill file (mm) plus a drill map.
   4. A zip of 2 + 3 for upload to a board house.
   5. Assembly drawing (PDF), bottom-copper artwork at 1:1 (PDF, for
@@ -32,6 +32,32 @@ FAB = os.path.join(HERE, "fab")
 GERB = os.path.join(FAB, "gerbers")
 ZIPNAME = os.path.join(FAB, "cloudline_controller_RevB_gerbers_drill.zip")
 REV = "B"
+
+
+FAB_NOTES = """Cloudline AI-CLS6 controller PCB, Rev B
+=========================================
+SINGLE-SIDED BOARD: 1 copper layer.
+
+  Copper ........ BOTTOM side only:  cloudline_controller-B_Cu.gbl
+                  (drawn as seen from the TOP, like all files here; do NOT
+                  mirror it, do NOT move it to the top side)
+  Solder mask ... BOTTOM side only:  cloudline_controller-B_Mask.gbs
+  Silkscreen .... TOP side only:     cloudline_controller-F_Silkscreen.gto
+                  (the legend goes on the side WITHOUT copper)
+  Outline ....... cloudline_controller-Edge_Cuts.gm1  (100 x 75 mm)
+  Drill ......... cloudline_controller.drl  (Excellon, mm, absolute)
+                  ALL HOLES NON-PLATED.
+
+  FR-4, 1.6 mm, 1 oz copper, HASL lead-free. Top side: no copper, no
+  solder mask needed. Min track 0.5 mm, min spacing 0.35 mm, min hole 0.75 mm.
+"""
+
+
+def fix_text(path, pairs):
+    text = open(path).read()
+    for a, b in pairs:
+        text = text.replace(a, b)
+    open(path, "w").write(text)
 
 
 def run(cmd, quiet=False, **kw):
@@ -66,6 +92,18 @@ def main():
          "--ev", "--no-x2", "-o", GERB + "/", PCB], env=env)
     run(["kicad-cli", "pcb", "export", "drill", "--format", "excellon", "-u", "mm",
          "--generate-map", "--map-format", "pdf", "-o", GERB + "/", PCB], env=env)
+    # KiCad describes the copper as layer 2 of 2 and the holes as plated,
+    # because the design keeps F.Cu as a jumper layer. Rewrite those file
+    # attributes so they describe what is ordered: one layer, no plating.
+    for f in os.listdir(GERB):
+        path = os.path.join(GERB, f)
+        if f.endswith(".gbl"):
+            fix_text(path, [("TF.FileFunction,Copper,L2,Bot", "TF.FileFunction,Copper,L1,Bot")])
+        if f.endswith(".drl"):
+            fix_text(path, [("TF.FileFunction,MixedPlating,1,2", "TF.FileFunction,NonPlated,1,1,NPTH"),
+                            ("TA.AperFunction,Plated,PTH,ComponentDrill", "TA.AperFunction,NonPlated,NPTH,ComponentDrill")])
+    with open(os.path.join(GERB, "FAB_NOTES.txt"), "w") as f:
+        f.write(FAB_NOTES)
     produced = sorted(os.listdir(GERB))
     print("gerber/drill files:", produced)
     for unwanted in ("-F_Cu.", "-F_Mask."):
@@ -76,12 +114,12 @@ def main():
         for f in produced:
             # The .gbrjob would describe 2 copper layers (F.Cu is KiCad's
             # jumper layer), which could mislead a fab's auto-detection.
-            if not f.endswith((".pdf", ".gbrjob")):
+            if not f.endswith((".pdf", ".gbrjob")):  # includes FAB_NOTES.txt
                 z.write(os.path.join(GERB, f), f)
     print("wrote", ZIPNAME)
 
     # 5a. assembly drawing and home-etch artwork
-    run(["kicad-cli", "pcb", "export", "pdf", "-l", "F.Fab,F.SilkS,F.Cu,Edge.Cuts",
+    run(["kicad-cli", "pcb", "export", "pdf", "-l", "F.Fab,F.SilkS,B.Mask,Edge.Cuts",
          "--ibt", "--black-and-white", "-o", os.path.join(FAB, "assembly_top.pdf"), PCB], env=env)
     # Toner transfer: the bottom layer is printed as seen from the TOP (not
     # mirrored); laying the print face-down on the copper mirrors it.

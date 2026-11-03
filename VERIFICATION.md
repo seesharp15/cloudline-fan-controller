@@ -134,10 +134,41 @@ scenario, "AVR" = `test/avr/run_simavr.sh`, bench IDs = [BENCH_TEST.md](BENCH_TE
 
 | ID | Item | Evidence | Status |
 |---|---|---|---|
-| PCB-1 | PCB with only one copper trace layer | `hardware/pcb/cloudline_controller.kicad_pcb`: all tracks and pads on B.Cu; F.Cu is KiCad's *jumper* layer holding only wire link W1 and is not exported | PASS |
-| PCB-2 | Realises the schematic | `hardware/pcb/check_pcb.py`: copper-geometry connectivity vs. PINOUT §6, 20 nets / 72 pads, 0 opens / 0 shorts (mutation-tested) | PASS |
-| PCB-3 | Manufacturable | KiCad DRC: 0 errors, 0 unconnected (23 intentional library-mismatch warnings); gerbv reads the Gerbers back | PASS (not yet fabricated) |
-| PCB-4 | All files for production | `hardware/pcb/fab/`: Gerber + drill zip, drill map, BOM, assembly drawing, toner-transfer artwork, ordering options in `hardware/pcb/README.md` | PASS |
+| PCB-1 | PCB with only one copper trace layer | `hardware/pcb/cloudline_controller.kicad_pcb`: every track and pad on B.Cu, no wire links; F.Cu is KiCad's (empty) *jumper* layer and is not exported | PASS |
+| PCB-2 | Realises the schematic | `hardware/pcb/check_pcb.py`: copper-geometry connectivity vs. PINOUT §6, 20 nets / 71 pads, 0 opens / 0 shorts (mutation-tested) | PASS |
+| PCB-3 | Manufacturable | KiCad DRC: 0 errors, 0 unconnected (22 intentional library-mismatch warnings); gerbv reads the Gerbers back; independent review: no blockers, findings fixed (below) | PASS (not yet fabricated) |
+| PCB-4 | All files for production | `hardware/pcb/fab/`: Gerber + drill zip with `FAB_NOTES.txt`, drill map, BOM, assembly drawing, toner-transfer artwork; ordering options in `hardware/pcb/README.md` | PASS |
+
+**Independent review of the PCB (2026-11-03).** A separate agent reviewed the
+board, the footprints against the real parts (pin orders, polarities, lead
+pitches, the BOB-12009 against SparkFun's Eagle file), the mechanics, the
+fab package and the documentation. It confirmed:
+
+- the Nano pin mapping;
+- the TO-92 and diode orientation, and C1's polarity;
+- the BOB-12009 footprint;
+- all lead pitches except F1's;
+- the J2/J3/J4 labels against their nets;
+- the J2 wire-entry direction;
+- the clearances and the fab layers.
+
+It found no blockers. Its findings were:
+
+| # | Sev. | Finding | Resolution |
+|---|---|---|---|
+| P-1 | Major | The 100 × 75 mm board doesn't fit the enclosure in the BOM, and the BOM and README gave different box sizes. | No inside dimensions could be verified for the listed box, so the BOM and README now state the required **inside** size (115 × 90 × 35 mm for the PCB) and standoff mounting through the board's own holes. |
+| P-2 | Major | A 1-layer order doesn't tell the fab that the copper is on the bottom and the legend on top; the file attributes said "L2" and "Plated". | `FAB_NOTES.txt` in the zip, order-remark text in the PCB README, attributes rewritten to `Copper,L1,Bot` and `NonPlated`. |
+| P-3 | Minor | Wire link W1 only grounded U4's GND, which the BOB-12009 doesn't use (its GND pins connect only to each other in SparkFun's board file). | U4's GND left unwired; **the board now has no wire links**. |
+| P-4 | Minor | F1 footprint (Bel Fuse 0ZRE) has its second pad offset 1.6 mm sideways; the MF-R020 has straight leads. | New `PTC_Radial_P5.10mm` footprint, pads 5.1 mm apart in line. |
+| P-5 | Minor | TO-92 footprints have 2.54 mm pitch; straight-lead parts have 1.27 mm. | Assembly note and BOM note: bend the outer leads out. |
+| P-6 | Minor | Connector pin labels 0.8 mm / 0.12 mm stroke, below typical fab minimums. | 1.0 mm, 0.16 mm stroke. |
+| P-7 | Minor | J4's label was one string beside pin 4. | One label per pin, as on J3. |
+| P-8 | Minor | J2 pads (2.6 mm) on unplated holes may lift under screw torque. | 3.3 mm pads; cable gland recommended. |
+| P-9 | Minor | PCB README errors: `check_pins.py` doesn't read the PCB; the assembly drawing had no pads; "R4 bridges tracks" was untrue; Adafruit 757 offered without a footprint check. | All corrected; the assembly drawing now includes the pads (B.Mask). |
+
+After these fixes the board was regenerated and DRC, `check_pcb.py`, the
+host tests and the fab package were re-run (results above). The fixes were
+not reviewed again by a separate agent.
 
 ---
 

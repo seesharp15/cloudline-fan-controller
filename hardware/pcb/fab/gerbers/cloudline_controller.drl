@@ -1,45 +1,38 @@
 M48
-; DRILL file {KiCad 7.0.11+dfsg-1build4} date Tue Nov  3 01:23:37 2026
+; DRILL file {KiCad 7.0.11+dfsg-1build4} date Tue Nov  3 01:38:43 2026
 ; FORMAT={-:-/ absolute / metric / decimal}
-; #@! TF.CreationDate,2026-11-03T01:23:37+00:00
+; #@! TF.CreationDate,2026-11-03T01:38:43+00:00
 ; #@! TF.GenerationSoftware,Kicad,Pcbnew,7.0.11+dfsg-1build4
-; #@! TF.FileFunction,MixedPlating,1,2
+; #@! TF.FileFunction,NonPlated,1,1,NPTH
 FMAT,2
 METRIC
-; #@! TA.AperFunction,Plated,PTH,ComponentDrill
-T1C0.710
-; #@! TA.AperFunction,Plated,PTH,ComponentDrill
-T2C0.750
-; #@! TA.AperFunction,Plated,PTH,ComponentDrill
-T3C0.800
-; #@! TA.AperFunction,Plated,PTH,ComponentDrill
-T4C1.000
-; #@! TA.AperFunction,Plated,PTH,ComponentDrill
-T5C1.100
-; #@! TA.AperFunction,Plated,PTH,ComponentDrill
-T6C1.200
-; #@! TA.AperFunction,Plated,PTH,ComponentDrill
-T7C1.300
 ; #@! TA.AperFunction,NonPlated,NPTH,ComponentDrill
-T8C3.200
+T1C0.750
+; #@! TA.AperFunction,NonPlated,NPTH,ComponentDrill
+T2C0.800
+; #@! TA.AperFunction,NonPlated,NPTH,ComponentDrill
+T3C1.000
+; #@! TA.AperFunction,NonPlated,NPTH,ComponentDrill
+T4C1.100
+; #@! TA.AperFunction,NonPlated,NPTH,ComponentDrill
+T5C1.200
+; #@! TA.AperFunction,NonPlated,NPTH,ComponentDrill
+T6C1.300
+; #@! TA.AperFunction,NonPlated,NPTH,ComponentDrill
+T7C3.200
 %
 G90
 G05
 T1
-X138.0Y-80.0
-X143.1Y-81.6
-T2
 X103.0Y-65.0
 X103.0Y-72.62
 X110.0Y-57.38
 X110.0Y-65.0
-T3
-X70.74Y-108.4
-X73.28Y-108.4
-X75.82Y-105.0
-X78.36Y-105.0
-X89.25Y-88.5
-X89.25Y-96.0
+T2
+X70.74Y-104.9
+X73.28Y-104.9
+X75.82Y-104.9
+X78.36Y-104.9
 X91.92Y-100.0
 X91.92Y-104.5
 X94.0Y-55.0
@@ -65,8 +58,10 @@ X126.54Y-51.0
 X129.08Y-51.0
 X130.0Y-44.0
 X132.16Y-67.16
+X138.0Y-80.0
 X140.16Y-44.0
-T4
+X143.1Y-80.0
+T3
 X55.5Y-70.0
 X55.5Y-85.24
 X58.04Y-70.0
@@ -88,24 +83,24 @@ X73.28Y-70.0
 X73.28Y-85.24
 X73.28Y-91.5
 X73.28Y-101.66
-X73.28Y-112.2
+X73.28Y-108.8
 X75.82Y-58.5
 X75.82Y-70.0
 X75.82Y-85.24
 X75.82Y-91.5
 X75.82Y-101.66
-X75.82Y-112.2
+X75.82Y-108.8
 X78.36Y-58.5
 X78.36Y-70.0
 X78.36Y-85.24
 X78.36Y-91.5
 X78.36Y-101.66
-X78.36Y-112.2
+X78.36Y-108.8
 X80.9Y-70.0
 X80.9Y-85.24
 X80.9Y-91.5
 X80.9Y-101.66
-X80.9Y-112.2
+X80.9Y-108.8
 X83.44Y-70.0
 X83.44Y-85.24
 X83.44Y-91.5
@@ -118,18 +113,18 @@ X88.52Y-70.0
 X88.52Y-85.24
 X91.06Y-70.0
 X91.06Y-85.24
-T5
+T4
 X120.0Y-86.5
 X130.16Y-86.5
-T6
+T5
 X114.0Y-86.5
 X114.0Y-99.2
-T7
+T6
 X142.5Y-57.0
 X142.5Y-62.08
 X142.5Y-67.16
 X142.5Y-72.24
-T8
+T7
 X53.5Y-43.5
 X53.5Y-111.5
 X146.5Y-43.5
