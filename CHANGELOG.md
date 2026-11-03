@@ -1,5 +1,18 @@
 # Changelog
 
+## PCB build guide (2026-11-03)
+
+- `hardware/pcb/README.md` rewritten as the main page for the PCB:
+  - the three ways to get a board (mill, order, etch);
+  - the milling setup;
+  - every file;
+  - a walkthrough split into resumable sessions S0–S18, from opening the
+    files to a boxed controller. Each session has a start state, steps, a
+    checkpoint, and what to do if it goes wrong;
+  - a progress log to fill in.
+- `hardware/pcb/fusion/README.md` keeps the reference material and points to
+  the walkthrough for the steps.
+
 ## Rev B PCB, milling and Fusion 360 (2026-11-03)
 
 - **Board re-routed for isolation milling.**

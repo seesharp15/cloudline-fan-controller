@@ -57,118 +57,16 @@ y′ = 75 − y). The Nano's USB end is on the **right** in the mill files.
 
 ## Step by step
 
-### 1. Prepare the blank
+The full walkthrough is in [`../README.md`](../README.md#the-walkthrough-session-by-session).
+It goes from opening these files to a finished board in separate, resumable
+sessions:
 
-1. **Measure the blank thickness** with calipers at all four corners and
-   note the largest value. FR-4 is usually 1.5–1.6 mm. Copper weight doesn't
-   need to be known.
-2. Cut the blank to at least **110 × 85 mm**, which leaves 5 mm around the
-   board. A 100 × 160 Eurocard blank also works.
-3. **Surface the spoilboard** where the blank goes. Use a large flat end mill
-   about 0.2 mm deep.
-4. Clean the back of the blank. Cover the **whole** back with thin
-   double-sided tape and press it down hard, especially in the middle. Tape
-   only at the edges lets the middle bow up.
-5. **Flatness check** (this replaces the height map):
-   - Zero Z with the touch plate at the board centre.
-   - Probe the copper height at the four corners.
-   - The spread must stay within **±0.10 mm**. If it doesn't, re-tape the blank
-     or re-surface the spoilboard first.
+- S3 blank;
+- S4–S6 in Fusion: import, setup and operations, simulate and post;
+- S7–S10 on the machine: prepare and zero, isolation, drilling, outline;
+- S11 inspection and test.
 
-### 2. Fusion: import
-
-1. Upload `cloudline_pcb_MILL_copper_up.step` and open it.
-2. Import the tool library: in **Manufacture → Tool Library**, right-click
-   a local library folder and choose *Import tool libraries…*, then pick
-   `cloudline_pcb_tools.json`. Change the **tool numbers** to match the slots
-   in your tool changer if they differ from T1–T7.
-
-   The JSON follows Fusion's tool library format. It has not been tested in
-   Fusion. If the import fails, create the seven tools by hand from the
-   [feeds and speeds table](#feeds-and-speeds).
-3. Create a sketch on an **offset plane 1.635 mm** above the XY plane. In it,
-   use *Insert → Insert DXF* to place `cloudline_pcb_MILL_copper_up.dxf` at
-   origin 0,0 in mm. The `ISO_PASS1` / `ISO_PASS2` curves now lie exactly on
-   the copper surface.
-
-### 3. Fusion: setup (Manufacture → Setup)
-
-- **Machine:** your Stepcraft M.1000 machine definition, if you have one.
-  Otherwise use a generic 3-axis mill.
-- **Stock:** *Fixed size box*.
-  - X × Y = your blank size.
-  - Z = the **thickness you measured**.
-  - Model position: X *offset from left* 5 mm, Y *offset from front* 5 mm,
-    Z *offset from top* **0**, so the copper top is the stock top.
-- **WCS:** Z up. Origin *Stock box point*, **top, front-left corner** of the
-  stock.
-- **On the machine:**
-  - X/Y zero is the front-left corner of the blank.
-  - Z zero is the copper surface. Use the touch plate with **T1** at the
-    board centre.
-
-  Your tool changer's tool-length measurement must then refer every other
-  tool to that Z zero. Use the Stepcraft/UCCNC tool-changer routine for this.
-
-### 4. Fusion: operations (all in one setup, in this order)
-
-**Op 1: Isolation, T1. 2D → Trace, twice.**
-
-- **Geometry:** chain-select every curve on `ISO_PASS1`. Use a second
-  Trace for `ISO_PASS2`.
-- **Heights:**
-  - *Bottom height:* *Selected contour(s)*, **offset −0.20 mm**.
-  - *Top height:* 0.5 mm above. *Retract:* 2 mm.
-  - No multiple depths. No compensation: the paths are already tool-centre
-    lines.
-- **Simulate with stock** and compare the result with
-  [`isolation_preview.png`](isolation_preview.png).
-- Don't use these paths with another tool. For a different V-bit, see
-  [Regenerating](#regenerating).
-
-**Op 2: Drilling, T2–T6. Drilling → Drill, one operation per tool.**
-
-| Tool | Holes | How to select |
-|---|---|---|
-| T2 0.8 mm | 0.75 mm ×4 and 0.80 mm ×32 | Click one hole of each size, then *Select same diameter* |
-| T3 1.0 mm | 1.00 mm ×51 | |
-| T4 1.2 mm | 1.10 mm ×2 and 1.20 mm ×2 | |
-| T5 1.3 mm | 1.30 mm ×4 (J2 screw terminal) | |
-| T6 3.2 mm | 3.20 mm ×4 (M3 mounting) | |
-
-You have every drill size, so you can also put a 0.75 mm and a 1.1 mm drill on
-those holes. That gives a better fit, but takes two more tool changes.
-
-- *Cycle:* **Chip breaking – partial retract**, peck 0.5 mm. For T6, use
-  *Deep drilling – full retract*.
-- *Bottom height:* **Stock bottom**, with *Drill tip through bottom* and a
-  break-through depth of 0.5 mm.
-- *Hole order:* *Optimize order*.
-
-**Op 3: Outline, T7. 2D → 2D Contour.**
-
-- *Geometry:* the bottom outer edge of `FR4_substrate`. The tool goes
-  outside.
-- *Bottom height:* **Stock bottom − 0.2 mm**.
-- *Multiple depths:* maximum step-down 0.5 mm.
-- *Tabs:* 4 tabs, 3 mm wide, 0.6 mm thick. Or no tabs, as long as the tape
-  covers the whole board.
-- The 0.8 mm end mill also works for the outline, but use step-down 0.2 mm
-  and feed 250 mm/min.
-
-### 5. Post and run
-
-- **Post processor:** search the Fusion post library for **UCCNC** and use
-  Autodesk's *UCCNC* post. Output units mm.
-  - The program changes tools with `T# M6`.
-  - UCCNC runs its M6 macro, which drives the Stepcraft tool changer.
-  - The first time, check that the M6 macro measures tool lengths the way
-    your machine is set up.
-- Post **all operations into one program**. The order is T1 → T2…T6 → T7.
-- **First run:** do a dry run at Z +5 mm (offset the work Z in UCCNC), then
-  run on scrap before the real blank.
-
-### Feeds and speeds
+## Feeds and speeds
 
 These values are also in the tool library. They are starting values for
 carbide tools in FR-4, and every speed is within the DI 1000's
@@ -189,16 +87,8 @@ the drill sits fully in it.
 
 ## After milling
 
-- Scrub the copper with a fine abrasive pad.
-- Check the gaps with a loupe against [`isolation_preview.png`](isolation_preview.png).
-- With a continuity tester, check that neighbouring header pads are **not**
-  connected. These are the pairs listed in `milling_report.txt`.
-- A milled board has no solder mask and no silkscreen:
-  - Print [`../fab/assembly_top.pdf`](../fab/assembly_top.pdf) at 100 % as the
-    placement guide.
-  - Solder-through flux lacquer protects the copper.
-- Assemble as in [`../README.md`](../README.md). The parts go on the side
-  **without** copper.
+See sessions S11 (clean, inspect, test for shorts) and S12–S17 (assembly)
+in [`../README.md`](../README.md#s11-clean-inspect-and-test-the-bare-board).
 
 ## Regenerating
 
