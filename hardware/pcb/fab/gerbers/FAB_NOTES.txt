@@ -1,0 +1,16 @@
+Cloudline AI-CLS6 controller PCB, Rev B
+=========================================
+SINGLE-SIDED BOARD: 1 copper layer.
+
+  Copper ........ BOTTOM side only:  cloudline_controller-B_Cu.gbl
+                  (drawn as seen from the TOP, like all files here; do NOT
+                  mirror it, do NOT move it to the top side)
+  Solder mask ... BOTTOM side only:  cloudline_controller-B_Mask.gbs
+  Silkscreen .... TOP side only:     cloudline_controller-F_Silkscreen.gto
+                  (the legend goes on the side WITHOUT copper)
+  Outline ....... cloudline_controller-Edge_Cuts.gm1  (100 x 75 mm)
+  Drill ......... cloudline_controller.drl  (Excellon, mm, absolute)
+                  ALL HOLES NON-PLATED.
+
+  FR-4, 1.6 mm, 1 oz copper, HASL lead-free. Top side: no copper, no
+  solder mask needed. Min track 0.5 mm, min spacing 0.35 mm, min hole 0.75 mm.
