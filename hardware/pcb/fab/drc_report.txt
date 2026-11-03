@@ -1,0 +1,79 @@
+** Drc report for /home/user/cloudline-fan-controller/hardware/pcb/cloudline_controller.kicad_pcb **
+** Created on 2026-11-03 01:23:36 **
+
+** Found 23 DRC violations **
+[lib_footprint_mismatch]: Footprint 'D_DO-41_SOD81_P10.16mm_Horizontal' does not match copy in library 'Diode_THT'.
+    Local override; Severity: warning
+    @(120.0000 mm, 86.5000 mm): Footprint D1
+[lib_footprint_mismatch]: Footprint 'TO-92_Inline_Wide' does not match copy in library 'Package_TO_SOT_THT'.
+    Local override; Severity: warning
+    @(124.0000 mm, 51.0000 mm): Footprint Q1
+[lib_footprint_mismatch]: Footprint 'C_Disc_D5.0mm_W2.5mm_P5.00mm' does not match copy in library 'Capacitor_THT'.
+    Local override; Severity: warning
+    @(115.0000 mm, 65.0000 mm): Footprint C5
+[lib_footprint_mismatch]: Footprint 'R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal' does not match copy in library 'Resistor_THT'.
+    Local override; Severity: warning
+    @(130.0000 mm, 44.0000 mm): Footprint R5
+[lib_footprint_mismatch]: Footprint 'D_DO-34_SOD68_P7.62mm_Horizontal' does not match copy in library 'Diode_THT'.
+    Local override; Severity: warning
+    @(103.0000 mm, 72.6200 mm): Footprint D3
+[lib_footprint_mismatch]: Footprint 'TO-92_Inline_Wide' does not match copy in library 'Package_TO_SOT_THT'.
+    Local override; Severity: warning
+    @(97.0000 mm, 100.0000 mm): Footprint U2
+[lib_footprint_mismatch]: Footprint 'R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal' does not match copy in library 'Resistor_THT'.
+    Local override; Severity: warning
+    @(112.0000 mm, 45.0000 mm): Footprint R3
+[lib_footprint_mismatch]: Footprint 'D_DO-34_SOD68_P7.62mm_Horizontal' does not match copy in library 'Diode_THT'.
+    Local override; Severity: warning
+    @(110.0000 mm, 65.0000 mm): Footprint D4
+[lib_footprint_mismatch]: Footprint 'PinHeader_1x05_P2.54mm_Vertical' does not match copy in library 'Connector_PinHeader_2.54mm'.
+    Local override; Severity: warning
+    @(68.2000 mm, 58.5000 mm): Footprint J3
+[lib_footprint_mismatch]: Footprint 'Fuse_BelFuse_0ZRE0005FF_L8.3mm_W3.8mm' does not match copy in library 'Fuse'.
+    Local override; Severity: warning
+    @(138.0000 mm, 80.0000 mm): Footprint F1
+[lib_footprint_mismatch]: Footprint 'C_Disc_D5.0mm_W2.5mm_P5.00mm' does not match copy in library 'Capacitor_THT'.
+    Local override; Severity: warning
+    @(94.4600 mm, 95.5000 mm): Footprint C3
+[lib_footprint_mismatch]: Footprint 'TerminalBlock_Phoenix_MKDS-1,5-4-5.08_1x04_P5.08mm_Horizontal' does not match copy in library 'TerminalBlock_Phoenix'.
+    Local override; Severity: warning
+    @(142.5000 mm, 72.2400 mm): Footprint J2
+[lib_footprint_mismatch]: Footprint 'R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical' does not match copy in library 'Resistor_THT'.
+    Local override; Severity: warning
+    @(75.8200 mm, 105.0000 mm): Footprint R2
+[lib_footprint_mismatch]: Footprint 'R_Axial_DIN0207_L6.3mm_D2.5mm_P7.62mm_Horizontal' does not match copy in library 'Resistor_THT'.
+    Local override; Severity: warning
+    @(99.0000 mm, 65.0000 mm): Footprint R6
+[lib_footprint_mismatch]: Footprint 'C_Disc_D5.0mm_W2.5mm_P5.00mm' does not match copy in library 'Capacitor_THT'.
+    Local override; Severity: warning
+    @(100.0000 mm, 86.5000 mm): Footprint C2
+[lib_footprint_mismatch]: Footprint 'CP_Radial_D8.0mm_P3.50mm' does not match copy in library 'Capacitor_THT'.
+    Local override; Severity: warning
+    @(107.0000 mm, 86.5000 mm): Footprint C1
+[lib_footprint_mismatch]: Footprint 'R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal' does not match copy in library 'Resistor_THT'.
+    Local override; Severity: warning
+    @(122.0000 mm, 67.1600 mm): Footprint R7
+[lib_footprint_mismatch]: Footprint 'R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal' does not match copy in library 'Resistor_THT'.
+    Local override; Severity: warning
+    @(94.0000 mm, 55.0000 mm): Footprint R4
+[lib_footprint_mismatch]: Footprint 'D_DO-15_P12.70mm_Horizontal' does not match copy in library 'Diode_THT'.
+    Local override; Severity: warning
+    @(114.0000 mm, 86.5000 mm): Footprint D2
+[lib_footprint_mismatch]: Footprint 'PinHeader_1x04_P2.54mm_Vertical' does not match copy in library 'Connector_PinHeader_2.54mm'.
+    Local override; Severity: warning
+    @(73.2800 mm, 112.2000 mm): Footprint J4
+[lib_footprint_mismatch]: Footprint 'R_Axial_DIN0207_L6.3mm_D2.5mm_P2.54mm_Vertical' does not match copy in library 'Resistor_THT'.
+    Local override; Severity: warning
+    @(73.2800 mm, 108.4000 mm): Footprint R1
+[lib_footprint_mismatch]: Footprint 'C_Disc_D5.0mm_W2.5mm_P5.00mm' does not match copy in library 'Capacitor_THT'.
+    Local override; Severity: warning
+    @(91.9200 mm, 104.5000 mm): Footprint C4
+[lib_footprint_mismatch]: Footprint 'Arduino_Nano' does not match copy in library 'Module'.
+    Local override; Severity: warning
+    @(91.0600 mm, 70.0000 mm): Footprint U1
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** End of Report **

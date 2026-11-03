@@ -320,6 +320,7 @@ def draw():
     text(jx + 35, jy + 280, "VERIFY pins!", 12, "middle", "warn", "bold")
     text(jx + 35, jy + 295, "face view: below", 11, "middle", "val")
     j4 = pin_r(jx + 70, 360, "+10V", 4, 40)
+    text(176, 300, "+10V_FAN", 11, "start", "rail", "bold")
     j3 = pin_r(jx + 70, 410, "GND", 3, 40)
     j2 = pin_r(jx + 70, 480, "PWM", 2, 40)
     j1 = pin_r(jx + 70, 520, "TACH", 1, 40)
@@ -383,7 +384,7 @@ def draw():
     wire(j2, (qx - 10, 480))
     dot(260, 480)
     resistor_v(260, 480, 380, "R5", "4.7k  DNP", side="right", dnp=True)
-    pwr(260, 380, "+10V_P")
+    pwr(260, 380, "+10V_FAN")
     wire((qx - 10, qy + 40), (qx - 10, 570))
     gnd(qx - 10, 570)
     resistor_h(qx + 30, 470, qy, "R3", "220Ω", lab_dy=18)
@@ -507,7 +508,7 @@ def draw():
     # ---------------- Notes and title ----------------
     note_box(30, 860, 640, [
         "1. J1 pin functions come from builder reports, not AC Infinity. Measure your fan first",
-        "   (README: Pre-connection verification). Fit R5 only if PWM does not idle near +10 V.",
+        "   (README: Pre-connection verification). R5 (to the fan's +10V, before F1) only if M3 says so.",
         "2. TO-92 pinouts, flat face towards you, legs down: 2N7000 = S-G-D, MCP1700 = GND-VIN-VOUT.",
         "3. U3 pin ORDER differs between batches - wire by the printed labels, not by position.",
         "4. Resistors 1/4 W 5 %. C1 electrolytic >= 25 V. Diode band = cathode. DNP = not fitted.",

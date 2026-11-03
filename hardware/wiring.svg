@@ -52,7 +52,7 @@
 <text x="346" y="270" font-size="12" text-anchor="start" font-weight="bold" class="sec">SPEED OUTPUT</text>
 <text x="346" y="287" font-size="12" text-anchor="start" font-weight="normal" class="t">Q1 2N7000 (S-G-D), R3 220R D9 -&gt; gate</text>
 <text x="346" y="302" font-size="12" text-anchor="start" font-weight="normal" class="t">R4 10k D9 end of R3 -&gt; +5V (OFF at boot)</text>
-<text x="346" y="317" font-size="12" text-anchor="start" font-weight="normal" class="t">R5 4.7k to +10V_P: DNP</text>
+<text x="346" y="317" font-size="12" text-anchor="start" font-weight="normal" class="t">R5 4.7k to fan +10V: DNP</text>
 <text x="346" y="360" font-size="12" text-anchor="start" font-weight="bold" class="sec">TACH INPUT</text>
 <text x="346" y="377" font-size="12" text-anchor="start" font-weight="normal" class="t">R7 1k series, R6 10k -&gt; +5V</text>
 <text x="346" y="392" font-size="12" text-anchor="start" font-weight="normal" class="t">D3 BAT85 -&gt; +5V, D4 BAT85 -&gt; GND</text>

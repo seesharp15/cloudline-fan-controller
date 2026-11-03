@@ -130,6 +130,15 @@ scenario, "AVR" = `test/avr/run_simavr.sh`, bench IDs = [BENCH_TEST.md](BENCH_TE
 | LAY-1 | Repository layout | README *Development and tests* | PASS |
 | CHK-1 | Final checklist | end of the delivery message | PASS |
 
+### 1.7 Single-sided PCB (request of 2026-11-03)
+
+| ID | Item | Evidence | Status |
+|---|---|---|---|
+| PCB-1 | PCB with only one copper trace layer | `hardware/pcb/cloudline_controller.kicad_pcb`: all tracks and pads on B.Cu; F.Cu is KiCad's *jumper* layer holding only wire link W1 and is not exported | PASS |
+| PCB-2 | Realises the schematic | `hardware/pcb/check_pcb.py`: copper-geometry connectivity vs. PINOUT §6, 20 nets / 72 pads, 0 opens / 0 shorts (mutation-tested) | PASS |
+| PCB-3 | Manufacturable | KiCad DRC: 0 errors, 0 unconnected (23 intentional library-mismatch warnings); gerbv reads the Gerbers back | PASS (not yet fabricated) |
+| PCB-4 | All files for production | `hardware/pcb/fab/`: Gerber + drill zip, drill map, BOM, assembly drawing, toner-transfer artwork, ordering options in `hardware/pcb/README.md` | PASS |
+
 ---
 
 ## 2. Electrical calculations

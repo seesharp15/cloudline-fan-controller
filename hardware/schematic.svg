@@ -36,6 +36,7 @@
 <line x1="130" y1="360" x2="170" y2="360" class="w"/>
 <text x="124" y="364" font-size="12" text-anchor="end" font-weight="normal" class="pin">+10V</text>
 <text x="134" y="356" font-size="10" text-anchor="start" font-weight="normal" class="num">4</text>
+<text x="176" y="300" font-size="11" text-anchor="start" font-weight="bold" class="rail">+10V_FAN</text>
 <line x1="130" y1="410" x2="170" y2="410" class="w"/>
 <text x="124" y="414" font-size="12" text-anchor="end" font-weight="normal" class="pin">GND</text>
 <text x="134" y="406" font-size="10" text-anchor="start" font-weight="normal" class="num">3</text>
@@ -191,7 +192,7 @@
 <text x="272" y="441.0" font-size="12" text-anchor="start" font-weight="normal" class="val">4.7k  DNP</text>
 <line x1="260" y1="380" x2="260" y2="366" class="w"/>
 <line x1="250" y1="366" x2="270" y2="366" class="p"/>
-<text x="260" y="360" font-size="12" text-anchor="middle" font-weight="bold" class="rail">+10V_P</text>
+<text x="260" y="360" font-size="12" text-anchor="middle" font-weight="bold" class="rail">+10V_FAN</text>
 <polyline points="320,560 320,570" class="w" fill="none"/>
 <line x1="320" y1="570" x2="320" y2="580" class="w"/>
 <line x1="308" y1="580" x2="332" y2="580" class="p"/>
@@ -403,7 +404,7 @@
 <rect x="30" y="860" width="640" height="122" rx="4" class="note"/>
 <text x="40" y="878" font-size="13" text-anchor="start" font-weight="bold" class="ref">NOTES</text>
 <text x="40" y="896" font-size="12" text-anchor="start" font-weight="normal" class="val">1. J1 pin functions come from builder reports, not AC Infinity. Measure your fan first</text>
-<text x="40" y="912" font-size="12" text-anchor="start" font-weight="normal" class="val">   (README: Pre-connection verification). Fit R5 only if PWM does not idle near +10 V.</text>
+<text x="40" y="912" font-size="12" text-anchor="start" font-weight="normal" class="val">   (README: Pre-connection verification). R5 (to the fan's +10V, before F1) only if M3 says so.</text>
 <text x="40" y="928" font-size="12" text-anchor="start" font-weight="normal" class="val">2. TO-92 pinouts, flat face towards you, legs down: 2N7000 = S-G-D, MCP1700 = GND-VIN-VOUT.</text>
 <text x="40" y="944" font-size="12" text-anchor="start" font-weight="normal" class="val">3. U3 pin ORDER differs between batches - wire by the printed labels, not by position.</text>
 <text x="40" y="960" font-size="12" text-anchor="start" font-weight="normal" class="val">4. Resistors 1/4 W 5 %. C1 electrolytic &gt;= 25 V. Diode band = cathode. DNP = not fitted.</text>

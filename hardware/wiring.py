@@ -108,7 +108,7 @@ def draw():
         (by + 30, "POWER", ["F1 PTC 0.2 A  ->  D1 1N5817 (band ->)", "D2 P6KE13A, C1 220uF, C2 100nF",
                              "to GND: gives protected +10V_P"]),
         (by + 120, "SPEED OUTPUT", ["Q1 2N7000 (S-G-D), R3 220R D9 -> gate", "R4 10k D9 end of R3 -> +5V (OFF at boot)",
-                                     "R5 4.7k to +10V_P: DNP"]),
+                                     "R5 4.7k to fan +10V: DNP"]),
         (by + 210, "TACH INPUT", ["R7 1k series, R6 10k -> +5V", "D3 BAT85 -> +5V, D4 BAT85 -> GND",
                                    "C5 10nF -> GND"]),
         (by + 300, "3.3 V AND I2C FOR OLED", ["U2 MCP1700-3302E (GND-VIN-VOUT), C3, C4 1uF",

@@ -20,8 +20,8 @@ all four documents agree.
 
 | Rail | Nominal | Source | Feeds |
 |---|---|---|---|
-| **+10V_FAN** | ~10 V DC (measured on your fan in check M1) | Fan, J1 pin 4 | F1 |
-| **+10V_P** (protected) | ~9.6 V | After F1 (PTC, ~0.1 V) and D1 (Schottky, ~0.3 V) | Nano **VIN**, D2, C1, C2, R5 (only if fitted) |
+| **+10V_FAN** | ~10 V DC (measured on your fan in check M1) | Fan, J1 pin 4 | F1, R5 (only if fitted) |
+| **+10V_P** (protected) | ~9.6 V | After F1 (PTC, ~0.1 V) and D1 (Schottky, ~0.3 V) | Nano **VIN**, D2, C1, C2 |
 | **+5V** | 5.0 V | Nano on-board regulator (VIN → 5 V) | Nano, U2 input, R4 (pull-up at the D9 end of R3), R6 (tach pull-up), D3 clamp, U4 HV |
 | **+3V3** | 3.3 V | U2 MCP1700-3302E (from +5V) | OLED module VCC, R1/R2 I²C pull-ups, U4 LV |
 | **GND** | 0 V | Fan, J1 pin 3 | Everything. One common ground. |
@@ -164,7 +164,7 @@ U4, so the display only ever sees 3.3 V and the Nano 5 V.
 | R2 | 2.2 kΩ | U3 SCL / U4 LV2 ↔ +3V3 | I²C pull-up, display side |
 | R3 | 220 Ω | D9 ↔ Q1 gate | Limits D9's peak current into the gate capacitance; damps ringing |
 | R4 | 10 kΩ | D9 end of R3 ↔ +5V | Holds Q1 on through R3 (fan **OFF**) while D9 floats during reset/bootloader |
-| R5 | 4.7 kΩ **DNP** | J1 pin 2 ↔ +10V_P | Only if check M3 finds no internal pull-up |
+| R5 | 4.7 kΩ **DNP** | J1 pin 2 ↔ J1 pin 4 (+10V_FAN, before F1) | Only if check M3 finds no internal pull-up. It pulls up to the fan's own supply, like the missing internal pull-up would (2 mA). |
 | R6 | 10 kΩ | tach node (D2) ↔ +5V | Tach pull-up to **5 V** (never to 10 V) |
 | R7 | 1 kΩ | J1 pin 1 ↔ tach node | Series protection: clamp current 6.7 mA with 12 V on pin 1 |
 | C1 | 220 µF ≥ 25 V electrolytic | +10V_P ↔ GND | Bulk / hold-up (+ to the rail) |
@@ -182,9 +182,9 @@ For perfboard builds. Tick each line off as you solder it.
 
 | # | From | To | Net |
 |---|---|---|---|
-| 1 | J1 pin 4 | F1 lead 1 | +10V_FAN |
+| 1 | J1 pin 4 | F1 lead 1, R5* | +10V_FAN |
 | 2 | F1 lead 2 | D1 anode | |
-| 3 | D1 cathode | Nano VIN (30), C1 +, C2, D2 cathode, R5* | **+10V_P** |
+| 3 | D1 cathode | Nano VIN (30), C1 +, C2, D2 cathode | **+10V_P** |
 | 4 | J1 pin 3 | Nano GND (29), C1 −, C2, D2 anode, Q1 S, D4 anode, C5, C3, C4, U2 GND, U3 GND, U4 GND | **GND** |
 | 5 | J1 pin 2 | Q1 drain, R5* | FAN_PWM |
 | 6 | Nano D9 (12) | R3, R4 | PWM_GATE |

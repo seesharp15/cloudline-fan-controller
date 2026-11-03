@@ -70,6 +70,7 @@ from the fan's own 10 V supply.
 | [hardware/schematic.svg](hardware/schematic.svg) ([PNG](hardware/schematic.png)) | Full schematic, every part labelled with reference and value |
 | [hardware/wiring.svg](hardware/wiring.svg) ([PNG](hardware/wiring.png)) | Physical wiring view with suggested wire colours, for people who don't read schematics |
 | [hardware/bom.csv](hardware/bom.csv) | Parts list with part numbers and prices |
+| [hardware/pcb/](hardware/pcb/README.md) | **Single-sided PCB** (1 copper layer) as an alternative to perfboard: KiCad project, Gerbers + drill ready to order, assembly drawing, ordering options |
 | [FAQ.md](FAQ.md) | The questions builders ask: USB + fan power, PWM frequency, other fans, warranty, other boards… |
 | [BENCH_TEST.md](BENCH_TEST.md) | Manual test of every requirement, first with a dummy load, then with the fan |
 | [VERIFICATION.md](VERIFICATION.md) | Requirements traceability, electrical calculations, pin cross-check, what is verified versus assumed, known limitations, review findings |
@@ -100,9 +101,9 @@ part with the same value and rating works; the part numbers are examples.
 | F1 | 1 | Resettable PTC fuse | 0.2 A hold, 0.4 A trip | Bourns MF-R020 | $0.35 |
 | U4 | 1 | I²C level shifter module (BSS138) | 5 V ↔ 3.3 V, bidirectional, 2 channels used | SparkFun BOB-12009 (or Adafruit 757) | $4 |
 | C1 | 1 | Electrolytic capacitor | 220 µF, 25 V | Panasonic EEU-FR1E221 | $0.40 |
-| C2 | 1 | Ceramic capacitor | 100 nF, 50 V | KEMET C320C104K5R5TA | $0.25 |
-| C3, C4 | 2 | Ceramic capacitor | 1 µF, 25–50 V | TDK FG28X7R1H105KRT06 | $0.60 |
-| C5 | 1 | Ceramic capacitor | 10 nF, 50 V | KEMET C315C103K5R5TA | $0.25 |
+| C2 | 1 | Ceramic capacitor | 100 nF, 50 V, 5 mm lead pitch | TDK FG28X7R1H104KNT06 | $0.25 |
+| C3, C4 | 2 | Ceramic capacitor | 1 µF, 25 V, 5 mm lead pitch | TDK FG28X7R1E105KRT06 | $0.60 |
+| C5 | 1 | Ceramic capacitor | 10 nF, 50 V, 5 mm lead pitch | TDK FG28X7R1H103KNT06 | $0.25 |
 | R1, R2 | 2 | Resistor ¼ W 5 % | 2.2 kΩ | Yageo CFR-25JB-52-2K2 | $0.20 |
 | R3 | 1 | Resistor ¼ W 5 % | 220 Ω | Yageo CFR-25JB-52-220R | $0.10 |
 | R4, R6 | 2 | Resistor ¼ W 5 % | 10 kΩ | Yageo CFR-25JB-52-10K | $0.20 |
@@ -249,6 +250,10 @@ use the fan, and start the build.
 ---
 
 ## Step-by-step build
+
+These steps describe a perfboard build. With the [PCB](hardware/pcb/README.md)
+the order and the checks are the same; its README lists which parts go in
+at each step.
 
 Build in this order. Each step ends with a check: **don't continue until the
 check passes.** The schematic shows every connection; the
@@ -402,7 +407,8 @@ Unplug USB. Solder:
 1. **Speed output:** **Q1** (2N7000, flat face towards you: S, G, D);
    **R3** 220 Ω from socket **D9** (pin 12) to Q1 gate; **R4** 10 kΩ from
    the **D9 end of R3** to **+5V**; Q1 source to GND; J1 **PWM** wire to Q1 drain.
-   Fit **R5** (Q1 drain to +10V_P) only if check M3 told you to.
+   Fit **R5** (Q1 drain to J1's +10V wire, before F1) only if check M3
+   told you to.
 2. **Tach input:** **R7** 1 kΩ from J1 **TACH** wire to the tach node;
    from the tach node: **R6** 10 kΩ to +5V, **D3** BAT85 (band to +5V),
    **D4** BAT85 (band to the tach node, other end GND), **C5** 10 nF to GND,
