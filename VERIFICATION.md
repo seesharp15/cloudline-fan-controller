@@ -840,6 +840,31 @@ J1.1        PINOUT.md       ok       TACH
 pin cross-check: 72 checks, 0 mismatches
 ```
 
+### 8.5b Milling files: `python3 hardware/pcb/fusion/make_fusion.py && python3 hardware/pcb/fusion/check_fusion.py`
+
+```
+Isolation lines in the DXF (layers ISO_PASS1..2) computed for a 30 deg V-bit, 0.10 mm tip, 0.10 mm deep:
+  cut width 0.154 mm, pass offsets from the copper: 0.077, 0.169 mm
+  total path length: pass 1 1600 mm, pass 2 1621 mm
+  simulated cut: every net isolated from every other; no copper of any net removed
+fusion export check: 0 problems
+```
+
+`check_fusion.py` re-imports both STEP files. It checks:
+
+- 45 valid solids;
+- substrate 100 × 75 × 1.6 mm at the origin, with a volume that matches the 99 holes;
+- 44 copper bodies, one per net including unconnected pads;
+- copper volume 20.216 mm³ against 20.208 mm³ from the 2D geometry;
+- Z placement;
+- the Nano VIN pad at its mirrored and top-view positions.
+
+Not verified here:
+
+- the import into Fusion 360 itself;
+- toolpaths and posted G-code;
+- a board actually milled on the M.1000.
+
 ### 8.6 Link check
 
 Every relative link and `#anchor` in the Markdown files resolves (0 broken).

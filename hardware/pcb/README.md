@@ -30,6 +30,7 @@ four M3 mounting holes.
 | [`fab/bottom_copper_toner_transfer_1to1.pdf`](fab/bottom_copper_toner_transfer_1to1.pdf) | Bottom copper at 1:1, drawn as seen from the top (correct for toner transfer: the print goes face-down on the copper), for etching a board at home |
 | `fab/render_*.png`, `fab/gerbv_*.png` | Renders. The `gerbv_*` ones are drawn from the Gerber and drill files themselves by gerbv, an independent viewer: this is what the board house will see. |
 | [`fab/drc_report.txt`](fab/drc_report.txt) | KiCad design-rule check report |
+| [`fusion/`](fusion/README.md) | **Milling it yourself in Fusion 360** (Stepcraft M.1000): copper-side-up STEP model, DXF with isolation paths and drill layers, CAM setup, feeds and speeds |
 | `cloudline_controller.kicad_pcb`, `.kicad_pro`, `fp-lib-table`, `cloudline.pretty/` | The KiCad 7 project, to open and edit in KiCad |
 | [`make_pcb.py`](make_pcb.py) | Generates the board: placement, netlist, single-layer router |
 | [`make_fab.py`](make_fab.py) | Runs the checks and produces everything in `fab/` |
@@ -195,7 +196,8 @@ schematic, the wiring view, PINOUT and README, not the PCB.
     drawing; there is no 3D model);
   - the clearance of the Nano's USB plug at the board edge.
 - KiCad 7's command-line tool has no 3D/STEP export without the 3D model
-  package, so there is no 3D view.
+  package. [`fusion/`](fusion/README.md) has a STEP of the bare board (substrate,
+  holes and copper) built by its own script.
 
 ## Regenerating
 

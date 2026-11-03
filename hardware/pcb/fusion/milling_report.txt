@@ -1,0 +1,53 @@
+Milling report: Cloudline controller PCB (Rev B)
+==================================================
+Board 100.0 x 75.0 mm, copper islands: 44 in 44 nets
+
+Smallest copper-to-copper gaps between different nets
+(the isolation cut must fit inside these):
+   0.410 mm   +3V3 <-> SCL_3V3
+   0.410 mm   +3V3 <-> SDA_3V3
+   0.411 mm   +5V <-> <nc:U1.28>
+   0.417 mm   GATE <-> GND
+   0.437 mm   +5V <-> GND
+   0.450 mm   +10V_FAN <-> FAN_PWM
+   0.450 mm   +10V_FAN <-> GND
+   0.450 mm   +10V_FAN <-> TACH_IN
+   0.454 mm   +5V <-> TACH_5V
+   0.467 mm   +10V_P <-> GND
+   0.492 mm   KEY_BAK <-> PWM_D9
+   0.496 mm   +5V <-> <nc:U1.26>
+  smallest gap: 0.410 mm
+  net pairs closer than 0.40 mm: 0
+  net pairs closer than 0.50 mm: 12
+  net pairs closer than 0.60 mm: 13
+Smallest copper-to-board-edge distance: 3.150 mm
+
+Isolation cut width of a V-bit = tip + 2 * depth * tan(angle / 2):
+  20 deg, 0.1 mm tip, 0.05 mm deep: 0.118 mm  fits
+  20 deg, 0.1 mm tip, 0.10 mm deep: 0.135 mm  fits
+  20 deg, 0.1 mm tip, 0.15 mm deep: 0.153 mm  fits
+  30 deg, 0.1 mm tip, 0.05 mm deep: 0.127 mm  fits
+  30 deg, 0.1 mm tip, 0.10 mm deep: 0.154 mm  fits
+  30 deg, 0.1 mm tip, 0.15 mm deep: 0.180 mm  fits
+  30 deg, 0.2 mm tip, 0.05 mm deep: 0.227 mm  fits
+  30 deg, 0.2 mm tip, 0.10 mm deep: 0.254 mm  fits
+  30 deg, 0.2 mm tip, 0.15 mm deep: 0.280 mm  fits
+  60 deg, 0.1 mm tip, 0.05 mm deep: 0.158 mm  fits
+  60 deg, 0.1 mm tip, 0.10 mm deep: 0.215 mm  fits
+  60 deg, 0.1 mm tip, 0.15 mm deep: 0.273 mm  fits
+  (0.05 mm kept as margin; a flat end mill cuts its own diameter)
+
+Holes (drill diameter: count):
+  0.75 mm: 4
+  0.80 mm: 32
+  1.00 mm: 51
+  1.10 mm: 2
+  1.20 mm: 2
+  1.30 mm: 4
+  3.20 mm: 4
+  total: 99
+
+Isolation lines in the DXF (layers ISO_PASS1..2) computed for a 30 deg V-bit, 0.10 mm tip, 0.10 mm deep:
+  cut width 0.154 mm, pass offsets from the copper: 0.077, 0.169 mm
+  total path length: pass 1 1600 mm, pass 2 1621 mm
+  simulated cut: every net isolated from every other; no copper of any net removed
