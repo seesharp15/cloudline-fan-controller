@@ -13,4 +13,4 @@ SINGLE-SIDED BOARD: 1 copper layer.
                   ALL HOLES NON-PLATED.
 
   FR-4, 1.6 mm, 1 oz copper, HASL lead-free. Top side: no copper, no
-  solder mask needed. Min track 0.5 mm, min spacing 0.35 mm, min hole 0.75 mm.
+  solder mask needed. Min track 0.5 mm, min spacing 0.6 mm, min hole 0.75 mm.

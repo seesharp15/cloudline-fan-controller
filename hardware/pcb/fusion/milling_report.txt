@@ -4,37 +4,37 @@ Board 100.0 x 75.0 mm, copper islands: 44 in 44 nets
 
 Smallest copper-to-copper gaps between different nets
 (the isolation cut must fit inside these):
-   0.410 mm   +3V3 <-> SCL_3V3
-   0.410 mm   +3V3 <-> SDA_3V3
-   0.411 mm   +5V <-> <nc:U1.28>
-   0.417 mm   GATE <-> GND
-   0.437 mm   +5V <-> GND
-   0.450 mm   +10V_FAN <-> FAN_PWM
-   0.450 mm   +10V_FAN <-> GND
-   0.450 mm   +10V_FAN <-> TACH_IN
-   0.454 mm   +5V <-> TACH_5V
-   0.467 mm   +10V_P <-> GND
-   0.492 mm   KEY_BAK <-> PWM_D9
-   0.496 mm   +5V <-> <nc:U1.26>
-  smallest gap: 0.410 mm
+   0.640 mm   <nc:U1.28> <-> GND
+   0.640 mm   <nc:U1.2> <-> <nc:U1.3>
+   0.640 mm   +5V <-> <nc:U1.26>
+   0.640 mm   <nc:U1.4> <-> TACH_5V
+   0.640 mm   <nc:U4.GND_HV> <-> <nc:U4.HV3>
+   0.640 mm   <nc:U4.GND_LV> <-> <nc:U4.LV3>
+   0.640 mm   <nc:U1.21> <-> <nc:U1.22>
+   0.640 mm   ENC_B <-> ENC_SW
+   0.640 mm   KEY_BAK <-> KEY_CON
+   0.640 mm   SCL_3V3 <-> SDA_3V3
+   0.640 mm   SCL_5V <-> SDA_5V
+   0.640 mm   <nc:U1.14> <-> <nc:U1.15>
+  smallest gap: 0.640 mm
   net pairs closer than 0.40 mm: 0
-  net pairs closer than 0.50 mm: 12
-  net pairs closer than 0.60 mm: 13
+  net pairs closer than 0.50 mm: 0
+  net pairs closer than 0.60 mm: 0
 Smallest copper-to-board-edge distance: 3.150 mm
 
 Isolation cut width of a V-bit = tip + 2 * depth * tan(angle / 2):
-  20 deg, 0.1 mm tip, 0.05 mm deep: 0.118 mm  fits
   20 deg, 0.1 mm tip, 0.10 mm deep: 0.135 mm  fits
-  20 deg, 0.1 mm tip, 0.15 mm deep: 0.153 mm  fits
-  30 deg, 0.1 mm tip, 0.05 mm deep: 0.127 mm  fits
+  20 deg, 0.1 mm tip, 0.20 mm deep: 0.171 mm  fits
+  20 deg, 0.1 mm tip, 0.30 mm deep: 0.206 mm  fits
   30 deg, 0.1 mm tip, 0.10 mm deep: 0.154 mm  fits
-  30 deg, 0.1 mm tip, 0.15 mm deep: 0.180 mm  fits
-  30 deg, 0.2 mm tip, 0.05 mm deep: 0.227 mm  fits
+  30 deg, 0.1 mm tip, 0.20 mm deep: 0.207 mm  fits
+  30 deg, 0.1 mm tip, 0.30 mm deep: 0.261 mm  fits
   30 deg, 0.2 mm tip, 0.10 mm deep: 0.254 mm  fits
-  30 deg, 0.2 mm tip, 0.15 mm deep: 0.280 mm  fits
-  60 deg, 0.1 mm tip, 0.05 mm deep: 0.158 mm  fits
+  30 deg, 0.2 mm tip, 0.20 mm deep: 0.307 mm  fits
+  30 deg, 0.2 mm tip, 0.30 mm deep: 0.361 mm  fits
   60 deg, 0.1 mm tip, 0.10 mm deep: 0.215 mm  fits
-  60 deg, 0.1 mm tip, 0.15 mm deep: 0.273 mm  fits
+  60 deg, 0.1 mm tip, 0.20 mm deep: 0.331 mm  fits
+  60 deg, 0.1 mm tip, 0.30 mm deep: 0.446 mm  fits
   (0.05 mm kept as margin; a flat end mill cuts its own diameter)
 
 Holes (drill diameter: count):
@@ -47,7 +47,8 @@ Holes (drill diameter: count):
   3.20 mm: 4
   total: 99
 
-Isolation lines in the DXF (layers ISO_PASS1..2) computed for a 30 deg V-bit, 0.10 mm tip, 0.10 mm deep:
-  cut width 0.154 mm, pass offsets from the copper: 0.077, 0.169 mm
-  total path length: pass 1 1600 mm, pass 2 1621 mm
+Isolation lines in the DXF (layers ISO_PASS1..2) computed for a 30 deg V-bit, 0.10 mm tip, 0.20 mm deep:
+  cut width 0.207 mm, pass offsets from the copper: 0.104, 0.228 mm
+  total path length: pass 1 1614 mm, pass 2 1643 mm
   simulated cut: every net isolated from every other; no copper of any net removed
+  board height error +/-0.10 mm (no height map): at 0.10 mm deep the cut is 0.154 mm wide and still isolates every net; at 0.30 mm it is 0.261 mm wide and trims 0.027 mm off copper edges (harmless)

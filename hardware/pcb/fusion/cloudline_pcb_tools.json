@@ -1,0 +1,402 @@
+{
+  "data": [
+    {
+      "type": "chamfer mill",
+      "unit": "millimeters",
+      "description": "V-bit 30 deg, 0.1 mm tip - isolation",
+      "guid": "{dafb1140-610f-52e8-82c9-21660202012d}",
+      "vendor": "",
+      "product-id": "",
+      "product-link": "",
+      "BMC": "carbide",
+      "GRADE": "Mill Generic",
+      "geometry": {
+        "DC": 3.175,
+        "SFDM": 3.175,
+        "OAL": 38.0,
+        "NOF": 1,
+        "HAND": true,
+        "CSP": false,
+        "RE": 0.0,
+        "NT": 1,
+        "tip-diameter": 0.1,
+        "TA": 15.0,
+        "LCF": 5.738,
+        "LB": 15.0
+      },
+      "post-process": {
+        "number": 1,
+        "length-offset": 1,
+        "diameter-offset": 1,
+        "turret": 0,
+        "comment": "V-bit 30 deg, 0.1 mm tip - isolation",
+        "manual-tool-change": false,
+        "break-control": false,
+        "live": true
+      },
+      "start-values": {
+        "presets": [
+          {
+            "guid": "{10fd9c4c-a4fe-5eff-9ab9-706b953891bf}",
+            "name": "FR-4 PCB (Stepcraft DI 1000)",
+            "description": "",
+            "n": 20000,
+            "n_ramp": 20000,
+            "v_f": 400,
+            "v_f_leadIn": 400,
+            "v_f_leadOut": 400,
+            "v_f_transition": 400,
+            "v_f_ramp": 100,
+            "v_f_plunge": 100,
+            "v_f_retract": 200,
+            "f_z": 0.02,
+            "f_n": 0.02,
+            "v_c": 199.49,
+            "tool-coolant": "disabled",
+            "use-stepdown": true,
+            "stepdown": 0.2
+          }
+        ]
+      }
+    },
+    {
+      "type": "drill",
+      "unit": "millimeters",
+      "description": "Drill 0.8 mm - 0.75/0.80 holes",
+      "guid": "{77667ac9-fdc6-53a9-a189-51101f33d379}",
+      "vendor": "",
+      "product-id": "",
+      "product-link": "",
+      "BMC": "carbide",
+      "GRADE": "Mill Generic",
+      "geometry": {
+        "DC": 0.8,
+        "SFDM": 3.175,
+        "OAL": 38.0,
+        "NOF": 2,
+        "HAND": true,
+        "CSP": false,
+        "RE": 0.0,
+        "NT": 1,
+        "SIG": 118.0,
+        "LCF": 6.4,
+        "LB": 15.0
+      },
+      "post-process": {
+        "number": 2,
+        "length-offset": 2,
+        "diameter-offset": 2,
+        "turret": 0,
+        "comment": "Drill 0.8 mm - 0.75/0.80 holes",
+        "manual-tool-change": false,
+        "break-control": false,
+        "live": true
+      },
+      "start-values": {
+        "presets": [
+          {
+            "guid": "{2fe0ee05-a485-5e8d-93e5-cfbe94c81eef}",
+            "name": "FR-4 PCB (Stepcraft DI 1000)",
+            "description": "",
+            "n": 20000,
+            "n_ramp": 20000,
+            "v_f": 100,
+            "v_f_leadIn": 100,
+            "v_f_leadOut": 100,
+            "v_f_transition": 100,
+            "v_f_ramp": 100,
+            "v_f_plunge": 100,
+            "v_f_retract": 200,
+            "f_z": 0.0025,
+            "f_n": 0.005,
+            "v_c": 50.27,
+            "tool-coolant": "disabled"
+          }
+        ]
+      }
+    },
+    {
+      "type": "drill",
+      "unit": "millimeters",
+      "description": "Drill 1.0 mm",
+      "guid": "{e5fc3a74-aea1-5f7e-ad4a-a63d49ce1273}",
+      "vendor": "",
+      "product-id": "",
+      "product-link": "",
+      "BMC": "carbide",
+      "GRADE": "Mill Generic",
+      "geometry": {
+        "DC": 1.0,
+        "SFDM": 3.175,
+        "OAL": 38.0,
+        "NOF": 2,
+        "HAND": true,
+        "CSP": false,
+        "RE": 0.0,
+        "NT": 1,
+        "SIG": 118.0,
+        "LCF": 8.0,
+        "LB": 15.0
+      },
+      "post-process": {
+        "number": 3,
+        "length-offset": 3,
+        "diameter-offset": 3,
+        "turret": 0,
+        "comment": "Drill 1.0 mm",
+        "manual-tool-change": false,
+        "break-control": false,
+        "live": true
+      },
+      "start-values": {
+        "presets": [
+          {
+            "guid": "{28ab75bd-b29c-5184-aa5c-778dad54e61f}",
+            "name": "FR-4 PCB (Stepcraft DI 1000)",
+            "description": "",
+            "n": 20000,
+            "n_ramp": 20000,
+            "v_f": 120,
+            "v_f_leadIn": 120,
+            "v_f_leadOut": 120,
+            "v_f_transition": 120,
+            "v_f_ramp": 120,
+            "v_f_plunge": 120,
+            "v_f_retract": 240,
+            "f_z": 0.003,
+            "f_n": 0.006,
+            "v_c": 62.83,
+            "tool-coolant": "disabled"
+          }
+        ]
+      }
+    },
+    {
+      "type": "drill",
+      "unit": "millimeters",
+      "description": "Drill 1.2 mm - 1.10/1.20 holes",
+      "guid": "{43de366a-4477-57f7-9c8a-933de0a29e79}",
+      "vendor": "",
+      "product-id": "",
+      "product-link": "",
+      "BMC": "carbide",
+      "GRADE": "Mill Generic",
+      "geometry": {
+        "DC": 1.2,
+        "SFDM": 3.175,
+        "OAL": 38.0,
+        "NOF": 2,
+        "HAND": true,
+        "CSP": false,
+        "RE": 0.0,
+        "NT": 1,
+        "SIG": 118.0,
+        "LCF": 9.6,
+        "LB": 15.0
+      },
+      "post-process": {
+        "number": 4,
+        "length-offset": 4,
+        "diameter-offset": 4,
+        "turret": 0,
+        "comment": "Drill 1.2 mm - 1.10/1.20 holes",
+        "manual-tool-change": false,
+        "break-control": false,
+        "live": true
+      },
+      "start-values": {
+        "presets": [
+          {
+            "guid": "{c8cdd4de-8f59-558e-bdc8-ab76a2cf7265}",
+            "name": "FR-4 PCB (Stepcraft DI 1000)",
+            "description": "",
+            "n": 20000,
+            "n_ramp": 20000,
+            "v_f": 140,
+            "v_f_leadIn": 140,
+            "v_f_leadOut": 140,
+            "v_f_transition": 140,
+            "v_f_ramp": 140,
+            "v_f_plunge": 140,
+            "v_f_retract": 280,
+            "f_z": 0.0035,
+            "f_n": 0.007,
+            "v_c": 75.4,
+            "tool-coolant": "disabled"
+          }
+        ]
+      }
+    },
+    {
+      "type": "drill",
+      "unit": "millimeters",
+      "description": "Drill 1.3 mm - J2 screw terminal",
+      "guid": "{3753c062-cd1c-53fe-b335-4c15efab063f}",
+      "vendor": "",
+      "product-id": "",
+      "product-link": "",
+      "BMC": "carbide",
+      "GRADE": "Mill Generic",
+      "geometry": {
+        "DC": 1.3,
+        "SFDM": 3.175,
+        "OAL": 38.0,
+        "NOF": 2,
+        "HAND": true,
+        "CSP": false,
+        "RE": 0.0,
+        "NT": 1,
+        "SIG": 118.0,
+        "LCF": 10.4,
+        "LB": 15.0
+      },
+      "post-process": {
+        "number": 5,
+        "length-offset": 5,
+        "diameter-offset": 5,
+        "turret": 0,
+        "comment": "Drill 1.3 mm - J2 screw terminal",
+        "manual-tool-change": false,
+        "break-control": false,
+        "live": true
+      },
+      "start-values": {
+        "presets": [
+          {
+            "guid": "{17a604e4-2315-5f5d-b6de-dedff93cfee4}",
+            "name": "FR-4 PCB (Stepcraft DI 1000)",
+            "description": "",
+            "n": 20000,
+            "n_ramp": 20000,
+            "v_f": 140,
+            "v_f_leadIn": 140,
+            "v_f_leadOut": 140,
+            "v_f_transition": 140,
+            "v_f_ramp": 140,
+            "v_f_plunge": 140,
+            "v_f_retract": 280,
+            "f_z": 0.0035,
+            "f_n": 0.007,
+            "v_c": 81.68,
+            "tool-coolant": "disabled"
+          }
+        ]
+      }
+    },
+    {
+      "type": "drill",
+      "unit": "millimeters",
+      "description": "Drill 3.2 mm - M3 mounting holes",
+      "guid": "{7a1a8169-ac85-53c5-8137-55754a4adb57}",
+      "vendor": "",
+      "product-id": "",
+      "product-link": "",
+      "BMC": "carbide",
+      "GRADE": "Mill Generic",
+      "geometry": {
+        "DC": 3.2,
+        "SFDM": 3.2,
+        "OAL": 38.0,
+        "NOF": 2,
+        "HAND": true,
+        "CSP": false,
+        "RE": 0.0,
+        "NT": 1,
+        "SIG": 118.0,
+        "LCF": 25.6,
+        "LB": 15.0
+      },
+      "post-process": {
+        "number": 6,
+        "length-offset": 6,
+        "diameter-offset": 6,
+        "turret": 0,
+        "comment": "Drill 3.2 mm - M3 mounting holes",
+        "manual-tool-change": false,
+        "break-control": false,
+        "live": true
+      },
+      "start-values": {
+        "presets": [
+          {
+            "guid": "{0688f340-ef21-563d-aa85-2c5ac05702c0}",
+            "name": "FR-4 PCB (Stepcraft DI 1000)",
+            "description": "",
+            "n": 12000,
+            "n_ramp": 12000,
+            "v_f": 200,
+            "v_f_leadIn": 200,
+            "v_f_leadOut": 200,
+            "v_f_transition": 200,
+            "v_f_ramp": 200,
+            "v_f_plunge": 200,
+            "v_f_retract": 400,
+            "f_z": 0.00833,
+            "f_n": 0.01667,
+            "v_c": 120.64,
+            "tool-coolant": "disabled"
+          }
+        ]
+      }
+    },
+    {
+      "type": "flat end mill",
+      "unit": "millimeters",
+      "description": "End mill 2 mm 2-flute - board outline",
+      "guid": "{1111bcf1-59dd-5cd4-a568-a1e56537d413}",
+      "vendor": "",
+      "product-id": "",
+      "product-link": "",
+      "BMC": "carbide",
+      "GRADE": "Mill Generic",
+      "geometry": {
+        "DC": 2.0,
+        "SFDM": 3.175,
+        "OAL": 38.0,
+        "NOF": 2,
+        "HAND": true,
+        "CSP": false,
+        "RE": 0.0,
+        "NT": 1,
+        "LCF": 8.0,
+        "LB": 15.0,
+        "shoulder-length": 8.0
+      },
+      "post-process": {
+        "number": 7,
+        "length-offset": 7,
+        "diameter-offset": 7,
+        "turret": 0,
+        "comment": "End mill 2 mm 2-flute - board outline",
+        "manual-tool-change": false,
+        "break-control": false,
+        "live": true
+      },
+      "start-values": {
+        "presets": [
+          {
+            "guid": "{0940f7e4-8552-5c5b-8202-721a73032301}",
+            "name": "FR-4 PCB (Stepcraft DI 1000)",
+            "description": "",
+            "n": 18000,
+            "n_ramp": 18000,
+            "v_f": 500,
+            "v_f_leadIn": 500,
+            "v_f_leadOut": 500,
+            "v_f_transition": 500,
+            "v_f_ramp": 100,
+            "v_f_plunge": 100,
+            "v_f_retract": 200,
+            "f_z": 0.01389,
+            "f_n": 0.02778,
+            "v_c": 113.1,
+            "tool-coolant": "disabled",
+            "use-stepdown": true,
+            "stepdown": 0.5
+          }
+        ]
+      }
+    }
+  ],
+  "version": 15
+}

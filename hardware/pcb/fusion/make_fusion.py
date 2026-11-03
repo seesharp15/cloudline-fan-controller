@@ -46,7 +46,8 @@ QUAD = 16                    # arc segments per quarter circle
 # bit and regenerate; milling_report.txt lists the result.
 VBIT_ANGLE = 30.0            # included angle, degrees
 VBIT_TIP = 0.1               # tip (flat) diameter, mm
-CUT_DEPTH = 0.10             # into the copper surface, mm (copper is 0.035)
+CUT_DEPTH = 0.20             # below the copper surface, mm (copper is 0.035 or 0.07)
+Z_TOL = 0.10                 # board height error the paths must tolerate (no height map)
 PASS_OVERLAP = 0.4           # overlap between isolation passes
 N_PASSES = 2                 # pass 1 hugs the copper, pass 2 widens the gap
 
@@ -171,7 +172,7 @@ def gap_report(nets, holes):
     lines.append("")
     lines.append("Isolation cut width of a V-bit = tip + 2 * depth * tan(angle / 2):")
     for ang, tip in ((20, 0.1), (30, 0.1), (30, 0.2), (60, 0.1)):
-        for depth in (0.05, 0.10, 0.15):
+        for depth in (0.10, 0.20, 0.30):
             wdt = tip + 2 * depth * math.tan(math.radians(ang / 2))
             ok = "fits" if wdt <= gaps[0][0] - 0.05 else "TOO WIDE for the smallest gap"
             lines.append(f"  {ang:2d} deg, {tip:.1f} mm tip, {depth:.2f} mm deep: {wdt:.3f} mm  {ok}")
@@ -185,8 +186,8 @@ def gap_report(nets, holes):
     return "\n".join(lines) + "\n", gaps[0][0]
 
 
-def cut_width():
-    return VBIT_TIP + 2 * CUT_DEPTH * math.tan(math.radians(VBIT_ANGLE / 2))
+def cut_width(depth=CUT_DEPTH):
+    return VBIT_TIP + 2 * depth * math.tan(math.radians(VBIT_ANGLE / 2))
 
 
 def isolation_passes(nets):
@@ -211,10 +212,9 @@ def isolation_passes(nets):
     return passes
 
 
-def verify_isolation(nets, passes):
+def verify_isolation(nets, passes, w):
     """Simulate the cut: remove copper along every pass (width w) and check
     that no remaining copper area joins two different nets."""
-    w = cut_width()
     cut = unary_union([p.buffer(w / 2, quad_segs=QUAD) for p in passes])
     sheet = box(0, 0, W, H).difference(cut)        # copper left after milling
     comps = polys(sheet)
@@ -224,7 +224,9 @@ def verify_isolation(nets, passes):
         if len(hit) > 1:
             bad.append(sorted(hit))
     # every net's copper must survive (the cut never eats into a pad/track)
-    eaten = [n for n, g in nets.items() if g.difference(sheet).area > 1e-4]
+    # (slivers under 5 um are the polygon approximation of arcs, not cuts)
+    kept = sheet.buffer(0.005, quad_segs=QUAD)
+    eaten = [n for n, g in nets.items() if g.difference(kept).area > 1e-6]
     return bad, eaten
 
 
@@ -318,16 +320,29 @@ def main():
     nets, holes, prims = collect()
     report, min_gap = gap_report(nets, holes)
     passes = isolation_passes(nets)
-    bad, eaten = verify_isolation(nets, passes)
     w = cut_width()
+    bad, eaten = verify_isolation(nets, passes, w)
+    # The board may sit up to Z_TOL higher or lower than the touch-off point
+    # (no height map): shallower -> narrower cut, which must still isolate;
+    # deeper -> wider cut, which bites a little into the copper edges.
+    shallow = max(CUT_DEPTH - Z_TOL, 0.0)
+    bad_shallow, _ = verify_isolation(nets, passes, cut_width(shallow))
+    bite = (cut_width(CUT_DEPTH + Z_TOL) - w) / 2
+    if shallow < 0.07:
+        bad_shallow.append(f"cut only {shallow:.2f} mm deep at the high spot: not through 70 um copper")
     report += (f"\nIsolation lines in the DXF (layers ISO_PASS1..{N_PASSES}) computed for a "
                f"{VBIT_ANGLE:.0f} deg V-bit, {VBIT_TIP:.2f} mm tip, {CUT_DEPTH:.2f} mm deep:\n"
                f"  cut width {w:.3f} mm, pass offsets from the copper: "
                + ", ".join(f"{w / 2 + k * w * (1 - PASS_OVERLAP):.3f}" for k in range(N_PASSES)) + " mm\n"
                f"  total path length: " + ", ".join(f"pass {k + 1} {p.length:.0f} mm" for k, p in enumerate(passes)) + "\n"
                f"  simulated cut: {'every net isolated from every other' if not bad else 'NOT ISOLATED: ' + str(bad)}; "
-               f"{'no copper of any net removed' if not eaten else 'COPPER CUT on: ' + str(eaten)}\n")
-    if bad or eaten:
+               f"{'no copper of any net removed' if not eaten else 'COPPER CUT on: ' + str(eaten)}\n"
+               f"  board height error +/-{Z_TOL:.2f} mm (no height map): at {shallow:.2f} mm deep the cut is "
+               f"{cut_width(shallow):.3f} mm wide and "
+               f"{'still isolates every net' if not bad_shallow else 'FAILS: ' + str(bad_shallow)}; "
+               f"at {CUT_DEPTH + Z_TOL:.2f} mm it is {cut_width(CUT_DEPTH + Z_TOL):.3f} mm wide and trims "
+               f"{bite:.3f} mm off copper edges (harmless)\n")
+    if bad or eaten or bad_shallow:
         print(report)
         raise SystemExit("isolation check failed")
     os.makedirs(HERE, exist_ok=True)

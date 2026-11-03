@@ -13,7 +13,8 @@ The netlist below is the schematic (hardware/schematic.py) written out pin
 by pin; hardware/pcb/check_pcb.py compares it with PINOUT.md.
 
 Design rules (also stored in the board for KiCad's DRC):
-  clearance 0.35 mm, signal tracks 0.5 mm, power tracks 0.8 mm,
+  clearance 0.6 mm (tracks are routed 0.75 mm from other copper; the
+  0.64 mm between 2.54 mm-pitch header pads is the smallest gap), signal tracks 0.5 mm, power tracks 0.8 mm,
   pads at least 1.7 mm (holes are unplated on a single-sided board, so
   the copper ring is what holds the lead).
 """
@@ -34,7 +35,8 @@ OUT = os.path.join(HERE, "cloudline_controller.kicad_pcb")
 W, H = 100.0, 75.0
 OX, OY = 50.0, 40.0
 
-CLEAR = 0.35        # copper-to-copper clearance
+CLEAR = 0.6         # copper-to-copper clearance (DRC rule); wide for isolation milling
+ROUTE_CLEAR = 0.75  # what the router keeps from other copper (grid slack -> >= 0.69 actual)
 EDGE = 0.8          # copper-to-board-edge clearance
 GRID = 0.25         # router grid
 TRACK = {"signal": 0.5, "power": 0.8}
@@ -493,7 +495,7 @@ def main():
         if len(pads) < 2:
             continue
         w = TRACK["power" if nname in POWER_NETS else "signal"]
-        margin = CLEAR + w / 2 + 0.06
+        margin = ROUTE_CLEAR + w / 2 + 0.06
         blocked = edge_mask(EDGE + w / 2)
         padfree = ~edge_mask(EDGE + 0.9)
         for o in objs:
