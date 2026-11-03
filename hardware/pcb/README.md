@@ -30,6 +30,8 @@ four M3 mounting holes.
 | [`fab/bottom_copper_toner_transfer_1to1.pdf`](fab/bottom_copper_toner_transfer_1to1.pdf) | Bottom copper at 1:1, drawn as seen from the top (correct for toner transfer: the print goes face-down on the copper), for etching a board at home |
 | `fab/render_*.png`, `fab/gerbv_*.png` | Renders. The `gerbv_*` ones are drawn from the Gerber and drill files themselves by gerbv, an independent viewer: this is what the board house will see. |
 | [`fab/drc_report.txt`](fab/drc_report.txt) | KiCad design-rule check report |
+| [`fusion/`](fusion/README.md) | **Milling it yourself in Fusion 360** (Stepcraft M.1000, UCCNC, tool changer): copper-side-up STEP model, DXF with isolation paths and drill layers, Fusion tool library, CAM setup, feeds and speeds |
+| [`eagle/`](eagle/README.md) | **Editable in Fusion Electronics**: the schematic and board as EAGLE 9 `.sch` + `.brd`, checked by reading them back with KiCad's EAGLE importer |
 | `cloudline_controller.kicad_pcb`, `.kicad_pro`, `fp-lib-table`, `cloudline.pretty/` | The KiCad 7 project, to open and edit in KiCad |
 | [`make_pcb.py`](make_pcb.py) | Generates the board: placement, netlist, single-layer router |
 | [`make_fab.py`](make_fab.py) | Runs the checks and produces everything in `fab/` |
@@ -45,7 +47,7 @@ Upload the zip and choose these options (names vary between board houses):
 | Dimensions | 100 × 75 mm |
 | Material / thickness | FR-4, 1.6 mm |
 | Copper weight | 1 oz (35 µm) |
-| Min. track / spacing | 0.5 mm / 0.35 mm (power tracks 0.8 mm), well within any fab's limits |
+| Min. track / spacing | 0.5 mm / 0.6 mm (power tracks 0.8 mm), well within any fab's limits. The spacing is wide on purpose, so the board can also be isolation-milled. |
 | Holes | 0.75 – 1.3 mm, plus four 3.2 mm mounting holes; **all non-plated** (single-sided) |
 | Copper side | **Bottom** (`B_Cu.gbl`) |
 | Solder mask | **Bottom only** (`B_Mask.gbs`). The top has no copper, so it needs no mask; if the fab insists on one, any colour, no openings. |
@@ -153,7 +155,9 @@ order is not the same as the Molex pin numbers:
   survive the screw torque; still route the cable through a gland so it
   can't pull on the terminal.
 - **Tracks:** 0.8 mm for GND, +5V and the fused and unfused fan supply;
-  0.5 mm for signals; 0.35 mm clearance; 0.8 mm from the board edge.
+  0.5 mm for signals; 0.6 mm clearance (tracks are routed ≥ 0.69 mm from
+  other copper; the 0.64 mm between 2.54 mm-pitch header pads is the
+  smallest gap); 0.8 mm from the board edge.
 - **Silkscreen:** text at least 1.0 mm high with a 0.16 mm stroke (the title
   is larger).
 - **Footprints** come from KiCad 7's standard library, except two in
@@ -195,7 +199,8 @@ schematic, the wiring view, PINOUT and README, not the PCB.
     drawing; there is no 3D model);
   - the clearance of the Nano's USB plug at the board edge.
 - KiCad 7's command-line tool has no 3D/STEP export without the 3D model
-  package, so there is no 3D view.
+  package. [`fusion/`](fusion/README.md) has a STEP of the bare board (substrate,
+  holes and copper) built by its own script.
 
 ## Regenerating
 

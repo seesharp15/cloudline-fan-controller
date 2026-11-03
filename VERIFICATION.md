@@ -840,6 +840,60 @@ J1.1        PINOUT.md       ok       TACH
 pin cross-check: 72 checks, 0 mismatches
 ```
 
+### 8.5b Milling files: `python3 hardware/pcb/fusion/make_fusion.py && python3 hardware/pcb/fusion/check_fusion.py`
+
+```
+Isolation lines in the DXF (layers ISO_PASS1..2) computed for a 30 deg V-bit, 0.10 mm tip, 0.20 mm deep:
+  cut width 0.207 mm, pass offsets from the copper: 0.104, 0.228 mm
+  total path length: pass 1 1614 mm, pass 2 1643 mm
+  simulated cut: every net isolated from every other; no copper of any net removed
+  board height error +/-0.10 mm (no height map): at 0.10 mm deep the cut is 0.154 mm wide and still isolates every net; at 0.30 mm it is 0.261 mm wide and trims 0.027 mm off copper edges (harmless)
+fusion export check: 0 problems
+```
+
+The smallest copper gap after the re-route is 0.64 mm (it was 0.41 mm before).
+
+`check_fusion.py` re-imports both STEP files. It checks:
+
+- 45 valid solids;
+- the substrate is 100 × 75 × 1.6 mm at the origin, and its volume matches the 99 holes;
+- there are 44 copper bodies, one per net (unconnected pads included);
+- the copper volume is 20.320 mm³, against 20.311 mm³ from the 2D geometry;
+- Z placement;
+- the Nano VIN pad is at the right position in both the mirrored and top views.
+
+The isolation check is mutation-tested: running the same paths with a tool
+0.06 mm wider is reported as cutting copper. The simulation does not count
+slivers under 5 µm, because those come from approximating arcs as polygons.
+
+The tool library is checked by `make_tool_library.py`: every spindle speed is
+within the DI 1000's 8 000–20 000 rpm.
+
+Not verified here:
+
+- the import into Fusion 360 (STEP, DXF and tool library);
+- the toolpaths and the G-code posted for UCCNC;
+- a board actually milled on the M.1000.
+
+### 8.5c Fusion Electronics files: `python3 hardware/pcb/eagle/check_eagle.py`
+
+```
+DTD: checked both files
+board: 95 pads compared, worst position error 0.0000 mm
+board: 100 track segments, identical: True
+board: KiCad's connectivity on the imported board: 0 unconnected
+board: check_pcb.py on the imported board: pcb netlist check: 20 nets, 71 pads, 0 problems
+schematic: 24 parts, 20 nets, 71 pin connections, same netlist as the board: True
+eagle export check: 0 problems
+```
+
+The `.brd` is read by KiCad's EAGLE importer, which is independent of
+`make_eagle.py`. The `.sch` cannot be loaded by `kicad-cli` 7, so it is
+checked geometrically instead (see `hardware/pcb/eagle/README.md`).
+
+Mutation test: rotating U2 by 180° and moving one R6 net stub to the other
+pin produced 6 problems. Opening the files in Fusion 360 itself is not tested.
+
 ### 8.6 Link check
 
 Every relative link and `#anchor` in the Markdown files resolves (0 broken).

@@ -1,0 +1,54 @@
+Milling report: Cloudline controller PCB (Rev B)
+==================================================
+Board 100.0 x 75.0 mm, copper islands: 44 in 44 nets
+
+Smallest copper-to-copper gaps between different nets
+(the isolation cut must fit inside these):
+   0.640 mm   <nc:U1.28> <-> GND
+   0.640 mm   <nc:U1.2> <-> <nc:U1.3>
+   0.640 mm   +5V <-> <nc:U1.26>
+   0.640 mm   <nc:U1.4> <-> TACH_5V
+   0.640 mm   <nc:U4.GND_HV> <-> <nc:U4.HV3>
+   0.640 mm   <nc:U4.GND_LV> <-> <nc:U4.LV3>
+   0.640 mm   <nc:U1.21> <-> <nc:U1.22>
+   0.640 mm   ENC_B <-> ENC_SW
+   0.640 mm   KEY_BAK <-> KEY_CON
+   0.640 mm   SCL_3V3 <-> SDA_3V3
+   0.640 mm   SCL_5V <-> SDA_5V
+   0.640 mm   <nc:U1.14> <-> <nc:U1.15>
+  smallest gap: 0.640 mm
+  net pairs closer than 0.40 mm: 0
+  net pairs closer than 0.50 mm: 0
+  net pairs closer than 0.60 mm: 0
+Smallest copper-to-board-edge distance: 3.150 mm
+
+Isolation cut width of a V-bit = tip + 2 * depth * tan(angle / 2):
+  20 deg, 0.1 mm tip, 0.10 mm deep: 0.135 mm  fits
+  20 deg, 0.1 mm tip, 0.20 mm deep: 0.171 mm  fits
+  20 deg, 0.1 mm tip, 0.30 mm deep: 0.206 mm  fits
+  30 deg, 0.1 mm tip, 0.10 mm deep: 0.154 mm  fits
+  30 deg, 0.1 mm tip, 0.20 mm deep: 0.207 mm  fits
+  30 deg, 0.1 mm tip, 0.30 mm deep: 0.261 mm  fits
+  30 deg, 0.2 mm tip, 0.10 mm deep: 0.254 mm  fits
+  30 deg, 0.2 mm tip, 0.20 mm deep: 0.307 mm  fits
+  30 deg, 0.2 mm tip, 0.30 mm deep: 0.361 mm  fits
+  60 deg, 0.1 mm tip, 0.10 mm deep: 0.215 mm  fits
+  60 deg, 0.1 mm tip, 0.20 mm deep: 0.331 mm  fits
+  60 deg, 0.1 mm tip, 0.30 mm deep: 0.446 mm  fits
+  (0.05 mm kept as margin; a flat end mill cuts its own diameter)
+
+Holes (drill diameter: count):
+  0.75 mm: 4
+  0.80 mm: 32
+  1.00 mm: 51
+  1.10 mm: 2
+  1.20 mm: 2
+  1.30 mm: 4
+  3.20 mm: 4
+  total: 99
+
+Isolation lines in the DXF (layers ISO_PASS1..2) computed for a 30 deg V-bit, 0.10 mm tip, 0.20 mm deep:
+  cut width 0.207 mm, pass offsets from the copper: 0.104, 0.228 mm
+  total path length: pass 1 1614 mm, pass 2 1643 mm
+  simulated cut: every net isolated from every other; no copper of any net removed
+  board height error +/-0.10 mm (no height map): at 0.10 mm deep the cut is 0.154 mm wide and still isolates every net; at 0.30 mm it is 0.261 mm wide and trims 0.027 mm off copper edges (harmless)

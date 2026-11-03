@@ -71,6 +71,8 @@ from the fan's own 10 V supply.
 | [hardware/wiring.svg](hardware/wiring.svg) ([PNG](hardware/wiring.png)) | Physical wiring view with suggested wire colours, for people who don't read schematics |
 | [hardware/bom.csv](hardware/bom.csv) | Parts list with part numbers and prices |
 | [hardware/pcb/](hardware/pcb/README.md) | **Single-sided PCB** (1 copper layer) as an alternative to perfboard: KiCad project, Gerbers + drill ready to order, assembly drawing, ordering options |
+| [hardware/pcb/fusion/](hardware/pcb/fusion/README.md) | **Milling the PCB in Fusion 360** on a Stepcraft M.1000: STEP + DXF (isolation paths, drill layers), Fusion tool library, CAM setup for UCCNC |
+| [hardware/pcb/eagle/](hardware/pcb/eagle/README.md) | **Editable design for Fusion Electronics**: schematic + board in EAGLE format |
 | [FAQ.md](FAQ.md) | The questions builders ask: USB + fan power, PWM frequency, other fans, warranty, other boards… |
 | [BENCH_TEST.md](BENCH_TEST.md) | Manual test of every requirement, first with a dummy load, then with the fan |
 | [VERIFICATION.md](VERIFICATION.md) | Requirements traceability, electrical calculations, pin cross-check, what is verified versus assumed, known limitations, review findings |
