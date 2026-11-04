@@ -1,5 +1,24 @@
 # Changelog
 
+## Independent check of the fab files (2026-11-04)
+
+- New `hardware/pcb/verify_gerbers.py` (standard library only, no KiCad):
+  - It reads the Gerber and drill files that go to the fab and rebuilds the
+    copper connectivity from them alone. Pads are identified by the X2 tags
+    KiCad writes.
+  - It compares the result with `check_pcb.py`'s expected netlist, measures
+    clearance and edge distance, and checks drill/pad/mask correspondence
+    and that the outline forms one closed loop.
+  - It was tested with deliberately broken Gerbers: a deleted track, a
+    bridging track, copper 0.3 mm from a pad and a missing outline edge
+    were each detected.
+  - Result on the current (0.6 mm-clearance) board: 20 nets, 71 pads, no
+    opens, no shorts, minimum clearance 0.64 mm.
+  - It runs as part of `make -C test`.
+- A second single-sided board had been designed in a parallel session
+  against the earlier circuit (no level shifter, old tach stage). It was
+  dropped in favour of this board, which matches the current schematic.
+
 ## PCB build guide (2026-11-03)
 
 - `hardware/pcb/README.md` rewritten as the main page for the PCB:

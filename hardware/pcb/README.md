@@ -141,6 +141,7 @@ The milling files and the walkthrough are made for this setup:
 | [`fab/pcb_bom.csv`](fab/pcb_bom.csv) | Parts by reference, value and footprint. Part numbers and prices are in [`../bom.csv`](../bom.csv). |
 | `cloudline_controller.kicad_pcb`, `.kicad_pro`, `fp-lib-table`, `cloudline.pretty/` | The KiCad 7 project (the master copy) |
 | `make_pcb.py`, `make_fab.py`, `drc.py`, `check_pcb.py` | Generate and check the board and the `fab/` files |
+| `verify_gerbers.py` | Checks the files in `fab/gerbers/` themselves against the netlist; runs anywhere Python 3.8+ does, no KiCad needed |
 | `fusion/make_fusion.py`, `make_tool_library.py`, `check_fusion.py`; `eagle/make_eagle.py`, `check_eagle.py` | Generate and check the milling and EAGLE files |
 
 ## The walkthrough, session by session
@@ -698,6 +699,7 @@ here won't follow your edits.
 | KiCad DRC (`drc.py`) | **0 errors, 0 unconnected.** 22 warnings, all `lib_footprint_mismatch`: the pads were deliberately enlarged and moved to the bottom layer. |
 | Copper connectivity vs. PINOUT.md (`check_pcb.py`), computed from the copper shapes | **20 nets, 71 pads, 0 opens, 0 shorts.** Mutation-tested. |
 | Gerber/drill files read back by gerbv | The renders in `fab/gerbv_*.png` match the design |
+| Fab files vs. netlist (`verify_gerbers.py`, standard-library Python, no KiCad; also run by `make -C test`). This reads the actual Gerber/drill files and rebuilds copper connectivity from the flashed pads and drawn tracks, with pads identified by KiCad's X2 tags. | **20 nets, 71 pads, 0 opens, 0 shorts.** Minimum clearance 0.64 mm (rule 0.6). Copper is ≥ 3.15 mm from the edge and the minimum annular ring is 0.45 mm. Every drill hit has a pad or is one of the 4 mounting holes; every pad has a hole and a mask opening; the outline is one closed loop. Mutation-tested: a deleted track, a bridging track, copper 0.3 mm from a pad and a missing outline edge are all reported. |
 | Toner-transfer PDF scale | 1:1 (outline measured on the rendered PDF) |
 | Milling files (`fusion/check_fusion.py`, `make_fusion.py`) | The STEP files re-imported: 45 valid solids, correct size, holes, copper and mirroring. The isolation cut is simulated at the nominal depth and at ±0.1 mm: every net is isolated and no copper is cut. Mutation-tested. |
 | Fusion Electronics files (`eagle/check_eagle.py`) | Valid against EAGLE's DTD. The board is read back with KiCad's EAGLE importer and is identical: 95 pads, 100 tracks, 0 unconnected, and `check_pcb.py` passes on it. The schematic netlist matches the board. Mutation-tested. |

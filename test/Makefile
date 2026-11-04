@@ -14,7 +14,7 @@ FW_SRC   := $(FW)/app.cpp $(FW)/config.h $(FW)/fan_logic.h $(FW)/display_ui.h
 SIM_SRC  := test_firmware_sim.cpp sim.cpp sim.h check.h $(wildcard stubs/*.h stubs/avr/*.h)
 SCENARIOS := boot1 powercycle serial oledaddr nodisplay diagboot wrap calfail
 
-.PHONY: all test shots clean no-eeprom pins
+.PHONY: all test shots clean no-eeprom pins gerbers
 all: test
 
 $(BUILD):
@@ -39,7 +39,12 @@ no-eeprom:
 pins:
 	@python3 check_pins.py | tail -1
 
-test: $(BUILD)/test_fan_logic_cxx11 $(BUILD)/test_fan_logic $(BUILD)/test_firmware_sim no-eeprom pins
+# The PCB fabrication files themselves (Gerber + drill, not the KiCad board)
+# must realise the netlist: no opens, no shorts, clearances met. No KiCad needed.
+gerbers:
+	@out=$$(python3 ../hardware/pcb/verify_gerbers.py) || { echo "$$out"; exit 1; }; echo "gerbers: $${out##*RESULT: }"
+
+test: $(BUILD)/test_fan_logic_cxx11 $(BUILD)/test_fan_logic $(BUILD)/test_firmware_sim no-eeprom pins gerbers
 	$(BUILD)/test_fan_logic_cxx11 > /dev/null
 	$(BUILD)/test_fan_logic
 	@set -e; for s in $(SCENARIOS); do $(BUILD)/test_firmware_sim $$s; done
